@@ -15,6 +15,7 @@
 </template>
 
 <script>
+import imgSrc from '../assets/images/cars_normal.png'
 export default {
   name: 'SmartDriving',
   props: {
@@ -25,8 +26,8 @@ export default {
       H:540,
       W:1008,
       RoadW:60,
-      carW:20,
-      carH:40,
+      carW:15,
+      carH:30,
       car1X:524,
       car1Y:490    
       }
@@ -61,10 +62,15 @@ export default {
     this.drawLine(100, this.H/2,this.W/2-this.RoadW, this.H/2)
     this.drawLine(this.W/2+this.RoadW, this.H/2,this.W-100, this.H/2)
     // 画车车
-    // var img = new Image();
-    var img = document.getElementById("car_normal0")
-    this.context.drawImage(img,524,490,20,40)
-    // img.src = '../assets/cars_normal.png';
+     var img = document.getElementById("car_normal0")
+    // img.src = imgSrc
+    this.context.drawImage(img,this.W/2+this.RoadW/2-5,490,10,20)
+    // var img = new Image()
+    // img.src=imgSrc
+    // img.onload=function(){
+    //   this.context.drawImage(img,this.W/2+this.RoadW/2-5,490,10,20)
+    // }
+    // img.src = '../assets/cars_normal.png'
     // setTimeout(function(){this.context.drawImage(img,0,0)},1000)
     // this.W/2+this.RoadW/2-this.carW/2
     // setInterval(function(){ 
@@ -94,14 +100,14 @@ export default {
 }
 .legcar{
   float:left;
-  margin:20px;
+  margin:10px;
   display:inline;
 }
 p{
   color:#fff;
   font-size: 12px;
   text-align: center;
-  line-height:60px;
+  line-height:30px;
   display:inline;
   float:left;
 }
