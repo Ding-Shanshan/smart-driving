@@ -46,7 +46,9 @@ export class MyTrafficLight {
   }
 
   // 获取当前灯的状态
-
+  getState() {
+    return this.state;
+  }
 
   // sleep函数
   sleep(contrainer, color, duration) {
