@@ -1,14 +1,16 @@
 <template>
   <div class="hello">
-    <canvas id="myCanvas" :width="W" :height="H" ></canvas>
-    <div class="legend">
-      <div class="leg">
-        <img  src="../assets/images/cars_normal.png" :width="carW" :heigth="carH" class="legcar" id="car_normal0"/>
-        <p>普通驾驶车辆</p>
-      </div><br/>
-      <div class="leg">
-        <img  src="../assets/images/cars_smart.png" :width="carW" :heigth="carH" class="legcar" id="car_smart0"/>
-        <p>智能驾驶车辆</p>
+    <div class="MyCanvas">
+      <canvas id="myCanvas" :width="W" :height="H"></canvas>
+      <div class="legend">
+        <div class="leg">
+          <img  src="../assets/images/cars_normal.png" :width="carW" :heigth="carH" class="legcar" id="car_normal0"/>
+          <p>普通驾驶车辆</p>
+        </div><br/>
+        <div class="leg">
+          <img  src="../assets/images/cars_smart.png" :width="carW" :heigth="carH" class="legcar" id="car_smart0"/>
+          <p>智能驾驶车辆</p>
+        </div>
       </div>
     </div>
   </div>
@@ -22,23 +24,21 @@ export default {
   },
   data() {
     return {
-      H:800,
-      W:1500,
+      H : Math.trunc((window.screen.availHeight - 200)/100)*100,
+      W : Math.trunc((window.screen.availWidth  - 300)/100)*100,
       RoadW:60,
-      carW:20,
-      carH:40,
+      carW:10,
+      carH:20,
       car1X:524,
       car1Y:490,
-      startPositions: [
-          {x: 40, y: 330, width: 60, height: 140, color: "#abb8c3"},
-          {x: 1400, y: 330, width: 60, height: 140, color: "#cf2e2e"},
-          {x: 680, y: 40, width: 140, height: 60, color: "#00d084"},
-          {x: 680, y: 700, width: 140, height: 60, color: "#9b51e0"}
-    ],
-    startIndexes:[],
       }
   },
   methods: {
+    setCanvasDivWAndH() {
+      let canvasDiv = document.getElementsByClassName("MyCanvas")[0];
+      canvasDiv.style.width = this.W + "px";
+      canvasDiv.style.height = this.H + "px";
+    },
     //绘制路面
     drawLine(x,y,x1,y1){
         this.context.moveTo(x, y);
@@ -48,7 +48,6 @@ export default {
     //绘制起始地等方块,可以通过点击起始地，创建目的地随机的，固定类型的车辆
     //目前只完成点击D，生成目的地为A的普通车辆
     drawStartPosition(positions,p) {
-      // let  = [];
       //对于要绘制的每一个图像执行函数，
       for(let idx = 0;idx<positions.length;idx++) {
         this.context.beginPath();
@@ -58,14 +57,12 @@ export default {
         this.context.stroke();
         if (p && this.context.isPointInPath(p.x, p.y)) {
           //如果传入了事件坐标，就用isPointInPath判断一下，如果事件坐标在当前的图像里，就把当前图像的index放进数组里保存
-          this.startIndexes.push(idx);
           if(idx === 3) {
-            this.drawDToA(this,760,700);
+            this.drawDToA(this,this.W / 2 + 25,this.H - 100);
           }
         }
 
       }
-      return this.startIndexes;
     },
     //获取当前鼠标点击的像素位置
     getEventPosition(ev) {
@@ -87,8 +84,7 @@ export default {
       canvas.onclick = function fn1(e){
           var p = _self.getEventPosition(e);
           console.log(p);
-          var result = _self.drawStartPosition(_self.startPositions,p);
-          console.log(result);
+          _self.drawStartPosition(_self.startPositions,p);
       }
     },
     //绘制从D向A出发的普通车辆
@@ -99,9 +95,8 @@ export default {
         let curIdx = len - 2;
         let id = setInterval(frame,80);
         function frame() {
-            if(ty === 550) {
+            if(ty === _self.H/2 + _self.RoadW) {
                 clearInterval(id);
-                console.log("stopped");
                 //调用旋转方法
                 let normalCar = document.getElementsByClassName("NormalCar"+curIdx)[0];
                 normalCar.classList.add("trans");
@@ -112,20 +107,21 @@ export default {
                 function checkFlag() {
                   if(flag === 1){
                     clearInterval(checkIdx);
-                    _self.drawRightToLeftLines(_self,780,555,curIdx);
+                    _self.drawRightToLeftLines(_self,_self.W / 2 + 5 + _self.carH, _self.H / 2 + _self.RoadW,curIdx);
                   }
                 }
                 let checkIdx = setInterval(checkFlag,80);
                 
             }
             else{
+                ty = sy - 2;
                 sx = tx;
                 sy = ty;
-                let father = document.getElementsByTagName("body")[0];
+                let father = document.getElementsByClassName("MyCanvas")[0];
                 let normalCar = document.createElement("img");
                 normalCar.setAttribute("src","/img/cars_normal.cd369ee2.png");
-                normalCar.setAttribute("width","20");
-                normalCar.setAttribute("height","40");
+                normalCar.setAttribute("width","10");
+                normalCar.setAttribute("height","20");
                 normalCar.setAttribute("class","NormalCar"+curIdx);
                 normalCar.style.position = "absolute";
                 normalCar.style.left = (sx+20) + "px";
@@ -137,7 +133,7 @@ export default {
                     console.log("there is no img");
                 }
                 father.appendChild(normalCar);
-                ty = sy - 2;
+
             }
         }
     },
@@ -149,18 +145,19 @@ export default {
         let curIdx = len - 2;
         let id = setInterval(frame,80);
         function frame() {
-            if(ty === 110) {
+            if(ty === 80) {
                 clearInterval(id);
                 console.log("stopped");
             }
             else{
+                ty = sy - 2;
                 sx = tx;
                 sy = ty;
-                let father = document.getElementsByTagName("body")[0];
+                let father = document.getElementsByClassName("MyCanvas")[0];
                 let normalCar = document.createElement("img");
                 normalCar.setAttribute("src","/img/cars_normal.cd369ee2.png");
-                normalCar.setAttribute("width","20");
-                normalCar.setAttribute("height","40");
+                normalCar.setAttribute("width","10");
+                normalCar.setAttribute("height","20");
                 normalCar.setAttribute("class","NormalCar"+curIdx);
                 normalCar.style.position = "absolute";
                 normalCar.style.left = (sx+20) + "px";
@@ -172,7 +169,6 @@ export default {
                     console.log("there is no img");
                 }
                 father.appendChild(normalCar);
-                ty = sy - 2;
             }
         }
     },
@@ -184,7 +180,7 @@ export default {
         let curIdx = len - 2;
         let id = setInterval(frame,80);
         function frame() {
-            if(ty === 550) {
+            if(ty === _self.H / 2 + _self.RoadW) {
                 clearInterval(id);
                 console.log("stopped");
                 //调用旋转方法
@@ -197,20 +193,21 @@ export default {
                 function checkFlag() {
                   if(flag === 1){
                     clearInterval(checkIdx);
-                    _self.drawLeftToRightLines(_self,780,555,curIdx);
+                    _self.drawLeftToRightLines(_self,_self.W / 2 + 5 + _self.carH,_self.H / 2 + _self.RoadW,curIdx);
                   }
                 }
                 let checkIdx = setInterval(checkFlag,80);
                 
             }
             else{
+                ty = sy - 2;
                 sx = tx;
                 sy = ty;
-                let father = document.getElementsByTagName("body")[0];
+                let father = document.getElementsByClassName("MyCanvas")[0];
                 let normalCar = document.createElement("img");
                 normalCar.setAttribute("src","/img/cars_normal.cd369ee2.png");
-                normalCar.setAttribute("width","20");
-                normalCar.setAttribute("height","40");
+                normalCar.setAttribute("width","10");
+                normalCar.setAttribute("height","20");
                 normalCar.style.cssText = `position: absolute;`;
                 normalCar.setAttribute("class","NormalCar"+curIdx);
                 normalCar.style.position = "absolute";
@@ -223,7 +220,6 @@ export default {
                     console.log("there is no img");
                 }
                 father.appendChild(normalCar);
-                ty = sy - 2;
             }
         }
     },
@@ -271,26 +267,30 @@ export default {
       console.log(data);
       console.log("传来的方向");
       if(data["sourcePlace"] === "D" && data["targetPlace"]==="A"){
-        this.drawDToA(this,760,700);
+        this.drawDToA(this,this.W / 2 + 5 ,this.H - 100);
       }
       if(data["sourcePlace"] === "D" && data["targetPlace"]==="C") {
-        this.drawDToC(this,760,700);
+        this.drawDToC(this,this.W / 2 + 5,this.H - 100);
       }
       if(data["sourcePlace"] === "D" && data["targetPlace"]==="B") {
-        this.drawDToB(this,760,700);
+        this.drawDToB(this,this.W / 2 + 5,this.H - 100);
       } 
     }
   },
   mounted(){
-    const canvas = document.querySelector('canvas')
-    this.context = canvas.getContext('2d')
+
+    this.setCanvasDivWAndH();
+
+
+    const canvas = document.querySelector('canvas');
+    this.context = canvas.getContext('2d');
     this.context.beginPath();
     this.context.strokeStyle = 'White'; // 线条颜色
     this.context.lineWidth = 1.0;
     // 画实线
     //左侧路的上下沿
-    this.drawLine(100, this.H/2-this.RoadW,this.W/2-this.RoadW, this.H/2-this.RoadW)
-    this.drawLine(100, this.H/2+this.RoadW,this.W/2-this.RoadW, this.H/2+this.RoadW)
+    this.drawLine(100, this.H/2-this.RoadW,this.W/2-this.RoadW, this.H/2-this.RoadW);
+    this.drawLine(100, this.H/2+this.RoadW,this.W/2-this.RoadW, this.H/2+this.RoadW);
     //右侧路的上下沿
     this.drawLine(this.W/2+this.RoadW, this.H/2-this.RoadW,this.W-100, this.H/2-this.RoadW)
     this.drawLine(this.W/2+this.RoadW, this.H/2+this.RoadW,this.W-100, this.H/2+this.RoadW)
@@ -310,10 +310,16 @@ export default {
     this.drawLine(this.W/2+this.RoadW, this.H/2,this.W-100, this.H/2)
 
     //绘制位置坐标：A、B、C、D作为上右下左的路口起始位置
-    this.drawStartPosition(this.startPositions);
+    let startPositions = [
+      {x: 40, y: this.H/2 - this.RoadW - 10, width: 60, height: 140, color: "#abb8c3"},//左
+      {x: this.W - 100, y: this.H/2 - this.RoadW - 10, width: 60, height: 140, color: "#cf2e2e"},//右
+      {x: this.W/2-this.RoadW - 10, y: 40, width: 140, height: 60, color: "#00d084"},//上
+      {x: this.W/2-this.RoadW - 10, y: this.H - 100, width: 140, height: 60, color: "#9b51e0"}//下
+    ]
+    this.startPositions = startPositions;
+    this.drawStartPosition(startPositions);
     //绑定点击事件，当点击彩色区域时，会创建新的车的实例
     this.initClickEvent();
-      
   },
 
 }
@@ -328,7 +334,11 @@ export default {
 #myCanvas{
   // width:1008px;
   // height:540px;
+  position: absolute;
   background: #3F6FBB;
+}
+.MyCanvas {
+  position: relative;
 }
 .legend{
   position:absolute;
