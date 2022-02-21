@@ -8,7 +8,7 @@
             <!-- 主体 -->
             <el-main>
                 <div class="simulationDiagram">
-                    <simulationDiagram/>
+                    <simulationDiagram ref="moving"></simulationDiagram>
                 </div>
             </el-main>
             <!-- 侧边栏 -->
@@ -21,6 +21,10 @@
                 <div class="result">
                     <h4>运行结果</h4>
                 </div>
+                <!-- 新建车辆选择 -->
+                <div class="setNewCar">
+                    <setNewCar @createCar="createCar"></setNewCar>
+                </div>
             </el-aside>
         </el-container>
     </el-container>
@@ -29,11 +33,20 @@
 <script>
 import simulationDiagram from "./simulationDiagram.vue"
 import setParameters from "./setParameters.vue"
+import setNewCar from "./setNewCar.vue"
 export default {
     components:{
-        simulationDiagram,
-        setParameters
-    },
+    simulationDiagram,
+    setParameters,
+    setNewCar
+},
+methods : {
+    createCar(data) {
+        console.log("createCar调用兄弟方法");
+        console.log(data);
+        this.$refs.moving.textConnection(data);
+    }
+}
 }
 </script>
 

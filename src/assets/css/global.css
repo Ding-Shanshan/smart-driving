@@ -7,3 +7,23 @@ body,
     margin: 0;
     padding: 0;
 }
+
+.trans {
+    transform-origin: -90px 5px;
+    animation: rotate 3.5s linear;
+    animation-fill-mode : forwards;/*保持结束位置*/
+  }
+@keyframes rotate {
+    from { transform:rotate(0deg); }
+    to { transform:rotate(-90deg); }
+}
+
+.transToRight {
+    transform-origin: 50px 5px;
+    animation: rotateToRight 3.5s linear;
+    animation-fill-mode : forwards;/*保持结束位置*/
+  }
+@keyframes rotateToRight {
+    from { transform:rotate(0deg); }
+    to { transform:rotate(90deg); }
+}
