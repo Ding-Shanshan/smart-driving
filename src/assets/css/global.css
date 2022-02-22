@@ -1,0 +1,87 @@
+/* 全局样式表 */
+
+html,
+body,
+#app {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.trans {
+    transform-origin: -90px 0px;
+    animation: rotate 3.5s linear;
+    animation-fill-mode : forwards;/*保持结束位置*/
+  }
+@keyframes rotate {
+    from { transform:rotate(0deg); }
+    to { transform:rotate(-90deg); }
+}
+
+.transToRight {
+    transform-origin: 40px 5px;
+    animation: rotateToRight 3.5s linear;
+    animation-fill-mode : forwards;/*保持结束位置*/
+  }
+@keyframes rotateToRight {
+    from { transform:rotate(0deg); }
+    to { transform:rotate(90deg); }
+}
+.transToDown {
+  transform-origin: 5px 50px;
+  animation: rotateToRight 3.5s linear;
+  animation-fill-mode : forwards;/*保持结束位置*/
+} 
+@keyframes transToDown {
+  from { transform:rotate(-90deg); }
+  to { transform:rotate(0deg); }
+}
+.transToTop {
+  transform-origin: 5px -90px;
+  animation: transToTop 3.5s linear;
+  animation-fill-mode : forwards;/*保持结束位置*/
+} 
+@keyframes transToTop {
+  from { transform:rotate(0deg); }
+  to { transform:rotate(-90deg); }
+}
+
+.transToLeft {
+  transform-origin: -50px 0px;
+  animation: transToLeft 3.5s linear;
+  animation-fill-mode : forwards;/*保持结束位置*/
+} 
+@keyframes transToLeft {
+  from { transform:rotate(0deg); }
+  to { transform:rotate(90deg); }
+}
+
+.transTopToRight {
+  transform-origin: 95px 10px;
+  animation: transTopToRight 3.5s linear;
+  animation-fill-mode : forwards;/*保持结束位置*/
+} 
+@keyframes transTopToRight {
+  from { transform:rotate(0deg); }
+  to { transform:rotate(-90deg); }
+}
+
+.transRightToTop {
+  transform-origin: 0px -25px;
+  animation: transRightToTop 3.5s linear;
+  animation-fill-mode : forwards;/*保持结束位置*/
+} 
+@keyframes transRightToTop {
+  from { transform:rotate(0deg); }
+  to { transform:rotate(90deg); }
+}
+
+.transRightToDown {
+  transform-origin: 0px 95px;
+  animation: transRightToDown 3.5s linear;
+  animation-fill-mode : forwards;/*保持结束位置*/
+} 
+@keyframes transRightToDown {
+  from { transform:rotate(0deg); }
+  to { transform:rotate(-90deg); }
+}
