@@ -17,6 +17,7 @@
 </template>
 
 <script>
+import { Car } from "./CreateNewCar"
 export default {
   name: 'SmartDriving',
   props: {
@@ -31,6 +32,7 @@ export default {
       carH:20,
       car1X:524,
       car1Y:490,
+      AllCar : [],
       }
   },
   methods: {
@@ -45,8 +47,8 @@ export default {
         this.context.lineTo(x1, y1);
         this.context.stroke(); // 画线
     },
-    //绘制起始地等方块,可以通过点击起始地，创建目的地随机的，固定类型的车辆
-    //目前只完成点击D，生成目的地为A的普通车辆
+    // 绘制起始地等方块,可以通过点击起始地，创建目的地随机的，固定类型的车辆
+    // 目前只完成点击D，生成目的地为A的普通车辆
     drawStartPosition(positions,p) {
       //对于要绘制的每一个图像执行函数，
       for(let idx = 0;idx<positions.length;idx++) {
@@ -64,217 +66,80 @@ export default {
 
       }
     },
-    //获取当前鼠标点击的像素位置
-    getEventPosition(ev) {
-      let x, y;
-      if (ev.layerX || ev.layerX == 0) {
-          x = ev.layerX;
-          y = ev.layerY;
-      } else if (ev.offsetX || ev.offsetX == 0) { // Opera
-          x = ev.offsetX;
-          y = ev.offsetY;
-      }
-      return { x: x, y: y };
-    },
-    //初始化事件，绑定点击的动作
-    initClickEvent() {
-      let canvas = document.querySelector('canvas');
-      console.log("初始化点击事件");
-      let _self = this;
-      canvas.onclick = function fn1(e){
-          var p = _self.getEventPosition(e);
-          console.log(p);
-          _self.drawStartPosition(_self.startPositions,p);
-      }
-    },
-    //绘制从D向A出发的普通车辆
-    drawDToA(_self,sx,sy) {
-        let tx = sx;
-        let ty = sy;
-        let len =  document.getElementsByTagName("img").length;
-        let curIdx = len - 2;
-        let id = setInterval(frame,80);
-        function frame() {
-            if(ty === _self.H/2 + _self.RoadW) {
-                clearInterval(id);
-                //调用旋转方法
-                let normalCar = document.getElementsByClassName("NormalCar"+curIdx)[0];
-                normalCar.classList.add("trans");
-                let flag = 0;
-                setTimeout(function() {
-                  flag = 1;
-                },3500);
-                function checkFlag() {
-                  if(flag === 1){
-                    clearInterval(checkIdx);
-                    _self.drawRightToLeftLines(_self,_self.W / 2 + 5 + _self.carH, _self.H / 2 + _self.RoadW,curIdx);
-                  }
-                }
-                let checkIdx = setInterval(checkFlag,80);
-                
-            }
-            else{
-                ty = sy - 2;
-                sx = tx;
-                sy = ty;
-                let father = document.getElementsByClassName("MyCanvas")[0];
-                let normalCar = document.createElement("img");
-                normalCar.setAttribute("src","/img/cars_normal.cd369ee2.png");
-                normalCar.setAttribute("width","10");
-                normalCar.setAttribute("height","20");
-                normalCar.setAttribute("class","NormalCar"+curIdx);
-                normalCar.style.position = "absolute";
-                normalCar.style.left = (sx+20) + "px";
-                normalCar.style.top = sy + "px";
-                try {
-                    father.removeChild(document.getElementsByClassName('NormalCar'+curIdx)[0]);
-                }
-                catch(err) {
-                    console.log("there is no img");
-                }
-                father.appendChild(normalCar);
 
-            }
-        }
-    },
-    //绘制从D向C出发的普通车辆
-    drawDToC(_self,sx,sy) {
-        let tx = sx;
-        let ty = sy;
-        let len =  document.getElementsByTagName("img").length;
-        let curIdx = len - 2;
-        let id = setInterval(frame,80);
-        function frame() {
-            if(ty === 80) {
-                clearInterval(id);
-                console.log("stopped");
-            }
-            else{
-                ty = sy - 2;
-                sx = tx;
-                sy = ty;
-                let father = document.getElementsByClassName("MyCanvas")[0];
-                let normalCar = document.createElement("img");
-                normalCar.setAttribute("src","/img/cars_normal.cd369ee2.png");
-                normalCar.setAttribute("width","10");
-                normalCar.setAttribute("height","20");
-                normalCar.setAttribute("class","NormalCar"+curIdx);
-                normalCar.style.position = "absolute";
-                normalCar.style.left = (sx+20) + "px";
-                normalCar.style.top = sy + "px";
-                try {
-                    father.removeChild(document.getElementsByClassName('NormalCar'+curIdx)[0]);
-                }
-                catch(err) {
-                    console.log("there is no img");
-                }
-                father.appendChild(normalCar);
-            }
-        }
-    },
-    //绘制从D向B出发的普通车辆
-    drawDToB(_self,sx,sy) {
-        let tx = sx;
-        let ty = sy;
-        let len =  document.getElementsByTagName("img").length;
-        let curIdx = len - 2;
-        let id = setInterval(frame,80);
-        function frame() {
-            if(ty === _self.H / 2 + _self.RoadW) {
-                clearInterval(id);
-                console.log("stopped");
-                //调用旋转方法
-                let normalCar = document.getElementsByClassName("NormalCar"+curIdx)[0];
-                normalCar.classList.add("transToRight");
-                let flag = 0;
-                setTimeout(function() {
-                  flag = 1;
-                },3500);
-                function checkFlag() {
-                  if(flag === 1){
-                    clearInterval(checkIdx);
-                    _self.drawLeftToRightLines(_self,_self.W / 2 + 5 + _self.carH,_self.H / 2 + _self.RoadW,curIdx);
-                  }
-                }
-                let checkIdx = setInterval(checkFlag,80);
-                
-            }
-            else{
-                ty = sy - 2;
-                sx = tx;
-                sy = ty;
-                let father = document.getElementsByClassName("MyCanvas")[0];
-                let normalCar = document.createElement("img");
-                normalCar.setAttribute("src","/img/cars_normal.cd369ee2.png");
-                normalCar.setAttribute("width","10");
-                normalCar.setAttribute("height","20");
-                normalCar.style.cssText = `position: absolute;`;
-                normalCar.setAttribute("class","NormalCar"+curIdx);
-                normalCar.style.position = "absolute";
-                normalCar.style.left = (sx+20) + "px";
-                normalCar.style.top = sy + "px";
-                try {
-                    father.removeChild(document.getElementsByClassName('NormalCar'+curIdx)[0]);
-                }
-                catch(err) {
-                    console.log("there is no img");
-                }
-                father.appendChild(normalCar);
-            }
-        }
-    },
-    //绘制车辆从右向左移动
-    drawRightToLeftLines(_self,sx,sy,idx) {
-        let tx = sx;
-        let ty = sy;
-        let normalCar = document.getElementsByClassName("NormalCar"+idx)[0];
-        let r2l = setInterval(frame,80);
-        function frame() {
-            if(tx === 220) {
-                clearInterval(r2l);
-                console.log("stopped");
-            }
-            else{
-                sx = tx;
-                sy = ty;
-                normalCar.style.left = tx + "px";
-                normalCar.style.top = ty + "px";
-                tx = sx - 2;
-            }
-        }
-    },
-    //绘制车辆从左向右移动
-    drawLeftToRightLines(_self,sx,sy,idx) {
-        let tx = sx;
-        let ty = sy;
-        let normalCar = document.getElementsByClassName("NormalCar"+idx)[0];
-        let r2l = setInterval(frame,80);
-        function frame() {
-            if(tx === 1360) {
-                clearInterval(r2l);
-                console.log("stopped");
-            }
-            else{
-                sx = tx;
-                sy = ty;
-                normalCar.style.left = tx + "px";
-                normalCar.style.top = ty + "px";
-                tx = sx + 2;
-            }
-        }
-    },
     textConnection(data) {
-      console.log(data);
-      console.log("传来的方向");
-      if(data["sourcePlace"] === "D" && data["targetPlace"]==="A"){
-        this.drawDToA(this,this.W / 2 + 5 ,this.H - 100);
+      let rootSelf = this;
+      let globalid = setInterval(createIdxAndobjs,2000);
+      function createIdxAndobjs(){
+        if(rootSelf.AllCar.length === 30){
+          clearInterval(globalid);
+        }
+        else{
+          let Places = ["A","B","C","D"];
+        let sourceIdx = Math.floor(Math.random()*4);
+        let targetIdx = Math.floor(Math.random()*4);
+        let targetPlace = Places[targetIdx];
+        let sourcePlace = Places[sourceIdx];
+        let carIdx = document.getElementsByTagName("img").length-2;
+        // let car = Car.createNewCar("Normal","A",targetPlace,carIdx);
+        let car = Car.createNewCar("Normal",sourcePlace,targetPlace,carIdx);
+
+        rootSelf.AllCar[carIdx] = car;
+        
+        car.showInfo();
+        if(rootSelf.AllCar[carIdx].sourcePlace === "D" && rootSelf.AllCar[carIdx].targetPlace ==="A"){
+          rootSelf.AllCar[carIdx].drawDToA(rootSelf,rootSelf.W / 2 + (rootSelf.RoadW-rootSelf.carW)/2 ,rootSelf.H - 100);
+        }
+        if(rootSelf.AllCar[carIdx].sourcePlace === "D" && rootSelf.AllCar[carIdx].targetPlace==="C") {
+          rootSelf.AllCar[carIdx].drawDToC(rootSelf,rootSelf.W / 2 + (rootSelf.RoadW-rootSelf.carW)/2 ,rootSelf.H - 100);
+        }
+        if(rootSelf.AllCar[carIdx].sourcePlace === "D" && rootSelf.AllCar[carIdx].targetPlace==="B") {
+          rootSelf.AllCar[carIdx].drawDToB(rootSelf,rootSelf.W / 2 + (rootSelf.RoadW-rootSelf.carW)/2 ,rootSelf.H - 100);
+        } 
+        if(rootSelf.AllCar[carIdx].sourcePlace === "D" && rootSelf.AllCar[carIdx].targetPlace==="D") {
+          ;
+        }
+
+        if(rootSelf.AllCar[carIdx].sourcePlace === "A" && rootSelf.AllCar[carIdx].targetPlace==="D") {
+          rootSelf.AllCar[carIdx].drawAToD(rootSelf, 100, rootSelf.H / 2 + 20);
+        }
+        if(rootSelf.AllCar[carIdx].sourcePlace === "A" && rootSelf.AllCar[carIdx].targetPlace==="C") {
+          rootSelf.AllCar[carIdx].drawAToC(rootSelf, 100, rootSelf.H / 2 + 20);
+        }
+        if(rootSelf.AllCar[carIdx].sourcePlace === "A" && rootSelf.AllCar[carIdx].targetPlace==="B") {
+          rootSelf.AllCar[carIdx].drawAToB(rootSelf, 100, rootSelf.H / 2 + 20);
+        }
+        if(rootSelf.AllCar[carIdx].sourcePlace === "A" && rootSelf.AllCar[carIdx].targetPlace==="A") {
+          ;
+        }
+
+        if(rootSelf.AllCar[carIdx].sourcePlace === "C" && rootSelf.AllCar[carIdx].targetPlace==="D") {
+          rootSelf.AllCar[carIdx].drawCToD(rootSelf, rootSelf.W / 2 -rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2), 100);
+        }
+        if(rootSelf.AllCar[carIdx].sourcePlace === "C" && rootSelf.AllCar[carIdx].targetPlace==="A") {
+          rootSelf.AllCar[carIdx].drawCToA(rootSelf, rootSelf.W / 2 -rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2), 100);
+        }
+        if(rootSelf.AllCar[carIdx].sourcePlace === "C" && rootSelf.AllCar[carIdx].targetPlace==="B") {
+          rootSelf.AllCar[carIdx].drawCToB(rootSelf, rootSelf.W / 2 -rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2), 100);
+        }
+        if(rootSelf.AllCar[carIdx].sourcePlace === "C" && rootSelf.AllCar[carIdx].targetPlace==="C") {
+          ;
+        }
+
+        if(rootSelf.AllCar[carIdx].sourcePlace === "B" && rootSelf.AllCar[carIdx].targetPlace==="D") {
+          rootSelf.AllCar[carIdx].drawBToD(rootSelf, rootSelf.W - 100, rootSelf.H / 2 - rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2));
+        }
+        if(rootSelf.AllCar[carIdx].sourcePlace === "B" && rootSelf.AllCar[carIdx].targetPlace==="A") {
+          rootSelf.AllCar[carIdx].drawBToA(rootSelf, rootSelf.W - 100, rootSelf.H / 2 - rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2));
+        }
+        if(rootSelf.AllCar[carIdx].sourcePlace === "B" && rootSelf.AllCar[carIdx].targetPlace==="B") {
+          ;
+        }
+        if(rootSelf.AllCar[carIdx].sourcePlace === "B" && rootSelf.AllCar[carIdx].targetPlace==="C") {
+          rootSelf.AllCar[carIdx].drawBToC(rootSelf, rootSelf.W - 100, rootSelf.H / 2 - rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2));
+        }
+        }
       }
-      if(data["sourcePlace"] === "D" && data["targetPlace"]==="C") {
-        this.drawDToC(this,this.W / 2 + 5,this.H - 100);
-      }
-      if(data["sourcePlace"] === "D" && data["targetPlace"]==="B") {
-        this.drawDToB(this,this.W / 2 + 5,this.H - 100);
-      } 
     }
   },
   mounted(){
@@ -319,7 +184,7 @@ export default {
     this.startPositions = startPositions;
     this.drawStartPosition(startPositions);
     //绑定点击事件，当点击彩色区域时，会创建新的车的实例
-    this.initClickEvent();
+    // this.initClickEvent();
   },
 
 }

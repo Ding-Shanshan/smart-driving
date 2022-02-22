@@ -42,7 +42,6 @@ export default {
 },
 methods : {
     createCar(data) {
-        console.log("createCar调用兄弟方法");
         console.log(data);
         this.$refs.moving.textConnection(data);
     }
