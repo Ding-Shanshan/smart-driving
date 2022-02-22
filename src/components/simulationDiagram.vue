@@ -12,14 +12,21 @@
           <p>智能驾驶车辆</p>
         </div>
       </div>
+      <div class="trafficLight">
+        <!-- <trafficLight></trafficLight> -->
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import { Car } from "../assets/js/CreateNewCar"
+import trafficLight from "@/components/trafficLight.vue"
 export default {
   name: 'SmartDriving',
+  components:{
+      trafficLight
+    },
   props: {
     msg: String
   },
@@ -228,6 +235,12 @@ p{
 }
 .NormalCar {
     position: absolute;
+}
+.trafficLight {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 </style>
