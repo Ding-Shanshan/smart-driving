@@ -72,6 +72,7 @@ export default {
     methods: {
         run() {
             console.log(this.parameters);
+            this.$emit('createCar',this.parameters);
         }
     }
 }

@@ -15,15 +15,11 @@
             <el-aside width="300px">
                 <!-- 参数调节面板 -->
                 <div class="setParameters">
-                    <setParameters/>
+                    <setParameters  @createCar="createCar"></setParameters>
                 </div>
                 <!-- 运行结果面板 -->
                 <div class="printResult">
                     <printResult/>
-                </div>
-                <!-- 新建车辆选择 -->
-                <div class="setNewCar">
-                    <setNewCar @createCar="createCar"></setNewCar>
                 </div>
             </el-aside>
         </el-container>
@@ -34,13 +30,11 @@
 import simulationDiagram from "@/components/simulationDiagram.vue"
 import setParameters from "@/components/setParameters.vue"
 import printResult from "@/components/printResult.vue"
-import setNewCar from "./setNewCar.vue"
 export default {
     components:{
         simulationDiagram,
         setParameters,
         printResult,
-        setNewCar
     },
     methods : {
         createCar(data) {

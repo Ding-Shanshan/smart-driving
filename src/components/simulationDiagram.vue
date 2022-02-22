@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import { Car } from "./CreateNewCar"
+import { Car } from "../assets/js/CreateNewCar"
 export default {
   name: 'SmartDriving',
   props: {
