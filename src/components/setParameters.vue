@@ -65,14 +65,17 @@ export default {
                 proportion:'',
                 smartCarSpeed:'',
                 normalCarSpeed:[],
-                bigCarproportion:''
-            }
+                bigCarproportion:'' 
+            },
+            isruning : false
         }
     },
     methods: {
         run() {
             console.log(this.parameters);
             this.$emit('createCar',this.parameters);
+            this.isruning = true
+            this.$emit('runchange',this.isruning)
         }
     }
 }
