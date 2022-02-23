@@ -8,18 +8,18 @@
             <!-- 主体 -->
             <el-main>
                 <div class="simulationDiagram">
-                    <simulationDiagram/>
+                    <simulationDiagram ref="moving"></simulationDiagram>
                 </div>
             </el-main>
             <!-- 侧边栏 -->
             <el-aside width="300px">
-                <!-- 参数面板 -->
+                <!-- 参数调节面板 -->
                 <div class="setParameters">
-                    <setParameters/>
+                    <setParameters  @createCar="createCar"></setParameters>
                 </div>
-                <!-- 运行结果 -->
-                <div class="result">
-                    <h4>运行结果</h4>
+                <!-- 运行结果面板 -->
+                <div class="printResult">
+                    <printResult/>
                 </div>
             </el-aside>
         </el-container>
@@ -27,13 +27,21 @@
 </template>
 
 <script>
-import simulationDiagram from "./simulationDiagram.vue"
-import setParameters from "./setParameters.vue"
+import simulationDiagram from "@/components/simulationDiagram.vue"
+import setParameters from "@/components/setParameters.vue"
+import printResult from "@/components/printResult.vue"
 export default {
     components:{
         simulationDiagram,
-        setParameters
+        setParameters,
+        printResult,
     },
+    methods : {
+        createCar(data) {
+            console.log(data);
+            this.$refs.moving.textConnection(data);
+        }
+    }
 }
 </script>
 
