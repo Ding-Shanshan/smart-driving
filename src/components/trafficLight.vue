@@ -1,5 +1,5 @@
 <template>
-  <div class="light" ref="myTraffic">
+  <div class="light" ref="myTraffic" id="light">
     <span class="red"></span>
     <span class="yellow"></span>
     <span class="green"></span>
@@ -24,6 +24,7 @@ export default {
         5000
       )
       myTrafficLight.main()
+      
     })
 
     return {
@@ -35,9 +36,11 @@ export default {
 
 <style lang="less" scoped>
 .light {
-  // width: 340px;
-  // height: 120px;
+  width: 0px;
+  height: 120px;
   // margin-left: 10px; // 100
+  margin-left:40px;
+  margin-top:-55px;
   background-color: #666;
   border-radius: 10px;
   .red {

@@ -35,9 +35,10 @@ export default {
 
 <style lang="less" scoped>
 .light {
-  // width: 340px;
-  // height: 120px;
-  // margin-left: 10px; // 100
+  width: 70px;
+  height: 0px;
+  margin-left: -55px; // 100
+   margin-top: 30px; // 100
   background-color: #666;
   border-radius: 10px;
   .red {
