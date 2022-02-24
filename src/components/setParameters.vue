@@ -60,15 +60,19 @@ export default {
             parameters: {
                 totalNum: '',
                 proportion:'',
+                smartCarSpeed:'',
             },
             light:'默认',
-            light2:'默认'
+            light2:'默认',
+            isruning : false
         }
     },
     methods: {
         run() {
             console.log(this.parameters);
             this.$emit('createCar',this.parameters);
+            this.isruning = true
+            this.$emit('runchange',this.isruning)
         }
     }
 }
@@ -87,6 +91,7 @@ div {
 }
 .lightParameter {
     width: 100%;
+    margin-bottom: 60px;
 }
 .light,
 .light2 {
