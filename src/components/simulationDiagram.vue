@@ -12,8 +12,11 @@
           <p>智能驾驶车辆</p>
         </div>
       </div>
-      <div class="trafficLight">
-        <!-- <trafficLight></trafficLight> -->
+      <div class="Light">
+        <trafficLight  class="trafficLight" id="trafficL0"></trafficLight>
+        <!-- 左右向红绿灯 -->
+        <trafficLight2  class="trafficLight" id="trafficL1" ></trafficLight2>
+        <!-- 上下向红绿灯 -->
       </div>
     </div>
   </div>
@@ -22,10 +25,12 @@
 <script>
 import { Car } from "../assets/js/CreateNewCar"
 import trafficLight from "@/components/trafficLight.vue"
+import trafficLight2 from "@/components/trafficLight2.vue"
 export default {
   name: 'SmartDriving',
   components:{
-      trafficLight
+      trafficLight,
+      trafficLight2
     },
   props: {
     msg: String
@@ -47,6 +52,16 @@ export default {
       let canvasDiv = document.getElementsByClassName("MyCanvas")[0];
       canvasDiv.style.width = this.W + "px";
       canvasDiv.style.height = this.H + "px";
+    },
+    setTrafficLXAndY(){
+      // 上下方向红绿灯
+      let trafficL = document.getElementsByClassName("trafficLight")[1];
+      trafficL.style.top = (this.H/2-this.RoadW-32) + "px";
+      trafficL.style.left = (this.W/2+this.RoadW - 4) + "px"; 
+      // 左右方向红绿灯
+      let trafficL2 = document.getElementsByClassName("trafficLight")[0];
+      trafficL2.style.top = (this.H/2 + this.RoadW + 16) + "px";
+      trafficL2.style.left = (this.W/2 - this.RoadW -50) + "px";
     },
     //绘制路面
     drawLine(x,y,x1,y1){
@@ -192,6 +207,9 @@ export default {
     this.drawStartPosition(startPositions);
     //绑定点击事件，当点击彩色区域时，会创建新的车的实例
     // this.initClickEvent();
+
+    // 设置红绿灯XY
+    this.setTrafficLXAndY();
   },
 
 }
@@ -226,7 +244,7 @@ p{
   color:#fff;
   font-size: 12px;
   text-align: center;
-  line-height:60px;
+  line-height:30px;
   display:inline;
   float:left;
 }
@@ -238,9 +256,11 @@ p{
 }
 .trafficLight {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  height:30px; 
+  width:70px; 
+  transform: scale(0.8,0.8);
 }
-
+#trafficL0{
+  transform: rotate(90deg) scale(0.8,0.8);
+}
 </style>
