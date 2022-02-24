@@ -37,7 +37,7 @@ export default {
               second=0;
               minute=minute+1;
             }
-          runtime = minute+'分'+second+'秒'+millisecond+'毫秒'
+          runtime.value = minute+'分'+second+'秒'+millisecond+'毫秒'
           console.log(runtime)
         }
       }
