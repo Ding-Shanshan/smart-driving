@@ -54,7 +54,7 @@ export class MyTrafficLight {
   sleep(contrainer, color, duration) {
     return new Promise(resolve => {
       setTimeout(() => {
-        ['red', 'green', 'yellow'].forEach(item => {
+        ['red', 'yellow', 'green'].forEach(item => {
           contrainer.querySelector('.' + item).style.opacity = 0.1
         })
         contrainer.querySelector('.' + color).style.opacity = 1
@@ -73,10 +73,9 @@ export class MyTrafficLight {
   // 主函数
   async main() {
     while (true) {
-      await this.changeColor(this.contrainer, 'red', this.redTime);
-      await this.changeColor(this.contrainer, 'yellow', this.yellowTime);
       await this.changeColor(this.contrainer, 'green', this.greenTime);
-
+      await this.changeColor(this.contrainer, 'yellow', this.yellowTime);
+      await this.changeColor(this.contrainer, 'red', this.redTime);
     }
   }
 }

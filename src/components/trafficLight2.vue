@@ -1,5 +1,5 @@
 <template>
-  <div class="light" ref="myTraffic" id="light">
+  <div class="light" ref="myTraffic">
     <span class="red"></span>
     <span class="yellow"></span>
     <span class="green"></span>
@@ -8,16 +8,15 @@
 
 <script>
 import { ref, onMounted } from "vue"
-import { MyTrafficLight } from "@/assets/js/trafficLight.js"
+import { MyTrafficLight } from "@/assets/js/trafficLight2.js"
 export default {
-  name: "TrafficLight",
+  name: "TrafficLight2",
   setup() {
     const myTraffic = ref(null)
-
     onMounted(() => {
       // 使用ref获取交通信号灯
       // console.log(myTraffic.value)
-      // 传递dom容器，三种灯的时间 绿 红 黄
+      // 传递dom容器，三种灯的时间 红 黄 绿
       const myTrafficLight = new MyTrafficLight(
         myTraffic.value,
         5000,
@@ -25,7 +24,6 @@ export default {
         5000
       )
       myTrafficLight.main()
-      
     })
 
     return {
@@ -37,11 +35,10 @@ export default {
 
 <style lang="less" scoped>
 .light {
-  width: 0px;
-  height: 120px;
-  // margin-left: 10px; // 100
-  margin-left:40px;
-  margin-top:-55px;
+  width: 70px;
+  height: 0px;
+  margin-left: -55px; // 100
+   margin-top: 30px; // 100
   background-color: #666;
   border-radius: 10px;
   .red {
