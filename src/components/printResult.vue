@@ -6,28 +6,23 @@
 </template>
 
 <script>
+import { ref,watch } from 'vue'
 
 export default {
   props:['isRun'],
-  setup() {
-    
-  },
-  data(){
-      return{
-        runTime:'',
-        runtime:''
-      }
-    },
-  watch:{
-    isRun(newValue,oldValue){
-      console.log(newValue,oldValue);
-      if(newValue === true && oldValue ===false){
+  setup(props) {
+  let runtime = ref('00分00秒000毫秒')
+   watch(
+     ( ) => props.isRun,
+     (newValue,oldValue) => {
+       console.log('11')
+       if(newValue === true && oldValue === false){
         var minute,second;
-        minute=second=0;
-        var millisecond=0;
+        minute = second = 0;
+        var millisecond = 0;
         var int;
         //开始函数
-        int=setInterval(timer,50);
+        int = setInterval(timer,50);
         //计时函数
         function timer()
         {
@@ -42,26 +37,31 @@ export default {
               second=0;
               minute=minute+1;
             }
-          let runtime = minute+'分'+second+'秒'+millisecond+'毫秒'
+          runtime = minute+'分'+second+'秒'+millisecond+'毫秒'
           console.log(runtime)
         }
-        //重置函数
-        // function Reset()
-        // {
-        //   window.clearInterval(int);
-        //   millisecond=hour=minute=second=0;
-        //   '00分00秒000毫秒';
-        // }
-        // //暂停函数
-        // function stop()
-        // {
-        //   window.clearInterval(int);
-        // }
-          }
-        }
-      },
-  methods:{
+      }
+     }
+   )
+    return {
+      runtime
+    }
 
+  //       //重置函数
+  //       // function Reset()
+  //       // {
+  //       //   window.clearInterval(int);
+  //       //   millisecond=hour=minute=second=0;
+  //       //   '00分00秒000毫秒';
+  //       // }
+  //       // //暂停函数
+  //       // function stop()
+  //       // {
+  //       //   window.clearInterval(int);
+  //       // }
+  //         }
+  //       }
+  //     },
   }
 }
 </script>
