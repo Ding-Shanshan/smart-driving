@@ -15,7 +15,6 @@ export default {
    watch(
      ( ) => props.isRun,
      (newValue,oldValue) => {
-       console.log('11')
        if(newValue === true && oldValue === false){
         var minute,second;
         minute = second = 0;
@@ -38,7 +37,6 @@ export default {
               minute=minute+1;
             }
           runtime.value = minute+'分'+second+'秒'+millisecond+'毫秒'
-          console.log(runtime)
         }
       }
      }
