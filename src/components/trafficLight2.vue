@@ -8,15 +8,15 @@
 
 <script>
 import { ref, onMounted } from "vue"
-import { MyTrafficLight } from "@/assets/js/trafficLight.js"
+import { MyTrafficLight } from "@/assets/js/trafficLight2.js"
 export default {
-  name: "TrafficLight",
+  name: "TrafficLight2",
   setup() {
     const myTraffic = ref(null)
     onMounted(() => {
       // 使用ref获取交通信号灯
       // console.log(myTraffic.value)
-      // 传递dom容器，三种灯的时间 红 黄 绿 
+      // 传递dom容器，三种灯的时间 红 黄 绿
       const myTrafficLight = new MyTrafficLight(
         myTraffic.value,
         3000,

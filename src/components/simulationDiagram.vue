@@ -12,9 +12,12 @@
           <p>智能驾驶车辆</p>
         </div>
       </div>
-      <div class="trafficLight">
-        <!-- <trafficLight></trafficLight> -->
-      </div>
+      <!-- <div class="trafficLight"> -->
+        <trafficLight  class="trafficLight" id="trafficL0"></trafficLight>
+        <!-- 左右向红绿灯 -->
+        <trafficLight2  class="trafficLight" id="trafficL1" ></trafficLight2>
+        <!-- 上下向红绿灯 -->
+      <!-- </div> -->
     </div>
   </div>
 </template>
@@ -22,24 +25,26 @@
 <script>
 import { Car } from "../assets/js/CreateNewCar"
 import trafficLight from "@/components/trafficLight.vue"
+import trafficLight2 from "@/components/trafficLight2.vue"
 export default {
   name: 'SmartDriving',
   components:{
-      trafficLight
+      trafficLight,
+      trafficLight2
     },
   props: {
     msg: String
   },
   data() {
     return {
-      H : Math.trunc((window.screen.availHeight - 200)/100)*100,
+      H : Math.trunc((window.screen.availHeight - 200)/100)*100, //- 200
       W : Math.trunc((window.screen.availWidth  - 300)/100)*100,
       RoadW:60,
       carW:10,
       carH:20,
       car1X:524,
       car1Y:490,
-      AllCar : [],
+      AllCar : []
       }
   },
   methods: {
@@ -47,6 +52,16 @@ export default {
       let canvasDiv = document.getElementsByClassName("MyCanvas")[0];
       canvasDiv.style.width = this.W + "px";
       canvasDiv.style.height = this.H + "px";
+    },
+    setTrafficLXAndY(){
+      // 上下方向红绿灯
+      let trafficL = document.getElementsByClassName("trafficLight")[1];
+      trafficL.style.top = (this.H/2 - this.RoadW-35) + "px";
+      trafficL.style.left = (this.W/2 + this.RoadW-10) + "px"; 
+      // 左右方向红绿灯
+      let trafficL2 = document.getElementsByClassName("trafficLight")[0];
+      trafficL2.style.top = (this.H/2 + this.RoadW+10) + "px";
+      trafficL2.style.left = (this.W/2 - this.RoadW-50) + "px";
     },
     //绘制路面
     drawLine(x,y,x1,y1){
@@ -172,9 +187,9 @@ export default {
     //下方路的左右边
     this.drawLine(this.W/2-this.RoadW, this.H/2+this.RoadW,this.W/2-this.RoadW, this.H-100)
     this.drawLine(this.W/2+this.RoadW, this.H/2+this.RoadW,this.W/2+this.RoadW, this.H-100)
-    //重复代码，意义不明
-    // this.drawLine(this.W/2-this.RoadW, this.H/2+this.RoadW,this.W/2-this.RoadW, this.H-10)
-    // this.drawLine(this.W/2+this.RoadW, this.H/2+this.RoadW,this.W/2+this.RoadW, this.H-10)
+    // 防止画出虚线，所以重复画一次
+    this.drawLine(this.W/2-this.RoadW, this.H/2+this.RoadW,this.W/2-this.RoadW, this.H-100)
+    this.drawLine(this.W/2+this.RoadW, this.H/2+this.RoadW,this.W/2+this.RoadW, this.H-100)
     this.context.setLineDash([5, 5]) // 上下左右道路中间的虚线
     this.drawLine(this.W/2, 100,this.W/2, this.H/2-this.RoadW)
     this.drawLine(this.W/2, this.H/2+this.RoadW,this.W/2, this.H-100)
@@ -183,15 +198,18 @@ export default {
 
     //绘制位置坐标：A、B、C、D作为上右下左的路口起始位置
     let startPositions = [
-      {x: 40, y: this.H/2 - this.RoadW - 10, width: 60, height: 140, color: "#abb8c3"},//左
-      {x: this.W - 100, y: this.H/2 - this.RoadW - 10, width: 60, height: 140, color: "#cf2e2e"},//右
-      {x: this.W/2-this.RoadW - 10, y: 40, width: 140, height: 60, color: "#00d084"},//上
-      {x: this.W/2-this.RoadW - 10, y: this.H - 100, width: 140, height: 60, color: "#9b51e0"}//下
+      {x: 40, y: this.H/2 - this.RoadW - 10, width: 60, height: 140, color: "LightSteelBlue"},//左 #abb8c3
+      {x: this.W - 100, y: this.H/2 - this.RoadW - 10, width: 60, height: 140, color: 'LightCoral' },//右 Salmon "#cf2e2e"
+      {x: this.W/2-this.RoadW - 10, y: 40, width: 140, height: 60, color: "Teal  "},//上 #00d084 Turquoise
+      {x: this.W/2-this.RoadW - 10, y: this.H - 100, width: 140, height: 60, color: "MediumPurple"}//下 #9b51e0  
     ]
     this.startPositions = startPositions;
     this.drawStartPosition(startPositions);
     //绑定点击事件，当点击彩色区域时，会创建新的车的实例
     // this.initClickEvent();
+
+    // 设置红绿灯XY
+    this.setTrafficLXAndY();
   },
 
 }
@@ -207,7 +225,7 @@ export default {
   // width:1008px;
   // height:540px;
   position: absolute;
-  background: #3F6FBB;
+  background:  #283a77 ; //#3F6FBB DarkBlue
 }
 .MyCanvas {
   position: relative;
@@ -236,11 +254,20 @@ p{
 .NormalCar {
     position: absolute;
 }
+// .trafficLight {
+//   position: absolute;
+//   top: 50%;
+//   left: 50%;
+//   transform: translate(-50%, -50%);
+// }
 .trafficLight {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  height:30px; 
+  width:70px; 
+  transform: scale(0.8,0.8);
+}
+#trafficL0{
+  transform: rotate(90deg) scale(0.8,0.8);
 }
 
 </style>
