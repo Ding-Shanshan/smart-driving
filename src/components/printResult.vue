@@ -39,7 +39,14 @@ export default {
           runtime.value = minute+'分'+second+'秒'+millisecond+'毫秒'
         }
       }
-     }
+      if(oldValue === true & newValue === false){
+        stop()
+        function stop()
+        {
+          window.clearInterval(int);
+        }
+      }
+    }
    )
     return {
       runtime
