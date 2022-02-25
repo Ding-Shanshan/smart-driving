@@ -27,6 +27,7 @@
 </template>
 
 <script>
+import { number } from "../assets/js/CreateNewCar"
 import simulationDiagram from "@/components/simulationDiagram.vue"
 import setParameters from "@/components/setParameters.vue"
 import printResult from "@/components/printResult.vue"
@@ -48,6 +49,8 @@ export default {
         },
         isRun(val) {
             this.isrun = val
+            if(number === 3)
+                this.isrun = false
         }
     }
 }
