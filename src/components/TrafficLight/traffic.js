@@ -30,12 +30,13 @@
 
 // 抽象重构
 export class MyTrafficLight {
-  constructor(contrainer, redTime, yellowTime, greenTime) {
+  constructor(contrainer, redTime, yellowTime, greenTime,flag) {
     /**
    * @param contrainer 交通灯容器
    * @param redTime 红灯时间
    * @param yellowTime 黄灯时间
    * @param greenTime 绿灯时间
+   * @param flag 0：上下方向 1：左右方向
    */
     this.contrainer = contrainer;
     this.redTime = redTime;
@@ -72,10 +73,19 @@ export class MyTrafficLight {
 
   // 主函数
   async main() {
-    while (true) {
-      await this.changeColor(this.contrainer, 'red', this.redTime);
-      await this.changeColor(this.contrainer, 'yellow', this.yellowTime);
-      await this.changeColor(this.contrainer, 'green', this.greenTime);
+    if(flag){
+      while (true) {
+        await this.changeColor(this.contrainer, 'red', this.redTime);
+        await this.changeColor(this.contrainer, 'yellow', this.yellowTime);
+        await this.changeColor(this.contrainer, 'green', this.greenTime);
+      }
+    }else{
+      while (true) {
+        await this.changeColor(this.contrainer, 'red', this.redTime);
+        await this.changeColor(this.contrainer, 'yellow', this.yellowTime);
+        await this.changeColor(this.contrainer, 'green', this.greenTime);
+      }
     }
+    
   }
 }
