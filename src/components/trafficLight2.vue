@@ -19,7 +19,7 @@ export default {
       // 传递dom容器，三种灯的时间 红 黄 绿
       const myTrafficLight = new MyTrafficLight(
         myTraffic.value,
-        3000,
+        5000,
         2000,
         5000
       )

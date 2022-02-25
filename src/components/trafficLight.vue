@@ -19,7 +19,7 @@ export default {
       // 传递dom容器，三种灯的时间 红 黄 绿 
       const myTrafficLight = new MyTrafficLight(
         myTraffic.value,
-        3000,
+        5000,
         2000,
         5000
       )
@@ -36,9 +36,11 @@ export default {
 
 <style lang="less" scoped>
 .light {
-  // width: 340px;
-  // height: 120px;
+  width: 0px;
+  height: 120px;
   // margin-left: 10px; // 100
+  margin-left:40px;
+  margin-top:-55px;
   background-color: #666;
   border-radius: 10px;
   .red {
