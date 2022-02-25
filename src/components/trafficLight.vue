@@ -1,5 +1,5 @@
 <template>
-  <div class="light" ref="myTraffic">
+  <div class="light" ref="myTraffic" id="light">
     <span class="red"></span>
     <span class="yellow"></span>
     <span class="green"></span>
@@ -24,6 +24,7 @@ export default {
         5000
       )
       myTrafficLight.main()
+      
     })
 
     return {

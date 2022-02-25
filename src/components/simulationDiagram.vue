@@ -37,8 +37,8 @@ export default {
   },
   data() {
     return {
-      H : 700, //Math.trunc((window.screen.availHeight - 200)/100)*100
-      W : 1000, // Math.trunc((window.screen.availWidth  - 300)/100)*100
+      H : 620, //Math.trunc((window.screen.availHeight - 200)/100)*100
+      W : 950, // Math.trunc((window.screen.availWidth  - 300)/100)*100
       RoadW:60,
       carW:10,
       carH:20,

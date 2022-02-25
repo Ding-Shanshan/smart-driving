@@ -1,3 +1,5 @@
+import { createStructuralDirectiveTransform } from "@vue/compiler-core";
+import {intersectionBTOA,intersectionATOB,intersectionCTOD,intersectionDTOC} from "./intersection.js"
 let Car = {
     createNewCar: function(type, sourcePlace, targetPlace, index) {
         let car = {};
@@ -5,6 +7,12 @@ let Car = {
         car.sourcePlace = sourcePlace;
         car.targetPlace = targetPlace;
         car.index = index;
+        //获取红绿灯
+        let light=document.querySelectorAll('#trafficL0')
+        let lightlist=light[0].childNodes;
+        let light1=document.querySelectorAll('#trafficL1')
+        let lightlist1=light1[0].childNodes;
+        // console.log(lightlist[0].style.opacity)
         car.showInfo = function() {
             console.log(car.type, car.sourcePlace, car.targetPlace);
         };
@@ -46,7 +54,6 @@ let Car = {
                         }
                     }
                     let checkIdx = setInterval(checkFlag, 80);
-
                 } else {
                     ty = sy - 2;
                     sx = tx;
@@ -68,6 +75,7 @@ let Car = {
                 if (tx <= 100) {
                     clearInterval(r2l);
                 } else {
+                    // 红绿灯
                     sx = tx;
                     sy = ty;
                     normalCar.style.left = tx + "px";
@@ -149,6 +157,10 @@ let Car = {
             let ty = sy;
             let father = document.getElementsByClassName("MyCanvas")[0];
             let normalCar = document.createElement("img");
+            // jxd
+            let flag=1;    //flag表示定时器下一次预计的车辆状态，0表示车辆停止，1表示车辆行驶，2表示减速停车，3表示起步加速
+            let accelerate=0;   //加速速度
+            let slowdown=2;     //减速速度
             normalCar.setAttribute("src", "/img/cars_normal.cd369ee2.png");
             normalCar.setAttribute("width", "10");
             normalCar.setAttribute("height", "20");
@@ -162,15 +174,38 @@ let Car = {
                 console.log("there is no img");
             }
             father.appendChild(normalCar);
-            let id = setInterval(frame, 80);
+            let id = setInterval(frame, 30);
 
             function frame() {
                 if (ty === 100) {
                     clearInterval(id);
                 } else {
-                    ty = sy - 2;
-                    sx = tx;
-                    sy = ty;
+                     // jxd
+                     console.log(ty)
+                     if(ty===360)
+                     {
+                         // 判断路口情况 jxd
+                          flag=intersectionDTOC(ty,lightlist1);
+                     }
+                     // 根据车辆预计行驶状态，控制车辆进行行驶 jxd
+                     switch(flag){
+                         case 0:break;    //停车
+                         case 1: ty = sy - 2; sx = tx;sy = ty;break;    //正常行驶
+                         case 2: if(slowdown<=0)
+                                 {  
+                                     flag=intersectionDTOC(ty,lightlist1);   
+                                 }else{
+                                     slowdown=slowdown-0.04; ty = sy - slowdown; sx = tx;sy = ty;
+                                 }
+                                 break;   //减速,每次速度减0.1，速度为0时,状态改为停车
+                         case 3:accelerate=accelerate+0.04;ty = sy - accelerate; sx = tx;sy = ty;
+                                 if(accelerate>=2)
+                                         {
+                                             flag=1;
+                                         }
+                                 break;   //加速,速度到达2时，状态变为正常行驶
+                         default:break;
+                         }
                     normalCar.style.left = sx + "px";
                     normalCar.style.top = sy + "px";
                 }
@@ -313,6 +348,11 @@ let Car = {
             let ty = sy;
             let father = document.getElementsByClassName("MyCanvas")[0];
             let normalCar = document.createElement("img");
+            // jxd
+            let flag=1;    //flag表示定时器下一次预计的车辆状态，0表示车辆停止，1表示车辆行驶，2表示减速停车，3表示起步加速
+            let accelerate=0;   //加速速度
+            let slowdown=2;     //减速速度
+
             normalCar.setAttribute("src", require("../images/cars_normal90.png"));
             normalCar.setAttribute("width", "20");
             normalCar.setAttribute("height", "10");
@@ -326,21 +366,42 @@ let Car = {
                 console.log("there is no img");
             }
             father.appendChild(normalCar);
-            let id = setInterval(frame, 80);
+            let id = setInterval(frame, 30);
 
             function frame() {
                 if (tx === _self.W - 100) {
                     clearInterval(id);
                 } else {
-                    tx = sx + 2;
-                    sx = tx;
-                    sy = ty;
+                      // jxd
+                      if(tx===370)
+                      {
+                          // 判断路口情况 jxd
+                           flag=intersectionATOB(tx,lightlist);
+                      }
+                      // 根据车辆预计行驶状态，控制车辆进行行驶 jxd
+                      switch(flag){
+                          case 0:break;    //停车
+                          case 1: tx = sx + 2;sx = tx;sy = ty;break;    //正常行驶
+                          case 2: if(slowdown<=0)
+                                  {  
+                                      flag=intersectionATOB(tx,lightlist);   
+                                  }else{
+                                      slowdown=slowdown-0.04; tx=sx+slowdown; sx=tx;sy=ty; 
+                                  }
+                                  break;   //减速,每次速度减0.1，速度为0时,状态改为停车
+                          case 3:accelerate=accelerate+0.04;tx = sx + accelerate;sx = tx;sy = ty;
+                                  if(accelerate>=2)
+                                          {
+                                              flag=1;
+                                          }
+                                  break;   //加速,速度到达2时，状态变为正常行驶
+                          default:break;
+                                        }
                     normalCar.style.left = sx + "px";
                     normalCar.style.top = sy + "px";
                 }
             }
         };
-
         car.drawCToB = function(_self, sx, sy) {
             let tx = sx;
             let ty = sy;
@@ -438,14 +499,15 @@ let Car = {
                 }
             }
         };
-
-
-
         car.drawCToD = function(_self, sx, sy) {
             let tx = sx;
             let ty = sy;
             let father = document.getElementsByClassName("MyCanvas")[0];
             let normalCar = document.createElement("img");
+            // jxd
+            let flag=1;    //flag表示定时器下一次预计的车辆状态，0表示车辆停止，1表示车辆行驶，2表示减速停车，3表示起步加速
+            let accelerate=0;   //加速速度
+            let slowdown=2;     //减速速度
             normalCar.setAttribute("src", "/img/cars_normal.cd369ee2.png");
             normalCar.setAttribute("width", "10");
             normalCar.setAttribute("height", "20");
@@ -459,22 +521,43 @@ let Car = {
                 console.log("there is no img");
             }
             father.appendChild(normalCar);
-            let id = setInterval(frame, 80);
+            let id = setInterval(frame, 30);
 
             function frame() {
                 if (ty === _self.H - 100) {
                     clearInterval(id);
                 } else {
-                    ty = sy + 2;
-                    sx = tx;
-                    sy = ty;
+                    // jxd
+                    console.log(ty)
+                    if(ty===118)
+                    {
+                        // 判断路口情况 jxd
+                         flag=intersectionCTOD(ty,lightlist1);
+                    }
+                    // 根据车辆预计行驶状态，控制车辆进行行驶 jxd
+                    switch(flag){
+                        case 0:break;    //停车
+                        case 1: ty = sy + 2; sx = tx;sy = ty;break;    //正常行驶
+                        case 2: if(slowdown<=0)
+                                {  
+                                    flag=intersectionCTOD(ty,lightlist1);   
+                                }else{
+                                    slowdown=slowdown-0.04; ty = sy + slowdown; sx = tx;sy = ty;
+                                }
+                                break;   //减速,每次速度减0.1，速度为0时,状态改为停车
+                        case 3:accelerate=accelerate+0.04;ty = sy + accelerate; sx = tx;sy = ty;
+                                if(accelerate>=2)
+                                        {
+                                            flag=1;
+                                        }
+                                break;   //加速,速度到达2时，状态变为正常行驶
+                        default:break;
+                        }
                     normalCar.style.left = sx + "px";
                     normalCar.style.top = sy + "px";
                 }
             }
         };
-
-
         car.drawBToC = function(_self, sx, sy) {
             let tx = sx;
             let ty = sy;
@@ -524,7 +607,6 @@ let Car = {
                 }
             }
         };
-
         car.drawBToD = function(_self, sx, sy) {
             let tx = sx;
             let ty = sy;
@@ -574,12 +656,16 @@ let Car = {
                 }
             }
         };
-
         car.drawBToA = function(_self, sx, sy) {
             let tx = sx;
             let ty = sy;
             let father = document.getElementsByClassName("MyCanvas")[0];
             let normalCar = document.createElement("img");
+            // jxd
+            let flag=1;    //flag表示定时器下一次预计的车辆状态，0表示车辆停止，1表示车辆行驶，2表示减速停车，3表示起步加速
+            let accelerate=0;   //加速速度
+            let slowdown=2;     //减速速度
+
             normalCar.setAttribute("src", require("../images/cars_normal90.png"));
             normalCar.setAttribute("width", "20");
             normalCar.setAttribute("height", "10");
@@ -593,19 +679,42 @@ let Car = {
                 console.log("there is no img");
             }
             father.appendChild(normalCar);
-            let id = setInterval(frame, 80);
-
+            let id = setInterval(frame, 30);
             function frame() {
                 if (tx === 100) {
                     clearInterval(id);
                 } else {
-                    tx = sx - 2;
-                    sx = tx;
-                    sy = ty;
+                    // jxd
+                    if(tx===610)
+                    {
+                        // 判断路口情况 jxd
+                         flag=intersectionBTOA(tx,lightlist);
+                    }
+                    // 根据车辆预计行驶状态，控制车辆进行行驶 jxd
+                    switch(flag){
+                        case 0:break;    //停车
+                        case 1: tx = sx - 2;sx = tx;sy = ty;break;    //正常行驶
+                        case 2: if(slowdown<=0)
+                                {  
+                                    flag=intersectionBTOA(tx,lightlist);   
+                                }else{
+                                    slowdown=slowdown-0.04; tx=sx-slowdown; sx=tx;sy=ty; 
+                                }
+                                break;   //减速,每次速度减0.1，速度为0时,状态改为停车
+                        case 3:accelerate=accelerate+0.04;tx = sx - accelerate;sx = tx;sy = ty;
+                                if(accelerate>=2)
+                                        {
+                                            flag=1;
+                                        }
+                                break;   //加速,速度到达2时，状态变为正常行驶
+                        default:break;
+                        }
                     normalCar.style.left = sx + "px";
                     normalCar.style.top = sy + "px";
+                    }
+                   
                 }
-            }
+            
         };
         return car;
     }
