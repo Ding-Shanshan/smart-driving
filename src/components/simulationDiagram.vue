@@ -37,8 +37,8 @@ export default {
   },
   data() {
     return {
-      H : Math.trunc((window.screen.availHeight - 200)/100)*100, //- 200
-      W : Math.trunc((window.screen.availWidth  - 300)/100)*100,
+      H : 700, //Math.trunc((window.screen.availHeight - 200)/100)*100
+      W : 1000, // Math.trunc((window.screen.availWidth  - 300)/100)*100
       RoadW:60,
       carW:10,
       carH:20,
@@ -91,17 +91,22 @@ export default {
 
     textConnection(data) {
       let rootSelf = this;
+      // 2s一张车
       let globalid = setInterval(createIdxAndobjs,2000);
       function createIdxAndobjs(){
         if(rootSelf.AllCar.length === 30){
           clearInterval(globalid);
         }
         else{
+          // 随机产生起点终点
           let Places = ["A","B","C","D"];
         let sourceIdx = Math.floor(Math.random()*4);
         let targetIdx = Math.floor(Math.random()*4);
+        if(targetIdx===sourceIdx){
+          targetIdx=(targetIdx+1)%4;
+        }
         let targetPlace = Places[targetIdx];
-        let sourcePlace = Places[sourceIdx];
+        let sourcePlace = Places[sourceIdx];       
         let carIdx = document.getElementsByTagName("img").length-2;
         // let car = Car.createNewCar("Normal","A",targetPlace,carIdx);
         let car = Car.createNewCar("Normal",sourcePlace,targetPlace,carIdx);
@@ -219,7 +224,7 @@ export default {
 <style scoped lang="less">
 .hello {
     position: relative;
-    margin: 20px auto;
+    // margin: 20px auto;
 }
 #myCanvas{
   // width:1008px;
