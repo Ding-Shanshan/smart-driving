@@ -71,12 +71,17 @@ export class MyTrafficLight {
   }
 
   // 主函数
-  async main() {
-    while (true) {
+  async main(isR,light) {
+    while (isR&&light==='默认') {
       await this.changeColor(this.contrainer, 'red', this.redTime);
       await this.changeColor(this.contrainer, 'yellow', this.yellowTime);
       await this.changeColor(this.contrainer, 'green', this.greenTime);
-
+    }
+    while(isR&&light==='红灯'){
+      await this.changeColor(this.contrainer, 'red', 0);
+    }
+    while(isR&&light==='绿灯'){
+      await this.changeColor(this.contrainer, 'green', 0);
     }
   }
 }

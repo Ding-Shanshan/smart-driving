@@ -13,10 +13,10 @@
         </div>
       </div>
       <div class="Light">
-        <trafficLight  class="trafficLight" id="trafficL0"></trafficLight>
-        <!-- 左右向红绿灯 -->
-        <trafficLight2  class="trafficLight" id="trafficL1" ></trafficLight2>
+        <trafficLight2 :isRun="isR" :trafficL1="light1" class="trafficLight" id="trafficL1" ></trafficLight2>
         <!-- 上下向红绿灯 -->
+        <trafficLight :isRun="isR" :trafficL2="light2" class="trafficLight" id="trafficL0" ></trafficLight>
+        <!-- 左右向红绿灯 -->
       </div>
       <!-- <div class="trafficLight">
         <trafficLight></trafficLight>
@@ -25,10 +25,11 @@
 
       </div> -->
     </div>
-  </div>
+    </div>
 </template>
 
 <script>
+import { watch } from 'vue'
 import { Car } from "../assets/js/CreateNewCar"
 import trafficLight from "@/components/trafficLight.vue"
 import trafficLight2 from "@/components/trafficLight2.vue"
@@ -38,9 +39,7 @@ export default {
       trafficLight,
       trafficLight2
     },
-  props: {
-    msg: String
-  },
+  props:['isRun','changeL1','changeL2'],
   data() {
     return {
       H : 620, //Math.trunc((window.screen.availHeight - 200)/100)*100
@@ -51,6 +50,27 @@ export default {
       car1X:524,
       car1Y:490,
       AllCar : [],
+      isR: this.isRun,
+      light1:this.changeL1,
+      light2:this.changeL2
+      }
+  },
+  setup(props) {
+    watch([props],
+      (newValue,oldValue)=>{
+        }
+    )
+    return{}
+  },
+  watch: {
+      isRun(val) {
+        this.isR=val;
+      },
+      changeL1(val){
+        this.light1=val;
+      },
+      changeL2(val){
+        this.light2=val;
       }
   },
   methods: {

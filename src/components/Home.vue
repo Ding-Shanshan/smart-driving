@@ -8,14 +8,14 @@
             <!-- 主体 -->
             <el-main>
                 <div class="simulationDiagram">
-                    <simulationDiagram ref="moving"></simulationDiagram>
+                    <simulationDiagram ref="moving" :isRun="isrun" :changeL1="light1" :changeL2="light2"></simulationDiagram>
                 </div>
             </el-main>
             <!-- 侧边栏 -->
             <el-aside width="300px">
                 <!-- 参数调节面板 -->
                 <div class="setParameters">
-                    <setParameters  @createCar="createCar" @runchange="isRun"></setParameters>
+                    <setParameters  @createCar="createCar" @runchange="isRun" @trafficC1="changeL1" @trafficC2="changeL2"></setParameters>
                 </div>
                 <!-- 运行结果面板 -->
                 <div class="printResult">
@@ -33,7 +33,9 @@ import printResult from "@/components/printResult.vue"
 export default {
     data(){
         return{
-            isrun:false
+            isrun:false,
+            light1:'默认',
+            light2:'默认'
         }
     },
     components:{
@@ -48,6 +50,12 @@ export default {
         },
         isRun(val) {
             this.isrun = val
+        },
+        changeL1(val){
+            this.light1=val
+        },
+        changeL2(val){
+            this.light2=val
         }
     }
 }
