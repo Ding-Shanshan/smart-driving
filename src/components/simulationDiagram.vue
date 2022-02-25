@@ -12,12 +12,18 @@
           <p>智能驾驶车辆</p>
         </div>
       </div>
-      <!-- <div class="trafficLight"> -->
+      <div class="Light">
         <trafficLight  class="trafficLight" id="trafficL0"></trafficLight>
         <!-- 左右向红绿灯 -->
         <trafficLight2  class="trafficLight" id="trafficL1" ></trafficLight2>
         <!-- 上下向红绿灯 -->
-      <!-- </div> -->
+      </div>
+      <!-- <div class="trafficLight">
+        <trafficLight></trafficLight>
+      </div> -->
+      <!-- <div class="111" style="width:10px;height:10px;position: absolute;left:440px;top:310px;background:red">
+
+      </div> -->
     </div>
   </div>
 </template>
@@ -44,7 +50,7 @@ export default {
       carH:20,
       car1X:524,
       car1Y:490,
-      AllCar : []
+      AllCar : [],
       }
   },
   methods: {
@@ -56,12 +62,12 @@ export default {
     setTrafficLXAndY(){
       // 上下方向红绿灯
       let trafficL = document.getElementsByClassName("trafficLight")[1];
-      trafficL.style.top = (this.H/2 - this.RoadW-35) + "px";
-      trafficL.style.left = (this.W/2 + this.RoadW-10) + "px"; 
+      trafficL.style.top = (this.H/2-this.RoadW-32) + "px";
+      trafficL.style.left = (this.W/2+this.RoadW - 4) + "px"; 
       // 左右方向红绿灯
       let trafficL2 = document.getElementsByClassName("trafficLight")[0];
-      trafficL2.style.top = (this.H/2 + this.RoadW+10) + "px";
-      trafficL2.style.left = (this.W/2 - this.RoadW-50) + "px";
+      trafficL2.style.top = (this.H/2 + this.RoadW + 16) + "px";
+      trafficL2.style.left = (this.W/2 - this.RoadW -50) + "px";
     },
     //绘制路面
     drawLine(x,y,x1,y1){
@@ -81,7 +87,7 @@ export default {
         this.context.stroke();
         if (p && this.context.isPointInPath(p.x, p.y)) {
           //如果传入了事件坐标，就用isPointInPath判断一下，如果事件坐标在当前的图像里，就把当前图像的index放进数组里保存
-          if(idx === 3) {
+          if(idx === 1) {
             this.drawDToA(this,this.W / 2 + 25,this.H - 100);
           }
         }
@@ -91,47 +97,51 @@ export default {
 
     textConnection(data) {
       let rootSelf = this;
-      // 2s一张车
       let globalid = setInterval(createIdxAndobjs,2000);
       function createIdxAndobjs(){
+        // 测试
         if(rootSelf.AllCar.length === 30){
           clearInterval(globalid);
         }
         else{
-          // 随机产生起点终点
           let Places = ["A","B","C","D"];
+          // 测试注释
         let sourceIdx = Math.floor(Math.random()*4);
         let targetIdx = Math.floor(Math.random()*4);
+        // 避免起点终点重叠
         if(targetIdx===sourceIdx){
           targetIdx=(targetIdx+1)%4;
         }
         let targetPlace = Places[targetIdx];
-        let sourcePlace = Places[sourceIdx];       
+        let sourcePlace = Places[sourceIdx];
+        // let sourcePlace = Places[0];
+        //  let targetPlace = Places[1];
         let carIdx = document.getElementsByTagName("img").length-2;
         // let car = Car.createNewCar("Normal","A",targetPlace,carIdx);
-        let car = Car.createNewCar("Normal",sourcePlace,targetPlace,carIdx);
+        let car = Car.createNewCar("Normal",sourcePlace,targetPlace,carIdx);  
 
         rootSelf.AllCar[carIdx] = car;
         
         car.showInfo();
         if(rootSelf.AllCar[carIdx].sourcePlace === "D" && rootSelf.AllCar[carIdx].targetPlace ==="A"){
-          rootSelf.AllCar[carIdx].drawDToA(rootSelf,rootSelf.W / 2 + (rootSelf.RoadW-rootSelf.carW)/2 ,rootSelf.H - 100);
+          // 暂时直行
+          // rootSelf.AllCar[carIdx].drawDToA(rootSelf,rootSelf.W / 2 + (rootSelf.RoadW-rootSelf.carW)/2 ,rootSelf.H - 100);
         }
         if(rootSelf.AllCar[carIdx].sourcePlace === "D" && rootSelf.AllCar[carIdx].targetPlace==="C") {
           rootSelf.AllCar[carIdx].drawDToC(rootSelf,rootSelf.W / 2 + (rootSelf.RoadW-rootSelf.carW)/2 ,rootSelf.H - 100);
         }
         if(rootSelf.AllCar[carIdx].sourcePlace === "D" && rootSelf.AllCar[carIdx].targetPlace==="B") {
-          rootSelf.AllCar[carIdx].drawDToB(rootSelf,rootSelf.W / 2 + (rootSelf.RoadW-rootSelf.carW)/2 ,rootSelf.H - 100);
+          // rootSelf.AllCar[carIdx].drawDToB(rootSelf,rootSelf.W / 2 + (rootSelf.RoadW-rootSelf.carW)/2 ,rootSelf.H - 100);
         } 
         if(rootSelf.AllCar[carIdx].sourcePlace === "D" && rootSelf.AllCar[carIdx].targetPlace==="D") {
           ;
         }
 
         if(rootSelf.AllCar[carIdx].sourcePlace === "A" && rootSelf.AllCar[carIdx].targetPlace==="D") {
-          rootSelf.AllCar[carIdx].drawAToD(rootSelf, 100, rootSelf.H / 2 + 20);
+          // rootSelf.AllCar[carIdx].drawAToD(rootSelf, 100, rootSelf.H / 2 + 20);
         }
         if(rootSelf.AllCar[carIdx].sourcePlace === "A" && rootSelf.AllCar[carIdx].targetPlace==="C") {
-          rootSelf.AllCar[carIdx].drawAToC(rootSelf, 100, rootSelf.H / 2 + 20);
+          // rootSelf.AllCar[carIdx].drawAToC(rootSelf, 100, rootSelf.H / 2 + 20);
         }
         if(rootSelf.AllCar[carIdx].sourcePlace === "A" && rootSelf.AllCar[carIdx].targetPlace==="B") {
           rootSelf.AllCar[carIdx].drawAToB(rootSelf, 100, rootSelf.H / 2 + 20);
@@ -144,17 +154,17 @@ export default {
           rootSelf.AllCar[carIdx].drawCToD(rootSelf, rootSelf.W / 2 -rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2), 100);
         }
         if(rootSelf.AllCar[carIdx].sourcePlace === "C" && rootSelf.AllCar[carIdx].targetPlace==="A") {
-          rootSelf.AllCar[carIdx].drawCToA(rootSelf, rootSelf.W / 2 -rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2), 100);
+          // rootSelf.AllCar[carIdx].drawCToA(rootSelf, rootSelf.W / 2 -rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2), 100);
         }
         if(rootSelf.AllCar[carIdx].sourcePlace === "C" && rootSelf.AllCar[carIdx].targetPlace==="B") {
-          rootSelf.AllCar[carIdx].drawCToB(rootSelf, rootSelf.W / 2 -rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2), 100);
+          // rootSelf.AllCar[carIdx].drawCToB(rootSelf, rootSelf.W / 2 -rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2), 100);
         }
         if(rootSelf.AllCar[carIdx].sourcePlace === "C" && rootSelf.AllCar[carIdx].targetPlace==="C") {
           ;
         }
 
         if(rootSelf.AllCar[carIdx].sourcePlace === "B" && rootSelf.AllCar[carIdx].targetPlace==="D") {
-          rootSelf.AllCar[carIdx].drawBToD(rootSelf, rootSelf.W - 100, rootSelf.H / 2 - rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2));
+          // rootSelf.AllCar[carIdx].drawBToD(rootSelf, rootSelf.W - 100, rootSelf.H / 2 - rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2));
         }
         if(rootSelf.AllCar[carIdx].sourcePlace === "B" && rootSelf.AllCar[carIdx].targetPlace==="A") {
           rootSelf.AllCar[carIdx].drawBToA(rootSelf, rootSelf.W - 100, rootSelf.H / 2 - rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2));
@@ -163,17 +173,14 @@ export default {
           ;
         }
         if(rootSelf.AllCar[carIdx].sourcePlace === "B" && rootSelf.AllCar[carIdx].targetPlace==="C") {
-          rootSelf.AllCar[carIdx].drawBToC(rootSelf, rootSelf.W - 100, rootSelf.H / 2 - rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2));
+          // rootSelf.AllCar[carIdx].drawBToC(rootSelf, rootSelf.W - 100, rootSelf.H / 2 - rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2));
         }
         }
       }
     }
   },
   mounted(){
-
     this.setCanvasDivWAndH();
-
-
     const canvas = document.querySelector('canvas');
     this.context = canvas.getContext('2d');
     this.context.beginPath();
@@ -192,7 +199,7 @@ export default {
     //下方路的左右边
     this.drawLine(this.W/2-this.RoadW, this.H/2+this.RoadW,this.W/2-this.RoadW, this.H-100)
     this.drawLine(this.W/2+this.RoadW, this.H/2+this.RoadW,this.W/2+this.RoadW, this.H-100)
-    // 防止画出虚线，所以重复画一次
+    // 防止道路线画成虚线，所以画两次
     this.drawLine(this.W/2-this.RoadW, this.H/2+this.RoadW,this.W/2-this.RoadW, this.H-100)
     this.drawLine(this.W/2+this.RoadW, this.H/2+this.RoadW,this.W/2+this.RoadW, this.H-100)
     this.context.setLineDash([5, 5]) // 上下左右道路中间的虚线
@@ -203,17 +210,15 @@ export default {
 
     //绘制位置坐标：A、B、C、D作为上右下左的路口起始位置
     let startPositions = [
-      {x: 40, y: this.H/2 - this.RoadW - 10, width: 60, height: 140, color: "LightSteelBlue"},//左 #abb8c3
-      {x: this.W - 100, y: this.H/2 - this.RoadW - 10, width: 60, height: 140, color: 'LightCoral' },//右 Salmon "#cf2e2e"
-      {x: this.W/2-this.RoadW - 10, y: 40, width: 140, height: 60, color: "Teal  "},//上 #00d084 Turquoise
-      {x: this.W/2-this.RoadW - 10, y: this.H - 100, width: 140, height: 60, color: "MediumPurple"}//下 #9b51e0  
+      {x: 40, y: this.H/2 - this.RoadW - 10, width: 60, height: 140, color: "#abb8c3"},//左
+      {x: this.W - 100, y: this.H/2 - this.RoadW - 10, width: 60, height: 140, color: "#cf2e2e"},//右
+      {x: this.W/2-this.RoadW - 10, y: 40, width: 140, height: 60, color: "#00d084"},//上
+      {x: this.W/2-this.RoadW - 10, y: this.H - 100, width: 140, height: 60, color: "#9b51e0"}//下
     ]
     this.startPositions = startPositions;
     this.drawStartPosition(startPositions);
     //绑定点击事件，当点击彩色区域时，会创建新的车的实例
     // this.initClickEvent();
-
-    // 设置红绿灯XY
     this.setTrafficLXAndY();
   },
 
@@ -224,13 +229,13 @@ export default {
 <style scoped lang="less">
 .hello {
     position: relative;
-    // margin: 20px auto;
+    margin: 20px auto;
 }
 #myCanvas{
   // width:1008px;
   // height:540px;
   position: absolute;
-  background:  #283a77 ; //#3F6FBB DarkBlue
+  background: #3F6FBB;
 }
 .MyCanvas {
   position: relative;
@@ -242,7 +247,7 @@ export default {
 }
 .legcar{
   float:left;
-  margin:10px;
+  margin:20px;
   display:inline;
 }
 p{
@@ -259,20 +264,12 @@ p{
 .NormalCar {
     position: absolute;
 }
-// .trafficLight {
-//   position: absolute;
-//   top: 50%;
-//   left: 50%;
-//   transform: translate(-50%, -50%);
-// }
 .trafficLight {
   position: absolute;
-  height:30px; 
-  width:70px; 
-  transform: scale(0.8,0.8);
+  top: 50%;
+  left: 48%;
+  transform: translate(-50%, -50%);
 }
-#trafficL0{
-  transform: rotate(90deg) scale(0.8,0.8);
-}
+
 
 </style>
