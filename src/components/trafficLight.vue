@@ -11,32 +11,33 @@ import { ref, onMounted,watch } from "vue"
 import { MyTrafficLight } from "@/assets/js/trafficLight.js"
 export default {
   name: "TrafficLight",
-  props:['isRun','trafficL2'],
+  props:['isRun','trLight2'],
   setup(props) {
     const myTraffic = ref(null)
     var myTrafficLight = undefined
     onMounted(() => {
       // 使用ref获取交通信号灯
-      // console.log(myTraffic.value)
-      // 传递dom容器，三种灯的时间 红 黄 绿 
-      myTrafficLight = new MyTrafficLight(
-        myTraffic.value,
-        5000,
-        2000,
-        5000
-      )
-      // myTrafficLight.main(props.isRun)
+      // 传递dom容器，三种灯的时间 红 黄 绿
       
     }),
     watch([props],
       (newValue,oldValue)=>{
-        myTrafficLight = new MyTrafficLight(
-          myTraffic.value,
-          5000,
-          2000,
-          5000
-        )
-        myTrafficLight.main(props.isRun,props.trafficL2)
+        if(props.isRun){
+          // 开始运行
+          if(props.trLight2==='默认'){
+            // 传递dom容器，三种灯的时间 红 黄 绿
+            myTrafficLight = new MyTrafficLight(
+              myTraffic.value,
+              6,
+              2,
+              4
+            )
+          } else if(props.trLight2==='绿灯'){
+            myTrafficLight.changeColor('.green')
+          }else if(props.trLight2==='红灯'){
+            myTrafficLight.changeColor('.red')
+          }
+        }
         }
     )
 

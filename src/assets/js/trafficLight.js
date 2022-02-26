@@ -1,48 +1,24 @@
-// function sleep(contrainer, color, duration) {
-//   return new Promise(resolve => {
-//     setTimeout(() => {
-//       ['red', 'yellow', 'green'].forEach(item => {
-//         contrainer.querySelector('.' + item).style.opacity = 0.1
-//       })
-//       contrainer.querySelector('.' + color).style.opacity = 1
-//       console.log(duration, color);
-//       resolve()
-//     }, duration);
-//   })
-// }
-// async function changeColor(contrainer, color, duration) {
-//   // console.log('traffic-light ', color, contrainer);
-//   await sleep(contrainer, color, duration);
-// }
-// export async function main(contrainer, redTime, yellowTime, greenTime) {
-//   /**
-//    * @param contrainer 交通灯容器
-//    * @param redTime 红灯时间
-//    * @param yellowTime 黄灯时间
-//    * @param greenTime 绿灯时间
-//    */
-//   while (true) {
-//     await changeColor(contrainer, 'red', redTime);
-//     await changeColor(contrainer, 'yellow', yellowTime);
-//     await changeColor(contrainer, 'green', greenTime);
-//   }
-// }
-
-// 抽象重构
 export class MyTrafficLight {
   constructor(contrainer, redTime, yellowTime, greenTime) {
     /**
    * @param contrainer 交通灯容器
-   * @param redTime 红灯时间
-   * @param yellowTime 黄灯时间
-   * @param greenTime 绿灯时间
+   * @param {int} redTime 红灯时间
+   * @param {int} yellowTime 黄灯时间
+   * @param {int} greenTime 绿灯时间
    */
     this.contrainer = contrainer;
     this.redTime = redTime;
     this.yellowTime = yellowTime;
     this.greenTime = greenTime;
+    // 记录count值，后续可通过增加count的值动态改变红绿灯的时间
+    this.count = 0;
     // 当前灯状态
-    this.state = '';
+    this.state = 'green';
+    // 
+    this.timer = null;
+
+    // 默认执行
+    this.default();
   }
 
   // 获取当前灯的状态
@@ -50,38 +26,67 @@ export class MyTrafficLight {
     return this.state;
   }
 
-  // sleep函数
-  sleep(contrainer, color, duration) {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        ['red', 'green', 'yellow'].forEach(item => {
-          contrainer.querySelector('.' + item).style.opacity = 0.1
-        })
-        contrainer.querySelector('.' + color).style.opacity = 1
-        // console.log(duration);
-        this.state = color;
-        resolve()
-      }, duration);
+  // 排他
+  antiElse(color) {
+    ['.green', '.yellow', '.red'].forEach(item => {
+      this.contrainer.querySelector(item).style.opacity = 0.1;
     })
-  }
-  // 改变颜色
-  async changeColor(contrainer, color, duration) {
-    // console.log('traffic-light ', color, contrainer);
-    await this.sleep(contrainer, color, duration);
+    this.contrainer.querySelector(color).style.opacity = 1;
   }
 
-  // 主函数
-  async main(isR,light) {
-    while (isR&&light==='默认') {
-      await this.changeColor(this.contrainer, 'red', this.redTime);
-      await this.changeColor(this.contrainer, 'yellow', this.yellowTime);
-      await this.changeColor(this.contrainer, 'green', this.greenTime);
-    }
-    while(isR&&light==='红灯'){
-      await this.changeColor(this.contrainer, 'red', 0);
-    }
-    while(isR&&light==='绿灯'){
-      await this.changeColor(this.contrainer, 'green', 0);
-    }
+  // 默认效果
+  default() {
+    // 默认从绿灯开始，如果需要其他颜色，修改下面两行
+    this.count = this.greenTime;
+    this.antiElse('.green');
+    // 更换思路，每隔一秒判断一次灯是否到时间
+    this.timer = setInterval(() => {
+      switch (this.state) {
+        case 'green':
+          if (this.count) {
+            this.count--;
+          } else {
+            this.count = this.yellowTime;
+            this.state = 'yellow';
+            this.antiElse('.yellow');
+          }
+          break;
+
+        case 'yellow':
+          if (this.count) {
+            this.count--
+          } else {
+            this.count = this.redTime;
+            this.state = 'red';
+            this.antiElse('.red');
+          }
+          break;
+
+        case 'red':
+          if (this.count) {
+            this.count--
+          } else {
+            this.count = this.greenTime;
+            this.state = 'green';
+            this.antiElse('.green');
+          }
+          break;
+
+        default:
+          break;
+      }
+    }, 1000)
+  }
+
+  // 更改颜色
+  changeColor(color) {
+    /**
+     * @param {string} color 颜色的类名('.red')
+     */
+    // 清除默认效果
+    clearInterval(this.timer);
+    // 改变颜色
+    this.antiElse(color);
   }
 }
+

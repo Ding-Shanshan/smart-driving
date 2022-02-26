@@ -33,7 +33,7 @@
             <!-- 上下方向红绿灯 -->
             <div class="light">
                 <span>纵向红绿灯：</span>
-                <el-radio-group @change="trafficC1"  v-model="light">
+                <el-radio-group @change="trLight1"  v-model="light">
                     <el-radio-button label="红灯"></el-radio-button>
                     <el-radio-button label="绿灯"></el-radio-button>
                     <el-radio-button label="默认"></el-radio-button>
@@ -42,7 +42,7 @@
             <!-- 左右方向红绿灯 -->
             <div class="light2">
                 <span>横向红绿灯：</span>
-                <el-radio-group @change="trafficC2" v-model="light2">
+                <el-radio-group @change="trLight2" v-model="light2">
                     <el-radio-button label="红灯"></el-radio-button>
                     <el-radio-button label="绿灯"></el-radio-button>
                     <el-radio-button label="默认"></el-radio-button>
@@ -74,11 +74,11 @@ export default {
             this.isruning = true
             this.$emit('runchange',this.isruning)
         },
-        trafficC1(){
-            this.$emit('trafficC1',this.light);
+        trLight1(){
+            this.$emit('trLight1',this.light);
         },
-        trafficC2(){
-            this.$emit('trafficC2',this.light2);
+        trLight2(){
+            this.$emit('trLight2',this.light2);
         }
     }
 }

@@ -13,10 +13,10 @@
         </div>
       </div>
       <div class="Light">
-        <trafficLight2 :isRun="isR" :trafficL1="light1" class="trafficLight" id="trafficL1" ></trafficLight2>
-        <!-- 上下向红绿灯 -->
-        <trafficLight :isRun="isR" :trafficL2="light2" class="trafficLight" id="trafficL0" ></trafficLight>
+        <trafficLight :isRun="isR" :trLight2="light2" class="trL" id="trafficL0" ></trafficLight>
         <!-- 左右向红绿灯 -->
+        <trafficLight2 :isRun="isR" :trLight1="light1" class="trL" id="trafficL1" ></trafficLight2>
+        <!-- 上下向红绿灯 -->
       </div>
       <!-- <div class="trafficLight">
         <trafficLight></trafficLight>
@@ -81,11 +81,11 @@ export default {
     },
     setTrafficLXAndY(){
       // 上下方向红绿灯
-      let trafficL = document.getElementsByClassName("trafficLight")[1];
+      let trafficL = document.getElementsByClassName("trL")[1];
       trafficL.style.top = (this.H/2-this.RoadW-32) + "px";
       trafficL.style.left = (this.W/2+this.RoadW - 4) + "px"; 
       // 左右方向红绿灯
-      let trafficL2 = document.getElementsByClassName("trafficLight")[0];
+      let trafficL2 = document.getElementsByClassName("trL")[0];
       trafficL2.style.top = (this.H/2 + this.RoadW + 16) + "px";
       trafficL2.style.left = (this.W/2 - this.RoadW -50) + "px";
     },
@@ -284,7 +284,7 @@ p{
 .NormalCar {
     position: absolute;
 }
-.trafficLight {
+.trL {
   position: absolute;
   top: 50%;
   left: 48%;

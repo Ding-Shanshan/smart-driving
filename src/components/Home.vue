@@ -15,7 +15,7 @@
             <el-aside width="300px">
                 <!-- 参数调节面板 -->
                 <div class="setParameters">
-                    <setParameters  @createCar="createCar" @runchange="isRun" @trafficC1="changeL1" @trafficC2="changeL2"></setParameters>
+                    <setParameters  @createCar="createCar" @runchange="isRun" @trLight1="changeL1" @trLight2="changeL2"></setParameters>
                 </div>
                 <!-- 运行结果面板 -->
                 <div class="printResult">
