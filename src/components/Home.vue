@@ -58,7 +58,7 @@ export default {
             function judgeIsRun(){
                 if(number === 1)
                 vm.isrun = false;
-                console.log(vm.isrun)
+                //console.log(vm.isrun)
             }
         }
     }
