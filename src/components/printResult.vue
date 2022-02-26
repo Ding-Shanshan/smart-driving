@@ -2,6 +2,7 @@
   <div>
     <h4>运行结果</h4>
     <h4 id=mytime>{{runtime}}</h4>
+    <h4>{{isRun}}</h4>
   </div>
 </template>
 
@@ -20,8 +21,9 @@ export default {
         minute = second = 0;
         var millisecond = 0;
         var int;
+        
         //开始函数
-        int = setInterval(timer,50);
+        int = window.setInterval(timer,50);
         //计时函数
         function timer()
         {
@@ -40,12 +42,9 @@ export default {
         }
       }
       if(oldValue === true & newValue === false){
-        stop()
-        function stop()
-        {
           window.clearInterval(int);
-        }
       }
+      return 
     }
    )
     return {
