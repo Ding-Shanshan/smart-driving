@@ -49,8 +49,17 @@ export default {
         },
         isRun(val) {
             this.isrun = val
+            console.log(this)
+            var vm = this
             if(number === 3)
-                this.isrun = false
+            Vue.prototype.$number = number
+            var int;
+            int = setInterval(judgeIsRun,50);
+            function judgeIsRun(){
+                if(number === 1)
+                vm.isrun = false;
+                console.log(vm.isrun)
+            }
         }
     }
 }
