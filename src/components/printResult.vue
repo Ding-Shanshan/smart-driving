@@ -2,7 +2,6 @@
   <div>
     <h4>运行结果</h4>
     <h4 id=mytime>{{runtime}}</h4>
-    <h4>{{isRun}}</h4>
   </div>
 </template>
 
@@ -16,37 +15,38 @@ export default {
    watch(
      ( ) => props.isRun,
      (newValue,oldValue) => {
-       if(newValue === true && oldValue === false){
-        var minute,second;
-        minute = second = 0;
-        var millisecond = 0;
-        var int;
-        
-        //开始函数
-        int = window.setInterval(timer,50);
-        //计时函数
-        function timer()
-        {
-          millisecond=millisecond+50;
-          if(millisecond>=1000)
+        var int = null;
+        runningTime()
+        function runningTime(){
+            if(newValue === true && oldValue === false){
+            var minute,second;
+            minute = second = 0;
+            var millisecond = 0;
+            //开始函数
+            window.int = window.setInterval(timer,50);
+            //计时函数
+            function timer()
             {
-              millisecond=0;
-              second=second+1;
+              millisecond=millisecond+50;
+              if(millisecond>=1000)
+                {
+                  millisecond=0;
+                  second=second+1;
+                }
+              if(second>=60)
+                {
+                  second=0;
+                  minute=minute+1;
+                }
+              runtime.value = minute+'分'+second+'秒'+millisecond+'毫秒'
             }
-          if(second>=60)
-            {
-              second=0;
-              minute=minute+1;
+          }
+            else if(oldValue === true && newValue === false){
+              window.clearInterval(window.int);
             }
-          runtime.value = minute+'分'+second+'秒'+millisecond+'毫秒'
         }
       }
-      if(oldValue === true & newValue === false){
-          window.clearInterval(int);
-      }
-      return 
-    }
-   )
+  )
     return {
       runtime
     }
