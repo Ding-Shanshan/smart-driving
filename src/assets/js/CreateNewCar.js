@@ -1,5 +1,12 @@
 import { createStructuralDirectiveTransform } from "@vue/compiler-core";
 import {intersectionBTOA,intersectionATOB,intersectionCTOD,intersectionDTOC} from "./intersection.js"
+var number = 0;
+function carNumber( ){
+    number = number+1;
+    console.log(number);
+}
+
+
 let Car = {
     createNewCar: function(type, sourcePlace, targetPlace, index) {
         let car = {};
@@ -74,6 +81,7 @@ let Car = {
             function frame() {
                 if (tx <= 100) {
                     clearInterval(r2l);
+                    carNumber();
                 } else {
                     // 红绿灯
                     sx = tx;
@@ -143,6 +151,7 @@ let Car = {
             function frame() {
                 if (tx >= _self.W - 100) {
                     clearInterval(r2l);
+                    carNumber();
                 } else {
                     sx = tx;
                     sy = ty;
@@ -177,8 +186,9 @@ let Car = {
             let id = setInterval(frame, 30);
 
             function frame() {
-                if (ty === 100) {
+                if (ty === 100) { 
                     clearInterval(id);
+                    carNumber();
                 } else {
                      // jxd
                      console.log(ty)
@@ -267,6 +277,7 @@ let Car = {
             function frame() {
                 if (ty >= _self.H - 100) {
                     clearInterval(r2l);
+                    carNumber();
                 } else {
                     ty = sy + 2;
                     sx = tx;
@@ -334,6 +345,7 @@ let Car = {
             function frame() {
                 if (ty <= 100) {
                     clearInterval(r2l);
+                    carNumber();
                 } else {
                     ty = sy - 2;
                     sx = tx;
@@ -371,6 +383,7 @@ let Car = {
             function frame() {
                 if (tx === _self.W - 100) {
                     clearInterval(id);
+                    carNumber();
                 } else {
                       // jxd
                       if(tx===370)
@@ -526,6 +539,7 @@ let Car = {
             function frame() {
                 if (ty === _self.H - 100) {
                     clearInterval(id);
+                    carNumber();
                 } else {
                     // jxd
                     console.log(ty)
@@ -682,6 +696,7 @@ let Car = {
             let id = setInterval(frame, 30);
             function frame() {
                 if (tx === 100) {
+                    carNumber();
                     clearInterval(id);
                 } else {
                     // jxd
@@ -721,5 +736,5 @@ let Car = {
 }
 
 export {
-    Car
+    Car,number
 }
