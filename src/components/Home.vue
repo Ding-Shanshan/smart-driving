@@ -27,6 +27,7 @@
 </template>
 
 <script>
+import { number } from "../assets/js/CreateNewCar"
 import simulationDiagram from "@/components/simulationDiagram.vue"
 import setParameters from "@/components/setParameters.vue"
 import printResult from "@/components/printResult.vue"
