@@ -67,6 +67,20 @@ export default {
             isruning : false
         }
     },
+    watch:{
+        light(val){
+            if(val=='默认'){
+                this.light2='默认';
+                this.trLight2();
+            }
+        },
+        light2(val){
+            if(val=='默认'){
+                this.light='默认';
+                this.trLight1();
+            }
+        }
+    },
     methods: {
         run() {
             console.log(this.parameters);
