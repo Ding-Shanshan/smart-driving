@@ -42,8 +42,8 @@ export default {
   props:['isRun','changeL1','changeL2'],
   data() {
     return {
-      H : 620, //Math.trunc((window.screen.availHeight - 200)/100)*100
-      W : 950, // Math.trunc((window.screen.availWidth  - 300)/100)*100
+      H : 500, //620Math.trunc((window.screen.availHeight - 200)/100)*100
+      W : 1000, //950 Math.trunc((window.screen.availWidth  - 300)/100)*100
       RoadW:60,
       carW:10,
       carH:20,

@@ -44,7 +44,9 @@ export class MyTrafficLight {
       switch (this.state) {
         case 'green':
           if (this.count) {
-            this.count--;
+            // this.count--
+            this.count-=0.5
+            console.log(this.count)
           } else {
             this.count = this.yellowTime;
             this.state = 'yellow';
@@ -54,7 +56,7 @@ export class MyTrafficLight {
 
         case 'yellow':
           if (this.count) {
-            this.count--
+            this.count-=0.5
           } else {
             this.count = this.redTime;
             this.state = 'red';
@@ -64,18 +66,29 @@ export class MyTrafficLight {
 
         case 'red':
           if (this.count) {
-            this.count--
+            this.count-=0.5
+            console.log(this.count)
           } else {
-            this.count = this.greenTime;
-            this.state = 'green';
-            this.antiElse('.green');
+            this.count = this.yellowTime;
+            this.state = 'yellow2';
+            this.antiElse('.yellow');
           }
           break;
+
+        case 'yellow2':
+        if (this.count) {
+          this.count-=0.5
+        } else {
+          this.count = this.greenTime;
+          this.state = 'green';
+          this.antiElse('.green');
+        }
+        break;
 
         default:
           break;
       }
-    }, 1000)
+    }, 500)
   }
 
   // 更改颜色

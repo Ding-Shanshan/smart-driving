@@ -28,9 +28,9 @@ export default {
             // 传递dom容器，三种灯的时间 红 黄 绿
             myTrafficLight = new MyTrafficLight(
               myTraffic.value,
-              6,
-              2,
-              4
+              5,
+              1,
+              5
             )
           } else if(props.trLight2==='绿灯'){
             myTrafficLight.changeColor('.green')
