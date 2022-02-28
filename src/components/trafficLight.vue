@@ -21,8 +21,8 @@ export default {
       const myTrafficLight = new MyTrafficLight(
         myTraffic.value,
         5000,
-        2000,
-        5000
+        5000,
+        3000
       )
       myTrafficLight.main()
       

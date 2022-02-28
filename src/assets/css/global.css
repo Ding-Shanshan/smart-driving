@@ -14,7 +14,7 @@ body,
     animation-fill-mode : forwards;/*保持结束位置*/
   }
 @keyframes rotate {
-    from { transform:rotate(0deg); }
+    from { transform:rotate(-0deg); }
     to { transform:rotate(-90deg); }
 }
 
