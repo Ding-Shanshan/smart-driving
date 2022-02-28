@@ -1,7 +1,7 @@
 <template>
     <div>
-        <h4>参数调节</h4>
-        <el-form ref="parametersRef" :model="parameters" label-width="100px">
+        <h4>车辆参数</h4>
+        <el-form class="vehicleParameter" ref="parametersRef" :model="parameters" label-width="100px">
             <!-- 车辆总数 -->
             <el-form-item label="车辆总数：">
                 <el-select v-model="parameters.totalNum" placeholder="Total number of vehicles">
@@ -22,36 +22,33 @@
                     <el-option label="100%" value="1"></el-option>
                 </el-select>
             </el-form-item>
-            <!-- 智能车车速 -->
-            <el-form-item label="智能车车速：">
-                <el-select v-model="parameters.smartCarSpeed" placeholder="Speed of smart cars">
-                    <el-option label="30km/h" value="30"></el-option>
-                    <el-option label="60km/h" value="60"></el-option>
-                    <el-option label="80km/h" value="80"></el-option>
-                </el-select>
-            </el-form-item>
-            <!-- 普通车车速 -->
-            <el-form-item label="普通车车速：">
-                <el-select v-model="parameters.normalCarSpeed" placeholder="Speed of normal cars">
-                    <el-option label="30km/h-50km/h" value="30,50"></el-option>
-                    <el-option label="40km/h-70km/h" value="40,70"></el-option>
-                    <el-option label="60km/h-90km/h" value="60,90"></el-option>
-                </el-select>
-            </el-form-item>
-            <!-- 普通大车比例 -->
-            <el-form-item label="大车比例：">
-                <el-select v-model="parameters.bigCarproportion" placeholder="Proportion of big cars">
-                    <el-option label="5%" value="5"></el-option>
-                    <el-option label="10%" value="10"></el-option>
-                    <el-option label="30%" value="30"></el-option>
-                </el-select>
-            </el-form-item>
             <!-- 运行 -->
             <el-form-item class="run">
                 <el-button type="primary" @click="run">运行</el-button>
                 <el-button>取消</el-button>
             </el-form-item>
         </el-form>
+        <h4>红绿灯参数</h4>
+        <div class="lightParameter">
+            <!-- 上下方向红绿灯 -->
+            <div class="light">
+                <span>纵向红绿灯：</span>
+                <el-radio-group v-model="light">
+                    <el-radio-button label="红灯"></el-radio-button>
+                    <el-radio-button label="绿灯"></el-radio-button>
+                    <el-radio-button label="默认"></el-radio-button>
+                </el-radio-group>
+            </div>
+            <!-- 左右方向红绿灯 -->
+            <div class="light2">
+                <span>横向红绿灯：</span>
+                <el-radio-group v-model="light2">
+                    <el-radio-button label="红灯"></el-radio-button>
+                    <el-radio-button label="绿灯"></el-radio-button>
+                    <el-radio-button label="默认"></el-radio-button>
+                </el-radio-group>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -64,14 +61,18 @@ export default {
                 totalNum: '',
                 proportion:'',
                 smartCarSpeed:'',
-                normalCarSpeed:[],
-                bigCarproportion:''
-            }
+            },
+            light:'默认',
+            light2:'默认',
+            isruning : false
         }
     },
     methods: {
         run() {
             console.log(this.parameters);
+            this.$emit('createCar',this.parameters);
+            this.isruning = true
+            this.$emit('runchange',this.isruning)
         }
     }
 }
@@ -84,6 +85,22 @@ h4 {
 div {
     font-size: 14px;
     font-weight: 400;
+}
+.vehicleParameter {
+    margin-bottom: 40px;
+}
+.lightParameter {
+    width: 100%;
+    margin-bottom: 60px;
+}
+.light,
+.light2 {
+    text-align: center;
+    margin: 20px auto;
+}
+.light span,
+.light2 span{
+    color:#606266;
 }
 
 </style>

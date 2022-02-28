@@ -13,17 +13,13 @@
             </el-main>
             <!-- 侧边栏 -->
             <el-aside width="300px">
-                <!-- 参数面板 -->
+                <!-- 参数调节面板 -->
                 <div class="setParameters">
-                    <setParameters/>
+                    <setParameters  @createCar="createCar" @runchange="isRun"></setParameters>
                 </div>
-                <!-- 运行结果 -->
-                <div class="result">
-                    <h4>运行结果</h4>
-                </div>
-                <!-- 新建车辆选择 -->
-                <div class="setNewCar">
-                    <setNewCar @createCar="createCar"></setNewCar>
+                <!-- 运行结果面板 -->
+                <div class="printResult">
+                    <printResult :isRun="isrun"></printResult>
                 </div>
             </el-aside>
         </el-container>
@@ -31,21 +27,29 @@
 </template>
 
 <script>
-import simulationDiagram from "./simulationDiagram.vue"
-import setParameters from "./setParameters.vue"
-import setNewCar from "./setNewCar.vue"
+import simulationDiagram from "@/components/simulationDiagram.vue"
+import setParameters from "@/components/setParameters.vue"
+import printResult from "@/components/printResult.vue"
 export default {
+    data(){
+        return{
+            isrun:false
+        }
+    },
     components:{
-    simulationDiagram,
-    setParameters,
-    setNewCar
-},
-methods : {
-    createCar(data) {
-        console.log(data);
-        this.$refs.moving.textConnection(data);
+        simulationDiagram,
+        setParameters,
+        printResult,
+    },
+    methods : {
+        createCar(data) {
+            console.log(data);
+            this.$refs.moving.textConnection(data);
+        },
+        isRun(val) {
+            this.isrun = val
+        }
     }
-}
 }
 </script>
 
@@ -68,12 +72,12 @@ methods : {
     padding: 20px 20px 10px 10px;
     color: #303133;
     border-left: 1px solid #DDDFE5;
-    h4 {
-        font-size: 14px;
-        text-align: center;
-    }
 }
 .setParameters {
     margin-bottom: 40px;
+}
+.time{
+    width: 200px;
+    height: 300px;
 }
 </style>
