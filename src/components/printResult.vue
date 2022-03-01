@@ -1,8 +1,14 @@
 <template>
   <div>
-    <h4>运行结果</h4>
-    <h4 id=mytime>{{runtime}}</h4>
-    <div id="runChart"></div>
+    <el-collapse v-model="activeNames" @change="handleChange">
+      <el-collapse-item title="运行结果" name="1">
+        <!-- <h4>运行结果</h4> -->
+        <h4 id=mytime>{{runtime}}</h4>
+      </el-collapse-item>
+      <el-collapse-item title="历史数据" name="2">
+        <div id="runChart"></div>
+      </el-collapse-item>
+    </el-collapse>
   </div>
 </template>
 

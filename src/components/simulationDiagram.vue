@@ -96,7 +96,7 @@ export default {
       trafficL2.style.top = (this.H/2 + this.RoadW + 16) + "px";
       trafficL2.style.left = (this.W/2 - this.RoadW -50) + "px";
     },
-    //绘制路面
+    //绘制道路边缘线
     drawLine(x,y,x1,y1){
         this.context.moveTo(x, y);
         this.context.lineTo(x1, y1);
@@ -121,7 +121,15 @@ export default {
 
       }
     },
-
+    // 绘制路面
+    drawRoad(){
+      this.context.beginPath();
+      this.context.fillStyle = '#3F6FBB';//#3F6FBB
+      this.context.fillRect(100, this.H/2-this.RoadW, this.W-200, this.RoadW*2);
+      // this.context.fillStyle = '#3F6FBB';
+      this.context.fillRect(this.W/2-this.RoadW, 100, this.RoadW*2, this.H-200);
+      // this.context.rect(positions[idx].x, positions[idx].y, positions[idx].width, positions[idx].height);
+    },
     textConnection(data) {
       //获取兄弟组件中传过来的参数，通过总数和百分比计算出普通车和智能车的数量
       let smartCarTargetNum = parseInt(data.totalNum) * parseFloat(data.proportion)
@@ -248,6 +256,7 @@ export default {
     const canvas = document.querySelector('canvas');
     this.context = canvas.getContext('2d');
     this.context.beginPath();
+    this.drawRoad();
     this.context.strokeStyle = 'White'; // 线条颜色
     this.context.lineWidth = 1.0;
     // 画实线
@@ -275,12 +284,13 @@ export default {
     //绘制位置坐标：A、B、C、D作为左右上下的路口起始位置
     let startPositions = [
       {x: 40, y: this.H/2 - this.RoadW - 10, width: 60, height: 140, color: "#abb8c3"},//左
-      {x: this.W - 100, y: this.H/2 - this.RoadW - 10, width: 60, height: 140, color: "#cf2e2e"},//右
-      {x: this.W/2-this.RoadW - 10, y: 40, width: 140, height: 60, color: "#00d084"},//上
-      {x: this.W/2-this.RoadW - 10, y: this.H - 100, width: 140, height: 60, color: "#9b51e0"}//下
+      {x: this.W - 100, y: this.H/2 - this.RoadW - 10, width: 60, height: 140, color: "IndianRed  "},//右 #cf2e2e
+      {x: this.W/2-this.RoadW - 10, y: 40, width: 140, height: 60, color: 'CadetBlue '},//上 "#00d084"
+      {x: this.W/2-this.RoadW - 10, y: this.H - 100, width: 140, height: 60, color: "DarkSlateBlue "}//下 #9b51e0
     ]
     this.startPositions = startPositions;
     this.drawStartPosition(startPositions);
+    
     //绑定点击事件，当点击彩色区域时，会创建新的车的实例
     // this.initClickEvent();
     this.setTrafficLXAndY();
@@ -299,7 +309,7 @@ export default {
   // width:1008px;
   // height:540px;
   position: absolute;
-  background: #3F6FBB;
+  background: #283a77;//#3F6FBB#1f3a66
 }
 .MyCanvas {
   position: relative;
