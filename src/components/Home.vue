@@ -52,6 +52,17 @@ export default {
         },
         isRun(val) {
             this.isrun = val
+            console.log(this)
+            var vm = this
+            if(number === 3)
+            Vue.prototype.$number = number
+            var int;
+            int = setInterval(judgeIsRun,50);
+            function judgeIsRun(){
+                if(number === 1)
+                vm.isrun = false;
+                //console.log(vm.isrun)
+            }
         },
         changeL1(val){
             this.light1=val
@@ -61,6 +72,7 @@ export default {
         },
         mr(val){
             this.isMoren=val
+            
         }
     }
 }
