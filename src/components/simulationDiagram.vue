@@ -13,9 +13,9 @@
         </div>
       </div>
       <div class="Light">
-        <trafficLight :isRun="isR" :trLight2="light2" class="trL" id="trafficL0" ></trafficLight>
+        <trafficLight :isRun="isR" :trLight2="light2" :Moren="isMr" class="trL" id="trafficL0" ></trafficLight>
         <!-- 左右向红绿灯 -->
-        <trafficLight2 :isRun="isR" :trLight1="light1" class="trL" id="trafficL1" ></trafficLight2>
+        <trafficLight2 :isRun="isR" :trLight1="light1" :Moren="isMr" class="trL" id="trafficL1" ></trafficLight2>
         <!-- 上下向红绿灯 -->
       </div>
       <!-- <div class="trafficLight">
@@ -25,7 +25,7 @@
 
       </div> -->
     </div>
-    </div>
+  </div>
 </template>
 
 <script>
@@ -39,7 +39,7 @@ export default {
       trafficLight,
       trafficLight2
     },
-  props:['isRun','changeL1','changeL2'],
+    props:['isRun','changeL1','changeL2','mr'],
   data() {
     return {
       // H : Math.trunc((window.screen.availHeight - 200)/100)*100,
@@ -52,9 +52,11 @@ export default {
       car1X:524,
       car1Y:490,
       AllCar : [],
+      carIdx : 0,
       isR: this.isRun,
       light1:this.changeL1,
-      light2:this.changeL2
+      light2:this.changeL2,
+      isMr:this.mr
       }
   },
   setup(props) {
@@ -73,6 +75,9 @@ export default {
       },
       changeL2(val){
         this.light2=val;
+      },
+      mr(val){
+        this.isMr=val;
       }
   },
   methods: {
@@ -118,16 +123,26 @@ export default {
     },
 
     textConnection(data) {
+      //获取兄弟组件中传过来的参数，通过总数和百分比计算出普通车和智能车的数量
+      let smartCarTargetNum = parseInt(data.totalNum) * parseFloat(data.proportion)
+      let normalCarTargetNum = parseInt(data.totalNum) - smartCarTargetNum
+      // let normalCarTargetNum = 2;
+      // let smartCarTargetNum = 0;
+      //已经生成的两类车的数量
+      let normalCarCurNum = 0;
+      let smartCarCurNum = 0;
+      //车的类别
+      let Types = ["NormalCar","SmartCar"];
       let rootSelf = this;
       let globalid = setInterval(createIdxAndobjs,2100);
       function createIdxAndobjs(){
         // 测试
         
-        if(rootSelf.AllCar.length === 30){
+        if(normalCarCurNum + smartCarCurNum === parseInt(data.totalNum)){
           clearInterval(globalid);
         }
         else{
-          let Places = ["A","B","C","D"];
+        let Places = ["A","B","C","D"];
           // 测试注释
         let sourceIdx = Math.floor(Math.random()*4);
         let targetIdx = Math.floor(Math.random()*4);
@@ -139,65 +154,92 @@ export default {
         let sourcePlace = Places[sourceIdx];
         // let sourcePlace = Places[0];
         //  let targetPlace = Places[1];
-        let carIdx = document.getElementsByTagName("img").length-2;
+        // let carIdx = document.getElementsByTagName("img").length-2;
         // let car = Car.createNewCar("Normal","A",targetPlace,carIdx);
-        let car = Car.createNewCar("Normal",sourcePlace,targetPlace,carIdx);  
+        let car = undefined
+        //两者都少于预期生成的数量时，随机生成
+        if( normalCarCurNum < normalCarTargetNum && smartCarCurNum < smartCarTargetNum){
+          let carTypeIdx = Math.floor(Math.random() * Types.length);
+          if(Types[carTypeIdx] === "NormalCar"){
+            normalCarCurNum++;
+          } 
+          else{
+            smartCarCurNum++;
+          }
+          car = Car.createNewCar(rootSelf,Types[carTypeIdx],sourcePlace,targetPlace,rootSelf.carIdx);
+          rootSelf.AllCar[rootSelf.carIdx] = car; 
+          console.log(normalCarTargetNum,smartCarTargetNum,normalCarCurNum,smartCarCurNum)
+        }//一旦有一个生成数量够了，就只生成另一种
+        else if(normalCarCurNum < normalCarTargetNum){
+          car = Car.createNewCar(rootSelf, "NormalCar",sourcePlace,targetPlace,rootSelf.carIdx); 
+          normalCarCurNum++;
+          rootSelf.AllCar[rootSelf.carIdx] = car; 
+          console.log(normalCarTargetNum,smartCarTargetNum,normalCarCurNum,smartCarCurNum)
+        }
+        else if(smartCarCurNum < smartCarTargetNum){
+          car = Car.createNewCar(rootSelf, "SmartCar",sourcePlace,targetPlace,rootSelf.carIdx); 
+          smartCarCurNum++;
+          rootSelf.AllCar[rootSelf.carIdx] = car; 
+          console.log(normalCarTargetNum,smartCarTargetNum,normalCarCurNum,smartCarCurNum)
+        }
+        // let car = Car.createNewCar("Normal",sourcePlace,targetPlace,carIdx);  
 
-        rootSelf.AllCar[carIdx] = car;
+        // rootSelf.AllCar[carIdx] = car;
         
-        car.showInfo();
-        if(rootSelf.AllCar[carIdx].sourcePlace === "D" && rootSelf.AllCar[carIdx].targetPlace ==="A"){
-          rootSelf.AllCar[carIdx].drawDToA(rootSelf,rootSelf.W / 2 + (rootSelf.RoadW-rootSelf.carW)/2 ,rootSelf.H - 100);
+        // car.showInfo();
+        if(rootSelf.AllCar[rootSelf.carIdx].sourcePlace === "D" && rootSelf.AllCar[rootSelf.carIdx].targetPlace ==="A"){
+          rootSelf.AllCar[rootSelf.carIdx].drawDToA(rootSelf,rootSelf.W / 2 + (rootSelf.RoadW-rootSelf.carW)/2 ,rootSelf.H - 100);
         }
-        if(rootSelf.AllCar[carIdx].sourcePlace === "D" && rootSelf.AllCar[carIdx].targetPlace==="C") {
-          rootSelf.AllCar[carIdx].drawDToC(rootSelf,rootSelf.W / 2 + (rootSelf.RoadW-rootSelf.carW)/2 ,rootSelf.H - 100);
+        if(rootSelf.AllCar[rootSelf.carIdx].sourcePlace === "D" && rootSelf.AllCar[rootSelf.carIdx].targetPlace==="C") {
+          rootSelf.AllCar[rootSelf.carIdx].drawDToC(rootSelf,rootSelf.W / 2 + (rootSelf.RoadW-rootSelf.carW)/2 ,rootSelf.H - 100);
         }
-        if(rootSelf.AllCar[carIdx].sourcePlace === "D" && rootSelf.AllCar[carIdx].targetPlace==="B") {
-          rootSelf.AllCar[carIdx].drawDToB(rootSelf,rootSelf.W / 2 + (rootSelf.RoadW-rootSelf.carW)/2 ,rootSelf.H - 100);
+        if(rootSelf.AllCar[rootSelf.carIdx].sourcePlace === "D" && rootSelf.AllCar[rootSelf.carIdx].targetPlace==="B") {
+          rootSelf.AllCar[rootSelf.carIdx].drawDToB(rootSelf,rootSelf.W / 2 + (rootSelf.RoadW-rootSelf.carW)/2 ,rootSelf.H - 100);
         } 
-        if(rootSelf.AllCar[carIdx].sourcePlace === "D" && rootSelf.AllCar[carIdx].targetPlace==="D") {
+        if(rootSelf.AllCar[rootSelf.carIdx].sourcePlace === "D" && rootSelf.AllCar[rootSelf.carIdx].targetPlace==="D") {
           ;
         }
 
-        if(rootSelf.AllCar[carIdx].sourcePlace === "A" && rootSelf.AllCar[carIdx].targetPlace==="D") {
-          rootSelf.AllCar[carIdx].drawAToD(rootSelf, 100, rootSelf.H / 2 + 20);
+        if(rootSelf.AllCar[rootSelf.carIdx].sourcePlace === "A" && rootSelf.AllCar[rootSelf.carIdx].targetPlace==="D") {
+          rootSelf.AllCar[rootSelf.carIdx].drawAToD(rootSelf, 100, rootSelf.H / 2 + 20);
         }
-        if(rootSelf.AllCar[carIdx].sourcePlace === "A" && rootSelf.AllCar[carIdx].targetPlace==="C") {
-          rootSelf.AllCar[carIdx].drawAToC(rootSelf, 100, rootSelf.H / 2 + 20);
+        if(rootSelf.AllCar[rootSelf.carIdx].sourcePlace === "A" && rootSelf.AllCar[rootSelf.carIdx].targetPlace==="C") {
+          rootSelf.AllCar[rootSelf.carIdx].drawAToC(rootSelf, 100, rootSelf.H / 2 + 20);
         }
-        if(rootSelf.AllCar[carIdx].sourcePlace === "A" && rootSelf.AllCar[carIdx].targetPlace==="B") {
-          rootSelf.AllCar[carIdx].drawAToB(rootSelf, 100, rootSelf.H / 2 + 20);
+        if(rootSelf.AllCar[rootSelf.carIdx].sourcePlace === "A" && rootSelf.AllCar[rootSelf.carIdx].targetPlace==="B") {
+          rootSelf.AllCar[rootSelf.carIdx].drawAToB(rootSelf, 100, rootSelf.H / 2 + 20);
         }
-        if(rootSelf.AllCar[carIdx].sourcePlace === "A" && rootSelf.AllCar[carIdx].targetPlace==="A") {
+        if(rootSelf.AllCar[rootSelf.carIdx].sourcePlace === "A" && rootSelf.AllCar[rootSelf.carIdx].targetPlace==="A") {
           ;
         }
 
-        if(rootSelf.AllCar[carIdx].sourcePlace === "C" && rootSelf.AllCar[carIdx].targetPlace==="D") {
-          rootSelf.AllCar[carIdx].drawCToD(rootSelf, rootSelf.W / 2 -rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2), 100);
+        if(rootSelf.AllCar[rootSelf.carIdx].sourcePlace === "C" && rootSelf.AllCar[rootSelf.carIdx].targetPlace==="D") {
+          rootSelf.AllCar[rootSelf.carIdx].drawCToD(rootSelf, rootSelf.W / 2 -rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2), 100);
         }
-        if(rootSelf.AllCar[carIdx].sourcePlace === "C" && rootSelf.AllCar[carIdx].targetPlace==="A") {
-          rootSelf.AllCar[carIdx].drawCToA(rootSelf, rootSelf.W / 2 -rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2), 100);
+        if(rootSelf.AllCar[rootSelf.carIdx].sourcePlace === "C" && rootSelf.AllCar[rootSelf.carIdx].targetPlace==="A") {
+          rootSelf.AllCar[rootSelf.carIdx].drawCToA(rootSelf, rootSelf.W / 2 -rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2), 100);
         }
-        if(rootSelf.AllCar[carIdx].sourcePlace === "C" && rootSelf.AllCar[carIdx].targetPlace==="B") {
-          rootSelf.AllCar[carIdx].drawCToB(rootSelf, rootSelf.W / 2 -rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2), 100);
+        if(rootSelf.AllCar[rootSelf.carIdx].sourcePlace === "C" && rootSelf.AllCar[rootSelf.carIdx].targetPlace==="B") {
+          rootSelf.AllCar[rootSelf.carIdx].drawCToB(rootSelf, rootSelf.W / 2 -rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2), 100);
         }
-        if(rootSelf.AllCar[carIdx].sourcePlace === "C" && rootSelf.AllCar[carIdx].targetPlace==="C") {
+        if(rootSelf.AllCar[rootSelf.carIdx].sourcePlace === "C" && rootSelf.AllCar[rootSelf.carIdx].targetPlace==="C") {
           ;
         }
 
-        if(rootSelf.AllCar[carIdx].sourcePlace === "B" && rootSelf.AllCar[carIdx].targetPlace==="D") {
-          rootSelf.AllCar[carIdx].drawBToD(rootSelf, rootSelf.W - 100, rootSelf.H / 2 - rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2));
+        if(rootSelf.AllCar[rootSelf.carIdx].sourcePlace === "B" && rootSelf.AllCar[rootSelf.carIdx].targetPlace==="D") {
+          rootSelf.AllCar[rootSelf.carIdx].drawBToD(rootSelf, rootSelf.W - 100, rootSelf.H / 2 - rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2));
         }
-        if(rootSelf.AllCar[carIdx].sourcePlace === "B" && rootSelf.AllCar[carIdx].targetPlace==="A") {
-          rootSelf.AllCar[carIdx].drawBToA(rootSelf, rootSelf.W - 100, rootSelf.H / 2 - rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2));
+        if(rootSelf.AllCar[rootSelf.carIdx].sourcePlace === "B" && rootSelf.AllCar[rootSelf.carIdx].targetPlace==="A") {
+          rootSelf.AllCar[rootSelf.carIdx].drawBToA(rootSelf, rootSelf.W - 100, rootSelf.H / 2 - rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2));
         }
-        if(rootSelf.AllCar[carIdx].sourcePlace === "B" && rootSelf.AllCar[carIdx].targetPlace==="B") {
+        if(rootSelf.AllCar[rootSelf.carIdx].sourcePlace === "B" && rootSelf.AllCar[rootSelf.carIdx].targetPlace==="B") {
           ;
         }
-        if(rootSelf.AllCar[carIdx].sourcePlace === "B" && rootSelf.AllCar[carIdx].targetPlace==="C") {
-          rootSelf.AllCar[carIdx].drawBToC(rootSelf, rootSelf.W - 100, rootSelf.H / 2 - rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2));
+        if(rootSelf.AllCar[rootSelf.carIdx].sourcePlace === "B" && rootSelf.AllCar[rootSelf.carIdx].targetPlace==="C") {
+          rootSelf.AllCar[rootSelf.carIdx].drawBToC(rootSelf, rootSelf.W - 100, rootSelf.H / 2 - rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2));
         }
         }
+        rootSelf.carIdx++;
       }
     }
   },
@@ -230,7 +272,7 @@ export default {
     this.drawLine(100, this.H/2,this.W/2-this.RoadW, this.H/2)
     this.drawLine(this.W/2+this.RoadW, this.H/2,this.W-100, this.H/2)
 
-    //绘制位置坐标：A、B、C、D作为上右下左的路口起始位置
+    //绘制位置坐标：A、B、C、D作为左右上下的路口起始位置
     let startPositions = [
       {x: 40, y: this.H/2 - this.RoadW - 10, width: 60, height: 140, color: "#abb8c3"},//左
       {x: this.W - 100, y: this.H/2 - this.RoadW - 10, width: 60, height: 140, color: "#cf2e2e"},//右

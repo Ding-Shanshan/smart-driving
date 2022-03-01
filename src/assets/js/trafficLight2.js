@@ -36,6 +36,7 @@ export class MyTrafficLight {
 
   // 默认效果
   default() {
+    clearInterval(this.timer);
     // 默认从绿灯开始，如果需要其他颜色，修改下面两行
     this.count = this.redTime;
     this.antiElse('.red');
@@ -46,7 +47,6 @@ export class MyTrafficLight {
           if (this.count) {
             // this.count--
             this.count-=0.5
-            console.log(this.count)
           } else {
             this.count = this.yellowTime;
             this.state = 'yellow';
@@ -67,7 +67,6 @@ export class MyTrafficLight {
         case 'red':
           if (this.count) {
             this.count-=0.5
-            console.log(this.count)
           } else {
             this.count = this.yellowTime;
             this.state = 'yellow2';

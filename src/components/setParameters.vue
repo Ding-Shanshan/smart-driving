@@ -25,7 +25,7 @@
             <!-- 运行 -->
             <el-form-item class="run">
                 <el-button type="primary" @click="run">运行</el-button>
-                <el-button>取消</el-button>
+                <el-button @click="reset">重置</el-button>
             </el-form-item>
         </el-form>
         <h4>红绿灯参数</h4>
@@ -70,14 +70,20 @@ export default {
     watch:{
         light(val){
             if(val=='默认'){
+                this.$emit('moren',true);
                 this.light2='默认';
                 this.trLight2();
+            }else{
+                this.$emit('moren',false);
             }
         },
         light2(val){
             if(val=='默认'){
+                this.$emit('moren',true);
                 this.light='默认';
                 this.trLight1();
+            }else{
+                this.$emit('moren',false);
             }
         }
     },
@@ -87,6 +93,10 @@ export default {
             this.$emit('createCar',this.parameters);
             this.isruning = true
             this.$emit('runchange',this.isruning)
+        },
+        reset(){
+            this.isruning = false
+            this.$emit('runchange',this.isruning);
         },
         trLight1(){
             this.$emit('trLight1',this.light);

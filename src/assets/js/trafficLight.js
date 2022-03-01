@@ -36,6 +36,7 @@ export class MyTrafficLight {
 
   // 默认效果
   default() {
+    clearInterval(this.timer);
     // 默认从绿灯开始，如果需要其他颜色，修改下面两行
     this.count = this.greenTime;
     this.antiElse('.green');
