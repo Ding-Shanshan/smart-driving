@@ -119,6 +119,7 @@ let Car = {
         car.drawRightToLeftLines = function(_self, sx, sy) {
             let tx = sx;
             let ty = sy;
+            let father = document.getElementsByClassName("MyCanvas")[0];
             let normalCar = document.getElementsByClassName(car.type + car.index)[0];
             let r2l = setInterval(frame, 30);
 
@@ -126,6 +127,7 @@ let Car = {
                 if (tx <= 100) {
                     clearInterval(r2l);
                     carNumber();
+                    father.removeChild(normalCar);
                 } else {
                     // 红绿灯
                     sx = tx;
@@ -189,6 +191,7 @@ let Car = {
         car.drawLeftToRightLines = function(_self, sx, sy) {
             let tx = sx;
             let ty = sy;
+            let father = document.getElementsByClassName("MyCanvas")[0];
             let normalCar = document.getElementsByClassName(car.type + car.index)[0];
             let r2l = setInterval(frame, 30);
 
@@ -196,6 +199,8 @@ let Car = {
                 if (tx >= _self.W - 100) {
                     clearInterval(r2l);
                     carNumber();
+                    father.removeChild(normalCar);
+
                 } else {
                     sx = tx;
                     sy = ty;
@@ -234,6 +239,7 @@ let Car = {
                 if (ty === 100) {
                     clearInterval(id);
                     carNumber();
+                    father.removeChild(normalCar);
                 } else {
                     // jxd
                     console.log(ty)
@@ -327,6 +333,7 @@ let Car = {
         car.drawTopToDownLines = function(_self, sx, sy) {
             let tx = sx;
             let ty = sy;
+            let father = document.getElementsByClassName("MyCanvas")[0];
             let normalCar = document.getElementsByClassName(car.type + car.index)[0];
             let r2l = setInterval(frame, 30);
 
@@ -334,6 +341,7 @@ let Car = {
                 if (ty >= _self.H - 100) {
                     clearInterval(r2l);
                     carNumber();
+                    father.removeChild(normalCar);
                 } else {
                     ty = sy + 2;
                     sx = tx;
@@ -432,6 +440,7 @@ let Car = {
         car.drawDownToTopLines = function(_self, sx, sy) {
             let tx = sx;
             let ty = sy;
+            let father = document.getElementsByClassName("MyCanvas")[0];
             let normalCar = document.getElementsByClassName(car.type + car.index)[0];
             let r2l = setInterval(frame, 30);
 
@@ -439,6 +448,7 @@ let Car = {
                 if (ty <= 100) {
                     clearInterval(r2l);
                     carNumber();
+                    father.removeChild(normalCar);
                 } else {
                     ty = sy - 2;
                     sx = tx;
@@ -477,6 +487,7 @@ let Car = {
                 if (tx === _self.W - 100) {
                     clearInterval(id);
                     carNumber();
+                    father.removeChild(normalCar);
                 } else {
                     // jxd
                     if (tx === 370) {
@@ -700,6 +711,7 @@ let Car = {
                 if (ty === _self.H - 100) {
                     clearInterval(id);
                     carNumber();
+                    father.removeChild(normalCar);
                 } else {
                     // jxd
                     console.log(ty)
@@ -908,6 +920,7 @@ let Car = {
                 if (tx <= 100) {
                     carNumber();
                     clearInterval(id);
+                    father.removeChild(normalCar);
                 } else {
                     // jxd
                     if (tx === 610) {
