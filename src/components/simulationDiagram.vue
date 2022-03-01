@@ -45,15 +45,14 @@ export default {
     return {
       // H : Math.trunc((window.screen.availHeight - 200)/100)*100,
       // W : Math.trunc((window.screen.availWidth  - 300)/100)*100,
-      H : 500,
-      W : 1000,
+      H:500,
+      W:1000,
       RoadW:60,
       carW:10,
       carH:20,
       car1X:524,
       car1Y:490,
       AllCar : [],
-      obstructs : {}
       }
   },
   methods: {
@@ -99,44 +98,41 @@ export default {
     },
 
     textConnection(data) {
-      console.log(data)
-      let normalCarTargetNum = parseInt(data.totalNum) * parseFloat(data.proportion)
-      let smartCarTargetNum = parseInt(data.totalNum) - normalCarTargetNum
+      //获取兄弟组件中传过来的参数，通过总数和百分比计算出普通车和智能车的数量
+      let smartCarTargetNum = parseInt(data.totalNum) * parseFloat(data.proportion)
+      let normalCarTargetNum = parseInt(data.totalNum) - smartCarTargetNum
       // let normalCarTargetNum = 2;
       // let smartCarTargetNum = 0;
+      //已经生成的两类车的数量
       let normalCarCurNum = 0;
       let smartCarCurNum = 0;
+      //车的类别
       let Types = ["NormalCar","SmartCar"];
       let rootSelf = this;
-      let globalid = setInterval(createIdxAndobjs,2000);
+      let globalid = setInterval(createIdxAndobjs,2100);
       function createIdxAndobjs(){
         // 测试
-        // if(rootSelf.AllCar.length === parseInt(data.totalNum)){
-        //   clearInterval(globalid);
-        // }
+        
         if(normalCarCurNum + smartCarCurNum === parseInt(data.totalNum)){
           clearInterval(globalid);
         }
         else{
-          let Places = ["A","B","C","D"];
+        let Places = ["A","B","C","D"];
           // 测试注释
         let sourceIdx = Math.floor(Math.random()*4);
         let targetIdx = Math.floor(Math.random()*4);
+        // 避免起点终点重叠
+        if(targetIdx===sourceIdx){
+          targetIdx=(targetIdx+1)%4;
+        }
         let targetPlace = Places[targetIdx];
         let sourcePlace = Places[sourceIdx];
-        // let targetPlace = "A";
-        // let sourcePlace = "B";
-        while(targetPlace === sourcePlace) {
-          sourceIdx = Math.floor(Math.random()*4);
-          targetIdx = Math.floor(Math.random()*4);
-          targetPlace = Places[targetIdx];
-          sourcePlace = Places[sourceIdx];
-        }
         // let sourcePlace = Places[0];
         //  let targetPlace = Places[1];
         let carIdx = document.getElementsByTagName("img").length-2;
         // let car = Car.createNewCar("Normal","A",targetPlace,carIdx);
         let car = undefined
+        //两者都少于预期生成的数量时，随机生成
         if( normalCarCurNum < normalCarTargetNum && smartCarCurNum < smartCarTargetNum){
           let carTypeIdx = Math.floor(Math.random() * Types.length);
           if(Types[carTypeIdx] === "NormalCar"){
@@ -148,7 +144,7 @@ export default {
           car = Car.createNewCar(rootSelf,Types[carTypeIdx],sourcePlace,targetPlace,carIdx);
           rootSelf.AllCar[carIdx] = car; 
           console.log(normalCarTargetNum,smartCarTargetNum,normalCarCurNum,smartCarCurNum)
-        }
+        }//一旦有一个生成数量够了，就只生成另一种
         else if(normalCarCurNum < normalCarTargetNum){
           car = Car.createNewCar(rootSelf, "NormalCar",sourcePlace,targetPlace,carIdx); 
           normalCarCurNum++;
@@ -161,27 +157,29 @@ export default {
           rootSelf.AllCar[carIdx] = car; 
           console.log(normalCarTargetNum,smartCarTargetNum,normalCarCurNum,smartCarCurNum)
         }
-        console.log(car);
+        // let car = Car.createNewCar("Normal",sourcePlace,targetPlace,carIdx);  
+
+        // rootSelf.AllCar[carIdx] = car;
         
+        // car.showInfo();
         if(rootSelf.AllCar[carIdx].sourcePlace === "D" && rootSelf.AllCar[carIdx].targetPlace ==="A"){
-          // 暂时直行
-          // rootSelf.AllCar[carIdx].drawDToA(rootSelf,rootSelf.W / 2 + (rootSelf.RoadW-rootSelf.carW)/2 ,rootSelf.H - 100);
+          rootSelf.AllCar[carIdx].drawDToA(rootSelf,rootSelf.W / 2 + (rootSelf.RoadW-rootSelf.carW)/2 ,rootSelf.H - 100);
         }
         if(rootSelf.AllCar[carIdx].sourcePlace === "D" && rootSelf.AllCar[carIdx].targetPlace==="C") {
           rootSelf.AllCar[carIdx].drawDToC(rootSelf,rootSelf.W / 2 + (rootSelf.RoadW-rootSelf.carW)/2 ,rootSelf.H - 100);
         }
         if(rootSelf.AllCar[carIdx].sourcePlace === "D" && rootSelf.AllCar[carIdx].targetPlace==="B") {
-          // rootSelf.AllCar[carIdx].drawDToB(rootSelf,rootSelf.W / 2 + (rootSelf.RoadW-rootSelf.carW)/2 ,rootSelf.H - 100);
+          rootSelf.AllCar[carIdx].drawDToB(rootSelf,rootSelf.W / 2 + (rootSelf.RoadW-rootSelf.carW)/2 ,rootSelf.H - 100);
         } 
         if(rootSelf.AllCar[carIdx].sourcePlace === "D" && rootSelf.AllCar[carIdx].targetPlace==="D") {
           ;
         }
 
         if(rootSelf.AllCar[carIdx].sourcePlace === "A" && rootSelf.AllCar[carIdx].targetPlace==="D") {
-          // rootSelf.AllCar[carIdx].drawAToD(rootSelf, 100, rootSelf.H / 2 + 20);
+          rootSelf.AllCar[carIdx].drawAToD(rootSelf, 100, rootSelf.H / 2 + 20);
         }
         if(rootSelf.AllCar[carIdx].sourcePlace === "A" && rootSelf.AllCar[carIdx].targetPlace==="C") {
-          // rootSelf.AllCar[carIdx].drawAToC(rootSelf, 100, rootSelf.H / 2 + 20);
+          rootSelf.AllCar[carIdx].drawAToC(rootSelf, 100, rootSelf.H / 2 + 20);
         }
         if(rootSelf.AllCar[carIdx].sourcePlace === "A" && rootSelf.AllCar[carIdx].targetPlace==="B") {
           rootSelf.AllCar[carIdx].drawAToB(rootSelf, 100, rootSelf.H / 2 + 20);
@@ -194,17 +192,17 @@ export default {
           rootSelf.AllCar[carIdx].drawCToD(rootSelf, rootSelf.W / 2 -rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2), 100);
         }
         if(rootSelf.AllCar[carIdx].sourcePlace === "C" && rootSelf.AllCar[carIdx].targetPlace==="A") {
-          // rootSelf.AllCar[carIdx].drawCToA(rootSelf, rootSelf.W / 2 -rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2), 100);
+          rootSelf.AllCar[carIdx].drawCToA(rootSelf, rootSelf.W / 2 -rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2), 100);
         }
         if(rootSelf.AllCar[carIdx].sourcePlace === "C" && rootSelf.AllCar[carIdx].targetPlace==="B") {
-          // rootSelf.AllCar[carIdx].drawCToB(rootSelf, rootSelf.W / 2 -rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2), 100);
+          rootSelf.AllCar[carIdx].drawCToB(rootSelf, rootSelf.W / 2 -rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2), 100);
         }
         if(rootSelf.AllCar[carIdx].sourcePlace === "C" && rootSelf.AllCar[carIdx].targetPlace==="C") {
           ;
         }
 
         if(rootSelf.AllCar[carIdx].sourcePlace === "B" && rootSelf.AllCar[carIdx].targetPlace==="D") {
-          // rootSelf.AllCar[carIdx].drawBToD(rootSelf, rootSelf.W - 100, rootSelf.H / 2 - rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2));
+          rootSelf.AllCar[carIdx].drawBToD(rootSelf, rootSelf.W - 100, rootSelf.H / 2 - rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2));
         }
         if(rootSelf.AllCar[carIdx].sourcePlace === "B" && rootSelf.AllCar[carIdx].targetPlace==="A") {
           rootSelf.AllCar[carIdx].drawBToA(rootSelf, rootSelf.W - 100, rootSelf.H / 2 - rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2));
@@ -213,7 +211,7 @@ export default {
           ;
         }
         if(rootSelf.AllCar[carIdx].sourcePlace === "B" && rootSelf.AllCar[carIdx].targetPlace==="C") {
-          // rootSelf.AllCar[carIdx].drawBToC(rootSelf, rootSelf.W - 100, rootSelf.H / 2 - rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2));
+          rootSelf.AllCar[carIdx].drawBToC(rootSelf, rootSelf.W - 100, rootSelf.H / 2 - rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2));
         }
         }
       }
@@ -239,9 +237,9 @@ export default {
     //下方路的左右边
     this.drawLine(this.W/2-this.RoadW, this.H/2+this.RoadW,this.W/2-this.RoadW, this.H-100)
     this.drawLine(this.W/2+this.RoadW, this.H/2+this.RoadW,this.W/2+this.RoadW, this.H-100)
-    //重复代码，意义不明
-    // this.drawLine(this.W/2-this.RoadW, this.H/2+this.RoadW,this.W/2-this.RoadW, this.H-10)
-    // this.drawLine(this.W/2+this.RoadW, this.H/2+this.RoadW,this.W/2+this.RoadW, this.H-10)
+    // 防止道路线画成虚线，所以画两次
+    this.drawLine(this.W/2-this.RoadW, this.H/2+this.RoadW,this.W/2-this.RoadW, this.H-100)
+    this.drawLine(this.W/2+this.RoadW, this.H/2+this.RoadW,this.W/2+this.RoadW, this.H-100)
     this.context.setLineDash([5, 5]) // 上下左右道路中间的虚线
     this.drawLine(this.W/2, 100,this.W/2, this.H/2-this.RoadW)
     this.drawLine(this.W/2, this.H/2+this.RoadW,this.W/2, this.H-100)

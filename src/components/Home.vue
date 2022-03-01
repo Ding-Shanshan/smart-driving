@@ -27,6 +27,7 @@
 </template>
 
 <script>
+import { number } from "../assets/js/CreateNewCar"
 import simulationDiagram from "@/components/simulationDiagram.vue"
 import setParameters from "@/components/setParameters.vue"
 import printResult from "@/components/printResult.vue"
@@ -48,6 +49,17 @@ export default {
         },
         isRun(val) {
             this.isrun = val
+            console.log(this)
+            var vm = this
+            if(number === 3)
+            Vue.prototype.$number = number
+            var int;
+            int = setInterval(judgeIsRun,50);
+            function judgeIsRun(){
+                if(number === 1)
+                vm.isrun = false;
+                //console.log(vm.isrun)
+            }
         }
     }
 }
