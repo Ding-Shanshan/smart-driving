@@ -98,16 +98,26 @@ export default {
     },
 
     textConnection(data) {
+      //获取兄弟组件中传过来的参数，通过总数和百分比计算出普通车和智能车的数量
+      let smartCarTargetNum = parseInt(data.totalNum) * parseFloat(data.proportion)
+      let normalCarTargetNum = parseInt(data.totalNum) - smartCarTargetNum
+      // let normalCarTargetNum = 2;
+      // let smartCarTargetNum = 0;
+      //已经生成的两类车的数量
+      let normalCarCurNum = 0;
+      let smartCarCurNum = 0;
+      //车的类别
+      let Types = ["NormalCar","SmartCar"];
       let rootSelf = this;
       let globalid = setInterval(createIdxAndobjs,2100);
       function createIdxAndobjs(){
         // 测试
         
-        if(rootSelf.AllCar.length === 30){
+        if(normalCarCurNum + smartCarCurNum === parseInt(data.totalNum)){
           clearInterval(globalid);
         }
         else{
-          let Places = ["A","B","C","D"];
+        let Places = ["A","B","C","D"];
           // 测试注释
         let sourceIdx = Math.floor(Math.random()*4);
         let targetIdx = Math.floor(Math.random()*4);
@@ -121,11 +131,37 @@ export default {
         //  let targetPlace = Places[1];
         let carIdx = document.getElementsByTagName("img").length-2;
         // let car = Car.createNewCar("Normal","A",targetPlace,carIdx);
-        let car = Car.createNewCar("Normal",sourcePlace,targetPlace,carIdx);  
+        let car = undefined
+        //两者都少于预期生成的数量时，随机生成
+        if( normalCarCurNum < normalCarTargetNum && smartCarCurNum < smartCarTargetNum){
+          let carTypeIdx = Math.floor(Math.random() * Types.length);
+          if(Types[carTypeIdx] === "NormalCar"){
+            normalCarCurNum++;
+          } 
+          else{
+            smartCarCurNum++;
+          }
+          car = Car.createNewCar(rootSelf,Types[carTypeIdx],sourcePlace,targetPlace,carIdx);
+          rootSelf.AllCar[carIdx] = car; 
+          console.log(normalCarTargetNum,smartCarTargetNum,normalCarCurNum,smartCarCurNum)
+        }//一旦有一个生成数量够了，就只生成另一种
+        else if(normalCarCurNum < normalCarTargetNum){
+          car = Car.createNewCar(rootSelf, "NormalCar",sourcePlace,targetPlace,carIdx); 
+          normalCarCurNum++;
+          rootSelf.AllCar[carIdx] = car; 
+          console.log(normalCarTargetNum,smartCarTargetNum,normalCarCurNum,smartCarCurNum)
+        }
+        else if(smartCarCurNum < smartCarTargetNum){
+          car = Car.createNewCar(rootSelf, "SmartCar",sourcePlace,targetPlace,carIdx); 
+          smartCarCurNum++;
+          rootSelf.AllCar[carIdx] = car; 
+          console.log(normalCarTargetNum,smartCarTargetNum,normalCarCurNum,smartCarCurNum)
+        }
+        // let car = Car.createNewCar("Normal",sourcePlace,targetPlace,carIdx);  
 
-        rootSelf.AllCar[carIdx] = car;
+        // rootSelf.AllCar[carIdx] = car;
         
-        car.showInfo();
+        // car.showInfo();
         if(rootSelf.AllCar[carIdx].sourcePlace === "D" && rootSelf.AllCar[carIdx].targetPlace ==="A"){
           rootSelf.AllCar[carIdx].drawDToA(rootSelf,rootSelf.W / 2 + (rootSelf.RoadW-rootSelf.carW)/2 ,rootSelf.H - 100);
         }

@@ -8,12 +8,18 @@ function carNumber() {
 }
 
 let Car = {
-    createNewCar: function(type, sourcePlace, targetPlace, index) {
+    createNewCar: function(rootSelf, type, sourcePlace, targetPlace, index) {
         let car = {};
         car.type = type;
         car.sourcePlace = sourcePlace;
         car.targetPlace = targetPlace;
         car.index = index;
+        car.rootSelf = rootSelf
+        if (car.type === "NormalCar") {
+            car.img = "cars_normal"
+        } else {
+            car.img = "cars_smart"
+        }
         //获取红绿灯
         let light = document.querySelectorAll('#trafficL0')
         let lightlist = light[0].childNodes;
@@ -32,15 +38,15 @@ let Car = {
             let sign = 1;
             let accelerate = 0; //加速速度
             let slowdown = 2; //减速速度
-            normalCar.setAttribute("src", "/img/cars_normal.cd369ee2.png");
+            normalCar.setAttribute("src", require("../images/" + car.img + ".png"));
             normalCar.setAttribute("width", "10");
             normalCar.setAttribute("height", "20");
-            normalCar.setAttribute("class", "NormalCar" + car.index);
+            normalCar.setAttribute("class", car.type + car.index);
             normalCar.style.position = "absolute";
             normalCar.style.left = sx + "px";
             normalCar.style.top = sy + "px";
             try {
-                father.removeChild(document.getElementsByClassName('NormalCar' + car.index)[0]);
+                father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
             } catch (err) {
                 console.log("there is no img");
             }
@@ -84,7 +90,7 @@ let Car = {
                             clearInterval(id);
                             //加上旋转属性
                             console.log("开始xuanzhuan")
-                            let normalCar = document.getElementsByClassName("NormalCar" + car.index)[0];
+                            let normalCar = document.getElementsByClassName(car.type + car.index)[0];
                             normalCar.classList.add("trans");
                             let flag = 0;
                             setTimeout(function() {
@@ -112,7 +118,7 @@ let Car = {
         car.drawRightToLeftLines = function(_self, sx, sy) {
             let tx = sx;
             let ty = sy;
-            let normalCar = document.getElementsByClassName("NormalCar" + car.index)[0];
+            let normalCar = document.getElementsByClassName(car.type + car.index)[0];
             let r2l = setInterval(frame, 30);
 
             function frame() {
@@ -134,16 +140,16 @@ let Car = {
             let ty = sy;
             let father = document.getElementsByClassName("MyCanvas")[0];
             let normalCar = document.createElement("img");
-            normalCar.setAttribute("src", "/img/cars_normal.cd369ee2.png");
+            normalCar.setAttribute("src", require("../images/" + car.img + ".png"));
             normalCar.setAttribute("width", "10");
             normalCar.setAttribute("height", "20");
             normalCar.style.cssText = `position: absolute;`;
-            normalCar.setAttribute("class", "NormalCar" + car.index);
+            normalCar.setAttribute("class", car.type + car.index);
             normalCar.style.position = "absolute";
             normalCar.style.left = sx + "px";
             normalCar.style.top = sy + "px";
             try {
-                father.removeChild(document.getElementsByClassName('NormalCar' + car.index)[0]);
+                father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
             } catch (err) {
                 console.log("there is no img");
             }
@@ -154,7 +160,7 @@ let Car = {
                 if (ty === _self.H / 2 + _self.RoadW) {
                     clearInterval(id);
                     //加上旋转属性
-                    let normalCar = document.getElementsByClassName("NormalCar" + car.index)[0];
+                    let normalCar = document.getElementsByClassName(car.type + car.index)[0];
                     normalCar.classList.add("transToRight");
                     let flag = 0;
                     setTimeout(function() {
@@ -182,7 +188,7 @@ let Car = {
         car.drawLeftToRightLines = function(_self, sx, sy) {
             let tx = sx;
             let ty = sy;
-            let normalCar = document.getElementsByClassName("NormalCar" + car.index)[0];
+            let normalCar = document.getElementsByClassName(car.type + car.index)[0];
             let r2l = setInterval(frame, 30);
 
             function frame() {
@@ -208,15 +214,15 @@ let Car = {
             let flag = 1; //flag表示定时器下一次预计的车辆状态，0表示车辆停止，1表示车辆行驶，2表示减速停车，3表示起步加速
             let accelerate = 0; //加速速度
             let slowdown = 2; //减速速度
-            normalCar.setAttribute("src", "/img/cars_normal.cd369ee2.png");
+            normalCar.setAttribute("src", require("../images/" + car.img + ".png"));
             normalCar.setAttribute("width", "10");
             normalCar.setAttribute("height", "20");
-            normalCar.setAttribute("class", "NormalCar" + car.index);
+            normalCar.setAttribute("class", car.type + car.index);
             normalCar.style.position = "absolute";
             normalCar.style.left = sx + "px";
             normalCar.style.top = sy + "px";
             try {
-                father.removeChild(document.getElementsByClassName('NormalCar' + car.index)[0]);
+                father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
             } catch (err) {
                 console.log("there is no img");
             }
@@ -275,15 +281,15 @@ let Car = {
             let ty = sy;
             let father = document.getElementsByClassName("MyCanvas")[0];
             let normalCar = document.createElement("img");
-            normalCar.setAttribute("src", require("../images/cars_normal90.png"));
+            normalCar.setAttribute("src", require("../images/" + car.img + "90.png"));
             normalCar.setAttribute("width", "20");
             normalCar.setAttribute("height", "10");
-            normalCar.setAttribute("class", "NormalCarRow" + car.index);
+            normalCar.setAttribute("class", car.type + car.index);
             normalCar.style.position = "absolute";
             normalCar.style.left = sx + "px";
             normalCar.style.top = sy + "px";
             try {
-                father.removeChild(document.getElementsByClassName('NormalCarRow' + car.index)[0]);
+                father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
             } catch (err) {
                 console.log("there is no img");
             }
@@ -294,7 +300,7 @@ let Car = {
                 if (tx === (_self.W / 2 - _self.RoadW - _self.carH)) {
                     clearInterval(id);
                     //加上旋转属性
-                    let normalCar = document.getElementsByClassName("NormalCarRow" + car.index)[0];
+                    let normalCar = document.getElementsByClassName(car.type + car.index)[0];
                     normalCar.classList.add("transToDown");
                     let flag = 0;
                     setTimeout(function() {
@@ -320,7 +326,7 @@ let Car = {
         car.drawTopToDownLines = function(_self, sx, sy) {
             let tx = sx;
             let ty = sy;
-            let normalCar = document.getElementsByClassName("NormalCarRow" + car.index)[0];
+            let normalCar = document.getElementsByClassName(car.type + car.index)[0];
             let r2l = setInterval(frame, 30);
 
             function frame() {
@@ -343,15 +349,15 @@ let Car = {
             let normalCar = document.createElement("img");
             let sign = 1;
             let slowdown = 2; //减速速度
-            normalCar.setAttribute("src", require("../images/cars_normal90.png"));
+            normalCar.setAttribute("src", require("../images/" + car.img + "90.png"));
             normalCar.setAttribute("width", "20");
             normalCar.setAttribute("height", "10");
-            normalCar.setAttribute("class", "NormalCarRow" + car.index);
+            normalCar.setAttribute("class", car.type + car.index);
             normalCar.style.position = "absolute";
             normalCar.style.left = sx + "px";
             normalCar.style.top = sy + "px";
             try {
-                father.removeChild(document.getElementsByClassName('NormalCarRow' + car.index)[0]);
+                father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
             } catch (err) {
                 console.log("there is no img");
             }
@@ -395,7 +401,7 @@ let Car = {
                             //加上旋转属性
                             clearInterval(id);
                             //加上旋转属性
-                            let normalCar = document.getElementsByClassName("NormalCarRow" + car.index)[0];
+                            let normalCar = document.getElementsByClassName(car.type + car.index)[0];
                             normalCar.classList.add("transToTop");
                             let flag = 0;
                             setTimeout(function() {
@@ -425,7 +431,7 @@ let Car = {
         car.drawDownToTopLines = function(_self, sx, sy) {
             let tx = sx;
             let ty = sy;
-            let normalCar = document.getElementsByClassName("NormalCarRow" + car.index)[0];
+            let normalCar = document.getElementsByClassName(car.type + car.index)[0];
             let r2l = setInterval(frame, 30);
 
             function frame() {
@@ -451,15 +457,15 @@ let Car = {
             let accelerate = 0; //加速速度
             let slowdown = 2; //减速速度
 
-            normalCar.setAttribute("src", require("../images/cars_normal90.png"));
+            normalCar.setAttribute("src", require("../images/" + car.img + "90.png"));
             normalCar.setAttribute("width", "20");
             normalCar.setAttribute("height", "10");
-            normalCar.setAttribute("class", "NormalCarRow" + car.index);
+            normalCar.setAttribute("class", car.type + car.index);
             normalCar.style.position = "absolute";
             normalCar.style.left = sx + "px";
             normalCar.style.top = sy + "px";
             try {
-                father.removeChild(document.getElementsByClassName('NormalCarRow' + car.index)[0]);
+                father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
             } catch (err) {
                 console.log("there is no img");
             }
@@ -538,15 +544,15 @@ let Car = {
             let sign = 1;
             let accelerate = 0; //加速速度
             let slowdown = 2; //减速速度
-            normalCar.setAttribute("src", "/img/cars_normal.cd369ee2.png");
+            normalCar.setAttribute("src", require("../images/" + car.img + "-.png"));
             normalCar.setAttribute("width", "10");
             normalCar.setAttribute("height", "20");
-            normalCar.setAttribute("class", "NormalCar" + car.index);
+            normalCar.setAttribute("class", car.type + car.index);
             normalCar.style.position = "absolute";
             normalCar.style.left = sx + "px";
             normalCar.style.top = sy + "px";
             try {
-                father.removeChild(document.getElementsByClassName('NormalCar' + car.index)[0]);
+                father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
             } catch (err) {
                 console.log("there is no img");
             }
@@ -593,7 +599,7 @@ let Car = {
                             //加上旋转属性
                             clearInterval(id);
                             //加上旋转属性
-                            let normalCar = document.getElementsByClassName("NormalCar" + car.index)[0];
+                            let normalCar = document.getElementsByClassName(car.type + car.index)[0];
                             normalCar.classList.add("transTopToRight");
                             let flag = 0;
                             setTimeout(function() {
@@ -621,16 +627,16 @@ let Car = {
             let ty = sy;
             let father = document.getElementsByClassName("MyCanvas")[0];
             let normalCar = document.createElement("img");
-            normalCar.setAttribute("src", "/img/cars_normal.cd369ee2.png");
+            normalCar.setAttribute("src", require("../images/" + car.img + "-.png"));
             normalCar.setAttribute("width", "10");
             normalCar.setAttribute("height", "20");
             normalCar.style.cssText = `position: absolute;`;
-            normalCar.setAttribute("class", "NormalCar" + car.index);
+            normalCar.setAttribute("class", car.type + car.index);
             normalCar.style.position = "absolute";
             normalCar.style.left = sx + "px";
             normalCar.style.top = sy + "px";
             try {
-                father.removeChild(document.getElementsByClassName('NormalCar' + car.index)[0]);
+                father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
             } catch (err) {
                 console.log("there is no img");
             }
@@ -641,7 +647,7 @@ let Car = {
                 if (ty === _self.H / 2 - _self.RoadW - _self.carH) {
                     clearInterval(id);
                     //加上旋转属性
-                    let normalCar = document.getElementsByClassName("NormalCar" + car.index)[0];
+                    let normalCar = document.getElementsByClassName(car.type + car.index)[0];
                     normalCar.classList.add("transToLeft");
                     let flag = 0;
                     setTimeout(function() {
@@ -674,15 +680,15 @@ let Car = {
             let flag = 1; //flag表示定时器下一次预计的车辆状态，0表示车辆停止，1表示车辆行驶，2表示减速停车，3表示起步加速
             let accelerate = 0; //加速速度
             let slowdown = 2; //减速速度
-            normalCar.setAttribute("src", "/img/cars_normal.cd369ee2.png");
+            normalCar.setAttribute("src", require("../images/" + car.img + "-.png"));
             normalCar.setAttribute("width", "10");
             normalCar.setAttribute("height", "20");
-            normalCar.setAttribute("class", "NormalCar" + car.index);
+            normalCar.setAttribute("class", car.type + car.index);
             normalCar.style.position = "absolute";
             normalCar.style.left = sx + "px";
             normalCar.style.top = sy + "px";
             try {
-                father.removeChild(document.getElementsByClassName('NormalCar' + car.index)[0]);
+                father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
             } catch (err) {
                 console.log("there is no img");
             }
@@ -741,16 +747,16 @@ let Car = {
             let ty = sy;
             let father = document.getElementsByClassName("MyCanvas")[0];
             let normalCar = document.createElement("img");
-            normalCar.setAttribute("src", require("../images/cars_normal90.png"));
+            normalCar.setAttribute("src", require("../images/" + car.img + "-90.png"));
             normalCar.setAttribute("width", "20");
             normalCar.setAttribute("height", "10");
             normalCar.style.cssText = `position: absolute;`;
-            normalCar.setAttribute("class", "NormalCarRow" + car.index);
+            normalCar.setAttribute("class", car.type + car.index);
             normalCar.style.position = "absolute";
             normalCar.style.left = sx + "px";
             normalCar.style.top = sy + "px";
             try {
-                father.removeChild(document.getElementsByClassName('NormalCarRow' + car.index)[0]);
+                father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
             } catch (err) {
                 console.log("there is no img");
             }
@@ -761,7 +767,7 @@ let Car = {
                 if (tx === _self.W / 2 + _self.RoadW) {
                     clearInterval(id);
                     //加上旋转属性
-                    let normalCar = document.getElementsByClassName("NormalCarRow" + car.index)[0];
+                    let normalCar = document.getElementsByClassName(car.type + car.index)[0];
                     normalCar.classList.add("transRightToTop");
                     let flag = 0;
                     setTimeout(function() {
@@ -794,16 +800,16 @@ let Car = {
             let accelerate = 0; //加速速度
             let slowdown = 2; //减速速度
 
-            normalCar.setAttribute("src", require("../images/cars_normal90.png"));
+            normalCar.setAttribute("src", require("../images/" + car.img + "-90.png"));
             normalCar.setAttribute("width", "20");
             normalCar.setAttribute("height", "10");
             normalCar.style.cssText = `position: absolute;`;
-            normalCar.setAttribute("class", "NormalCarRow" + car.index);
+            normalCar.setAttribute("class", car.type + car.index);
             normalCar.style.position = "absolute";
             normalCar.style.left = sx + "px";
             normalCar.style.top = sy + "px";
             try {
-                father.removeChild(document.getElementsByClassName('NormalCarRow' + car.index)[0]);
+                father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
             } catch (err) {
                 console.log("there is no img");
             }
@@ -849,7 +855,7 @@ let Car = {
                         case 3:
                             clearInterval(id);
                             //加上旋转属性
-                            let normalCar = document.getElementsByClassName("NormalCarRow" + car.index)[0];
+                            let normalCar = document.getElementsByClassName(car.type + car.index)[0];
                             normalCar.classList.add("transRightToDown");
                             let flag = 0;
                             setTimeout(function() {
@@ -882,15 +888,15 @@ let Car = {
             let accelerate = 0; //加速速度
             let slowdown = 2; //减速速度
 
-            normalCar.setAttribute("src", require("../images/cars_normal90.png"));
+            normalCar.setAttribute("src", require("../images/" + car.img + "-90.png"));
             normalCar.setAttribute("width", "20");
             normalCar.setAttribute("height", "10");
-            normalCar.setAttribute("class", "NormalCarRow" + car.index);
+            normalCar.setAttribute("class", car.type + car.index);
             normalCar.style.position = "absolute";
             normalCar.style.left = sx + "px";
             normalCar.style.top = sy + "px";
             try {
-                father.removeChild(document.getElementsByClassName('NormalCarRow' + car.index)[0]);
+                father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
             } catch (err) {
                 console.log("there is no img");
             }
@@ -898,7 +904,7 @@ let Car = {
             let id = setInterval(frame, 30);
 
             function frame() {
-                if (tx === 100) {
+                if (tx <= 100) {
                     carNumber();
                     clearInterval(id);
                 } else {
