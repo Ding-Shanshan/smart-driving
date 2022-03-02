@@ -62,9 +62,8 @@ export default {
         return {
             // 参数对象
             parameters: {
-                totalNum: '50',
+                totalNum: '30',
                 proportion:'0.5',
-                smartCarSpeed:'',
             },
             light:'默认',
             light2:'默认',
