@@ -15,10 +15,9 @@ let Car = {
         car.targetPlace = targetPlace;
         car.index = index;
         car.rootSelf = rootSelf
-        if(car.type === "NormalCar") {
+        if (car.type === "NormalCar") {
             car.img = "cars_normal"
-        }
-        else {
+        } else {
             car.img = "cars_smart"
         }
         //获取红绿灯

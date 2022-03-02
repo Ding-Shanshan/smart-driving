@@ -121,10 +121,10 @@ export default {
 
       }
     },
-    // 绘制路面
+     // 绘制路面
     drawRoad(){
       this.context.beginPath();
-      this.context.fillStyle = '#3F6FBB';//#3F6FBB
+      this.context.fillStyle = '#1851B1';//#3F6FBB
       this.context.fillRect(100, this.H/2-this.RoadW, this.W-200, this.RoadW*2);
       // this.context.fillStyle = '#3F6FBB';
       this.context.fillRect(this.W/2-this.RoadW, 100, this.RoadW*2, this.H-200);
