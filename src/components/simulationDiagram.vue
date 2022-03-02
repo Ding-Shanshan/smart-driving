@@ -15,7 +15,7 @@
       <div class="Light">
         <trafficLight  class="trafficLight" id="trafficL0"></trafficLight>
         <!-- 左右向红绿灯 -->
-        <trafficLight2  class="trafficLight" id="trafficL1" ></trafficLight2>
+        <!-- <trafficLight2  class="trafficLight" id="trafficL1" ></trafficLight2> -->
         <!-- 上下向红绿灯 -->
       </div>
       <!-- <div class="trafficLight">
@@ -68,12 +68,16 @@ export default {
     setTrafficLXAndY(){
       // 上下方向红绿灯
       let trafficL = document.getElementsByClassName("trafficLight")[1];
-      trafficL.style.top = (this.H/2-this.RoadW-32) + "px";
-      trafficL.style.left = (this.W/2+this.RoadW - 4) + "px"; 
+      // trafficL.style.top = (this.H/2-this.RoadW-32) + "px";
+      // trafficL.style.left = (this.W/2+this.RoadW - 4) + "px"; 
+      trafficL.style.top = 180 + "px"
+      trafficL.style.left = 465 + "px"
       // 左右方向红绿灯
       let trafficL2 = document.getElementsByClassName("trafficLight")[0];
-      trafficL2.style.top = (this.H/2 + this.RoadW + 16) + "px";
-      trafficL2.style.left = (this.W/2 - this.RoadW -50) + "px";
+      // trafficL2.style.top = (this.H/2 + this.RoadW + 16) + "px";
+      // trafficL2.style.left = (this.W/2 - this.RoadW -50) + "px";
+      trafficL2.style.top = 210 + "px"
+      trafficL2.style.left = 430 + "px"
     },
     //绘制道路边缘线
     drawLine(x,y,x1,y1){

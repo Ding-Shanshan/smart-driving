@@ -35,7 +35,7 @@
             <!-- 上下方向红绿灯 -->
             <div class="light">
                 <span>纵向红绿灯：</span>
-                <el-radio-group v-model="light">
+                <el-radio-group v-model="light" @click="changeLightTwo">
                     <el-radio-button label="红灯"></el-radio-button>
                     <el-radio-button label="绿灯"></el-radio-button>
                     <el-radio-button label="默认"></el-radio-button>
@@ -44,7 +44,7 @@
             <!-- 左右方向红绿灯 -->
             <div class="light2">
                 <span>横向红绿灯：</span>
-                <el-radio-group v-model="light2">
+                <el-radio-group v-model="light2" @click="changeLightOne">
                     <el-radio-button label="红灯"></el-radio-button>
                     <el-radio-button label="绿灯"></el-radio-button>
                     <el-radio-button label="默认"></el-radio-button>
@@ -57,6 +57,7 @@
 </template>
 
 <script>
+import { useStore } from "vuex"
 export default {
     data() {
         return {
@@ -77,7 +78,20 @@ export default {
             this.isruning = true
             this.$emit('runchange',[this.isruning,this.parameters])
         }
-    }
+    },
+    setup() {
+        const store = useStore()
+        const changeLightOne = (e) => {
+            store.commit("changeLightOne", e.target.value)
+        }
+        const changeLightTwo = (e) => {
+            store.commit("changeLightTwo", e.target.value)
+        }
+        return {
+            changeLightOne,
+            changeLightTwo,
+        }
+    },
 }
 </script>
 
