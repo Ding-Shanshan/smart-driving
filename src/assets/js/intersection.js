@@ -170,7 +170,7 @@ export function intersectionCTOD(ty,lightlist){
                 }
             }
             if(ty>118&&ty<168){
-                console.log("ty",ty)
+                // console.log("ty",ty)
                 if(nowLight=="green")
                 {
                     flag=3;
@@ -232,7 +232,7 @@ export function intersectionDTOC(ty,lightlist){
                 }
             }
             if(ty<360&&ty>310){
-                console.log("tx",nowLight)
+                // console.log("tx",nowLight)
                 if(nowLight=="green")
                 {
                     flag=3;
@@ -293,7 +293,7 @@ export function intersectionDTOC(ty,lightlist){
                     }
                 }
                 if(ty<360&&ty>306){
-                    console.log("tx",nowLight)
+                    // console.log("tx",nowLight)
                     if(nowLight=="green")
                     {
                         flag=3;
@@ -320,7 +320,7 @@ export function intersectionATOC(tx,lightlist){
                             nowLight=lightlist[i].className; //获取红绿灯
                         }
                     }
-                    console.log(nowLight)
+                    // console.log(nowLight)
                     if(tx===370)  //在x行驶到路口前20像素开始根据红绿灯来判断是否减速
                     {
                         //如果为红灯并且剩余时间大于等于0.5s,减速停车

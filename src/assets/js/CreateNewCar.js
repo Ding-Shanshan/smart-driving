@@ -4,8 +4,22 @@ var number = 0;
 
 function carNumber() {
     number = number + 1;
-    console.log(number);
 }
+// 路口直行车组
+let downToUpCars=new Array(); // 路口中从下到上的车
+let upToDownCars=new Array(); // 路口中从上到下的车
+let rightToLeftCars=new Array(); // 路口中从右到左的车
+let leftToRightCars=new Array(); // 路口中从左到右的车
+// 右转大队
+let downToRightCars=new Array();
+let upToLeftCars=new Array();
+let leftToDownCars=new Array(); // 路口中从左到下的车
+let rightToUpCars=new Array(); // 路口中右到上的车
+// 左转大队
+let downToLeftCars=new Array(); // 路口中从下到左的车
+let upToRightCars=new Array();
+let rightToDownCars=new Array();
+let leftToUpCars=new Array();
 
 let Car = {
     createNewCar: function(rootSelf, type, sourcePlace, targetPlace, index) {
@@ -25,10 +39,9 @@ let Car = {
         let lightlist = light[0].childNodes;
         let light1 = document.querySelectorAll('#trafficL1')
         let lightlist1 = light1[0].childNodes;
-        // console.log(lightlist[0].style.opacity)
         car.showInfo = function() {
-            console.log(car.type, car.sourcePlace, car.targetPlace);
         };
+        // 下到左左转
         car.drawDToA = function(_self, sx, sy) {
             let tx = sx;
             let ty = sy;
@@ -48,19 +61,23 @@ let Car = {
             try {
                 father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
             } catch (err) {
-                console.log("there is no img");
             }
             father.appendChild(normalCar);
             let id = setInterval(frame, 30);
 
             function frame() {
                 {
+                    let ifCar=upToDownCars.length===0&&upToLeftCars.length===0&&upToRightCars.length===0;
                     if (ty === 360) {
-                        // 判断路口情况 jxd
-                        sign = intersectionDTOC(ty, lightlist1);
+                        // 判断对面是否有车
+                        if(ifCar){
+                            // 判断路口情况 jxd
+                            sign = intersectionDTOC(ty, lightlist1);
+                        }else{
+                            sign=2;
+                        }
                     }
                     // 根据车辆预计行驶状态，控制车辆进行行驶 jxd
-                    //  console.log(ty)
                     switch (sign) {
                         case 0:
                             break; //停车
@@ -70,15 +87,17 @@ let Car = {
                             sy = ty;
                             if (ty <= 310) {
                                 sign = intersectionDTOA(ty, lightlist1);
-                                console.log(ty, sign)
                             }
                             break; //正常行驶
                         case 2:
+                            // 进入路口
                             if (ty <= 310) {
                                 slowdown = 0;
                             }
                             if (slowdown <= 0) {
-                                sign = intersectionDTOA(ty, lightlist1);
+                                if(ifCar){
+                                    sign = intersectionDTOA(ty, lightlist1);
+                                }
                             } else {
                                 slowdown = slowdown - 0.04;
                                 ty = sy - slowdown;
@@ -87,13 +106,14 @@ let Car = {
                             }
                             break; //减速,每次速度减0.1，速度为0时,状态改为停车
                         case 3:
+                            downToLeftCars.push(car.index);
                             clearInterval(id);
                             //加上旋转属性
-                            console.log("开始xuanzhuan")
                             let normalCar = document.getElementsByClassName(car.type + car.index)[0];
                             normalCar.classList.add("trans");
                             let flag = 0;
                             setTimeout(function() {
+                                downToLeftCars.shift();
                                 flag = 1;
                             }, 3500);
 
@@ -107,7 +127,6 @@ let Car = {
                         default:
                             break;
                     }
-                    //  console.log(sign)
                     normalCar.style.left = sx + "px";
                     normalCar.style.top = sy + "px";
 
@@ -137,6 +156,7 @@ let Car = {
                 }
             }
         };
+        // 下到右右转
         car.drawDToB = function(_self, sx, sy) {
             let tx = sx;
             let ty = sy;
@@ -153,13 +173,13 @@ let Car = {
             try {
                 father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
             } catch (err) {
-                console.log("there is no img");
             }
             father.appendChild(normalCar);
             let id = setInterval(frame, 30);
 
             function frame() {
                 if (ty === _self.H / 2 + _self.RoadW) {
+                    downToRightCars.push(car.index);
                     clearInterval(id);
                     //加上旋转属性
                     let normalCar = document.getElementsByClassName(car.type + car.index)[0];
@@ -167,6 +187,7 @@ let Car = {
                     let flag = 0;
                     setTimeout(function() {
                         flag = 1;
+                        downToRightCars.shift();
                     }, 3500);
 
                     function checkFlag() {
@@ -209,7 +230,7 @@ let Car = {
                 }
             }
         };
-
+        // 下到上 直行
         car.drawDToC = function(_self, sx, sy) {
             let tx = sx;
             let ty = sy;
@@ -229,22 +250,29 @@ let Car = {
             try {
                 father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
             } catch (err) {
-                console.log("there is no img");
             }
             father.appendChild(normalCar);
             let id = setInterval(frame, 30);
 
             function frame() {
+                let ifCar=upToRightCars.length===0&&rightToUpCars.length===0;
                 if (ty === 100) {
                     clearInterval(id);
                     carNumber();
                     father.removeChild(normalCar);
                 } else {
                     // jxd
-                    console.log(ty)
                     if (ty === 360) {
                         // 判断路口情况 jxd
-                        flag = intersectionDTOC(ty, lightlist1);
+                        if(ifCar){
+                            flag = intersectionDTOC(ty, lightlist1);
+                        }else{
+                            flag=2;
+                        }
+                    }else if(ty === 310){
+                        downToUpCars.push(car.index);
+                    }else if(ty === 190){
+                        downToUpCars.shift();
                     }
                     // 根据车辆预计行驶状态，控制车辆进行行驶 jxd
                     switch (flag) {
@@ -257,7 +285,9 @@ let Car = {
                             break; //正常行驶
                         case 2:
                             if (slowdown <= 0) {
-                                flag = intersectionDTOC(ty, lightlist1);
+                                if(ifCar){
+                                    flag = intersectionDTOC(ty, lightlist1);
+                                }
                             } else {
                                 slowdown = slowdown - 0.04;
                                 ty = sy - slowdown;
@@ -297,13 +327,13 @@ let Car = {
             try {
                 father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
             } catch (err) {
-                console.log("there is no img");
             }
             father.appendChild(normalCar);
             let id = setInterval(frame, 30);
 
             function frame() {
                 if (tx === (_self.W / 2 - _self.RoadW - _self.carH)) {
+                    leftToDownCars.push(car.index);
                     clearInterval(id);
                     //加上旋转属性
                     let normalCar = document.getElementsByClassName(car.type + car.index)[0];
@@ -311,6 +341,7 @@ let Car = {
                     let flag = 0;
                     setTimeout(function() {
                         flag = 1;
+                        leftToDownCars.shift();
                     }, 3500);
 
                     function checkFlag() {
@@ -350,6 +381,7 @@ let Car = {
                 }
             }
         };
+        // 左到上左转
         car.drawAToC = function(_self, sx, sy) {
             let tx = sx;
             let ty = sy;
@@ -367,18 +399,22 @@ let Car = {
             try {
                 father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
             } catch (err) {
-                console.log("there is no img");
             }
             father.appendChild(normalCar);
             let id = setInterval(frame, 30);
 
             function frame() {
                 {
+                    // 判断是否有车
+                    let ifCar=rightToLeftCars.length===0&&rightToUpCars.length===0&&rightToDownCars.length===0;
                     if (tx === 370) {
                         // 判断路口情况 jxd
-                        sign = intersectionATOC(tx, lightlist);
+                        if(ifCar){
+                            sign = intersectionATOC(tx, lightlist);
+                        }else{
+                            sign=2;
+                        }
                     }
-                    // console.log(tx)
                     switch (sign) {
                         case 0:
                             break; //停车
@@ -388,7 +424,6 @@ let Car = {
                             sy = ty;
                             if (tx >= 420) {
                                 sign = intersectionATOC(tx, lightlist1);
-                                console.log(tx, sign)
                             }
                             break; //正常行驶
                         case 2:
@@ -396,16 +431,18 @@ let Car = {
                                 slowdown = 0;
                             }
                             if (slowdown <= 0) {
-                                sign = intersectionATOC(tx, lightlist);
+                                if(ifCar){
+                                    sign = intersectionATOC(tx, lightlist);
+                                }
                             } else {
                                 slowdown = slowdown - 0.04;
                                 tx = sx + slowdown;
                                 sx = tx;
                                 sy = ty;
-                                console.log(slowdown)
                             }
                             break; //减速,每次速度减0.1，速度为0时,状态改为停车
                         case 3:
+                            leftToUpCars.push(car.index);
                             //加上旋转属性
                             clearInterval(id);
                             //加上旋转属性
@@ -414,6 +451,7 @@ let Car = {
                             let flag = 0;
                             setTimeout(function() {
                                 flag = 1;
+                                leftToUpCars.shift();
                             }, 3500);
 
                             function checkFlag() {
@@ -426,7 +464,6 @@ let Car = {
                         default:
                             break;
                     }
-                    // console.log(sign)
                     normalCar.style.left = sx + "px";
                     normalCar.style.top = sy + "px";
 
@@ -477,12 +514,12 @@ let Car = {
             try {
                 father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
             } catch (err) {
-                console.log("there is no img");
             }
             father.appendChild(normalCar);
             let id = setInterval(frame, 30);
 
             function frame() {
+                let ifCar=rightToDownCars.length===0&&downToRightCars.length===0;
                 if (tx === _self.W - 100) {
                     clearInterval(id);
                     carNumber();
@@ -491,7 +528,15 @@ let Car = {
                     // jxd
                     if (tx === 370) {
                         // 判断路口情况 jxd
-                        sign = intersectionATOB(tx, lightlist);
+                        if(ifCar){
+                            sign = intersectionATOB(tx, lightlist);
+                        }else{
+                            sign=2;
+                        }
+                    }else if(tx===440){
+                        leftToRightCars.push(car.index);
+                    }else if(tx===580){
+                        leftToRightCars.shift();
                     }
                     // 根据车辆预计行驶状态，控制车辆进行行驶 jxd
                     switch (sign) {
@@ -514,7 +559,6 @@ let Car = {
                                 } else {
                                     sign = 2;
                                 }
-                                console.log(sign)
                             }
                             break; //正常行驶
                         case 2:
@@ -522,7 +566,9 @@ let Car = {
                                 slowdown = 0;
                             }
                             if (slowdown <= 0) {
-                                sign = intersectionATOB(tx, lightlist);
+                                if(ifCar){
+                                    sign = intersectionATOB(tx, lightlist);
+                                }
                             } else {
                                 slowdown = slowdown - 0.04;
                                 tx = sx + slowdown;
@@ -547,6 +593,7 @@ let Car = {
                 }
             }
         };
+        // 上到右左转
         car.drawCToB = function(_self, sx, sy) {
             let tx = sx;
             let ty = sy;
@@ -565,19 +612,22 @@ let Car = {
             try {
                 father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
             } catch (err) {
-                console.log("there is no img");
             }
             father.appendChild(normalCar);
             let id = setInterval(frame, 30);
 
             function frame() {
                 {
+                    let ifCar=downToUpCars.length===0&&downToLeftCars.length===0&&downToRightCars.length===0;
                     if (ty === 118) {
                         // 判断路口情况 jxd
-                        sign = intersectionCTOB(ty, lightlist1);
+                        if(ifCar){
+                            sign = intersectionCTOB(ty, lightlist1);
+                        }else{
+                            sign=2;
+                        }
                     }
                     // 根据车辆预计行驶状态，控制车辆进行行驶 jxd
-                    console.log(ty)
                     switch (sign) {
                         case 0:
                             break; //停车
@@ -586,7 +636,6 @@ let Car = {
                             sx = tx;
                             sy = ty;
                             if (ty > 168) {
-                                console.log("进入状态判断", ty)
                                 sign = intersectionCTOB(ty, lightlist1);
                             }
                             break; //正常行驶
@@ -595,17 +644,19 @@ let Car = {
                                 slowdown = 0;
                             }
                             if (slowdown <= 0) {
-                                sign = intersectionCTOB(ty, lightlist1);
+                                if(ifCar){
+                                    sign = intersectionCTOB(ty, lightlist1);
+                                }                                
                             } else {
                                 slowdown = slowdown - 0.04;
                                 ty = sy + slowdown;
                                 sx = tx;
                                 sy = ty;
-                                console.log(slowdown)
                             }
 
                             break; //减速,每次速度减0.1，速度为0时,状态改为停车
                         case 3:
+                            upToRightCars.push(car.index);
                             clearInterval(id);
                             //加上旋转属性
                             clearInterval(id);
@@ -615,6 +666,7 @@ let Car = {
                             let flag = 0;
                             setTimeout(function() {
                                 flag = 1;
+                                upToRightCars.shift();
                             }, 3500);
 
                             function checkFlag() {
@@ -627,7 +679,6 @@ let Car = {
                         default:
                             break;
                     }
-                    console.log(sign)
                     normalCar.style.left = sx + "px";
                     normalCar.style.top = sy + "px";
                 }
@@ -649,13 +700,13 @@ let Car = {
             try {
                 father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
             } catch (err) {
-                console.log("there is no img");
             }
             father.appendChild(normalCar);
             let id = setInterval(frame, 30);
 
             function frame() {
                 if (ty === _self.H / 2 - _self.RoadW - _self.carH) {
+                    upToLeftCars.push(car.index);
                     clearInterval(id);
                     //加上旋转属性
                     let normalCar = document.getElementsByClassName(car.type + car.index)[0];
@@ -663,6 +714,7 @@ let Car = {
                     let flag = 0;
                     setTimeout(function() {
                         flag = 1;
+                        upToLeftCars.shift();
                     }, 3500);
 
                     function checkFlag() {
@@ -682,6 +734,7 @@ let Car = {
                 }
             }
         };
+        // 上到下 直行
         car.drawCToD = function(_self, sx, sy) {
             let tx = sx;
             let ty = sy;
@@ -701,22 +754,29 @@ let Car = {
             try {
                 father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
             } catch (err) {
-                console.log("there is no img");
             }
             father.appendChild(normalCar);
             let id = setInterval(frame, 30);
 
             function frame() {
+                let ifCar=downToLeftCars.length===0&&leftToDownCars.length===0;
                 if (ty === _self.H - 100) {
                     clearInterval(id);
                     carNumber();
                     father.removeChild(normalCar);
                 } else {
                     // jxd
-                    console.log(ty)
                     if (ty === 118) {
                         // 判断路口情况 jxd
-                        flag = intersectionCTOD(ty, lightlist1);
+                        if(ifCar){
+                            flag = intersectionCTOD(ty, lightlist1);
+                        }else{
+                            flag=2;
+                        }
+                    }else if(ty===170){
+                        upToDownCars.push(car.index);
+                    }else if(ty===310){
+                        upToDownCars.shift();
                     }
                     // 根据车辆预计行驶状态，控制车辆进行行驶 jxd
                     switch (flag) {
@@ -729,7 +789,9 @@ let Car = {
                             break; //正常行驶
                         case 2:
                             if (slowdown <= 0) {
-                                flag = intersectionCTOD(ty, lightlist1);
+                                if(ifCar){
+                                    flag = intersectionCTOD(ty, lightlist1);
+                                }
                             } else {
                                 slowdown = slowdown - 0.04;
                                 ty = sy + slowdown;
@@ -770,13 +832,13 @@ let Car = {
             try {
                 father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
             } catch (err) {
-                console.log("there is no img");
             }
             father.appendChild(normalCar);
             let id = setInterval(frame, 30);
 
             function frame() {
                 if (tx === _self.W / 2 + _self.RoadW) {
+                    rightToUpCars.push(car.index);
                     clearInterval(id);
                     //加上旋转属性
                     let normalCar = document.getElementsByClassName(car.type + car.index)[0];
@@ -784,6 +846,7 @@ let Car = {
                     let flag = 0;
                     setTimeout(function() {
                         flag = 1;
+                        rightToUpCars.shift();
                     }, 3500);
 
                     function checkFlag() {
@@ -803,6 +866,7 @@ let Car = {
                 }
             }
         };
+        // 右到下 左转
         car.drawBToD = function(_self, sx, sy) {
             let tx = sx;
             let ty = sy;
@@ -823,20 +887,22 @@ let Car = {
             try {
                 father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
             } catch (err) {
-                console.log("there is no img");
             }
             father.appendChild(normalCar);
             let id = setInterval(frame, 30);
 
             function frame() {
                 {
+                    let ifCar = leftToRightCars.length===0&&leftToUpCars.length===0&&leftToDownCars.length===0;
                     if (tx === 610) {
                         // 判断路口情况 jxd
-                        sign = intersectionBTOD(tx, lightlist);
-
+                        if(ifCar){
+                            sign = intersectionBTOD(tx, lightlist);
+                        }else{
+                            sign=2;
+                        }
                     }
                     // 根据车辆预计行驶状态，控制车辆进行行驶 jxd
-                    // console.log(ty)
                     switch (sign) {
                         case 0:
                             break; //停车
@@ -845,7 +911,6 @@ let Car = {
                             sx = tx;
                             sy = ty;
                             if (tx < 560) {
-                                //    console.log("进入状态判断",tx)
                                 sign = intersectionBTOD(tx, lightlist);
                             }
                             break; //正常行驶
@@ -854,17 +919,18 @@ let Car = {
                                 slowdown = 0;
                             }
                             if (slowdown <= 0) {
-                                sign = intersectionBTOD(tx, lightlist);
+                                if(ifCar){
+                                    sign = intersectionBTOD(tx, lightlist);
+                                }
                             } else {
                                 slowdown = slowdown - 0.04;
                                 tx = sx - slowdown;
                                 sx = tx;
                                 sy = ty;
-                                console.log(slowdown)
                             }
-                            console.log(slowdown, tx)
                             break; //减速,每次速度减0.1，速度为0时,状态改为停车
                         case 3:
+                            rightToDownCars.push(car.index);
                             clearInterval(id);
                             //加上旋转属性
                             let normalCar = document.getElementsByClassName(car.type + car.index)[0];
@@ -872,6 +938,7 @@ let Car = {
                             let flag = 0;
                             setTimeout(function() {
                                 flag = 1;
+                                rightToDownCars.shift();
                             }, 3500);
 
                             function checkFlag() {
@@ -884,12 +951,12 @@ let Car = {
                         default:
                             break;
                     }
-                    //    console.log(sign)
                     normalCar.style.left = sx + "px";
                     normalCar.style.top = sy + "px";
                 }
             }
         };
+        // 右到左 直行
         car.drawBToA = function(_self, sx, sy) {
             let tx = sx;
             let ty = sy;
@@ -910,12 +977,12 @@ let Car = {
             try {
                 father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
             } catch (err) {
-                console.log("there is no img");
             }
             father.appendChild(normalCar);
             let id = setInterval(frame, 30);
 
             function frame() {
+                let ifCar=leftToUpCars.length===0&&upToLeftCars.length===0;
                 if (tx <= 100) {
                     carNumber();
                     clearInterval(id);
@@ -924,7 +991,15 @@ let Car = {
                     // jxd
                     if (tx === 610) {
                         // 判断路口情况 jxd
-                        sign = intersectionBTOA(tx, lightlist);
+                        if(ifCar){
+                            sign = intersectionBTOA(tx, lightlist);
+                        }else{
+                            sign=2;
+                        }
+                    }else if(tx===560){
+                        rightToLeftCars.push(car.index);
+                    }else if(tx===420){
+                        rightToLeftCars.shift();
                     }
                     // 根据车辆预计行驶状态，控制车辆进行行驶 jxd
                     switch (sign) {
@@ -946,7 +1021,6 @@ let Car = {
                                 } else {
                                     sign = 2;
                                 }
-                                console.log(sign)
                             }
                             break; //正常行驶
                         case 2:
@@ -954,7 +1028,9 @@ let Car = {
                                 slowdown = 0;
                             }
                             if (slowdown <= 0) {
-                                sign = intersectionBTOA(tx, lightlist);
+                                if(ifCar){
+                                    sign = intersectionBTOA(tx, lightlist);
+                                }
                             } else {
                                 slowdown = slowdown - 0.04;
                                 tx = sx - slowdown;
