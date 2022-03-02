@@ -120,16 +120,16 @@ export default {
         else{
         let Places = ["A","B","C","D"];
           // 测试注释
-        let sourceIdx = Math.floor(Math.random()*4);
-        let targetIdx = Math.floor(Math.random()*4);
-        // 避免起点终点重叠
-        if(targetIdx===sourceIdx){
-          targetIdx=(targetIdx+1)%4;
-        }
-        let targetPlace = Places[targetIdx];
-        let sourcePlace = Places[sourceIdx];
-        // let sourcePlace = Places[0];
-        //  let targetPlace = Places[1];
+        // let sourceIdx = Math.floor(Math.random()*4);
+        // let targetIdx = Math.floor(Math.random()*4);
+        // // 避免起点终点重叠
+        // if(targetIdx===sourceIdx){
+        //   targetIdx=(targetIdx+1)%4;
+        // }
+        // let targetPlace = Places[targetIdx];
+        // let sourcePlace = Places[sourceIdx];
+        let sourcePlace = Places[3];
+         let targetPlace = Places[2];
         // let carIdx = document.getElementsByTagName("img").length-2;
         // let car = Car.createNewCar("Normal","A",targetPlace,carIdx);
         let car = undefined
