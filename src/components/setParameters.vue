@@ -1,6 +1,7 @@
 <template>
     <div>
-        <h4>车辆参数</h4>
+        <el-collapse v-model="activeNames" @change="handleChange">
+        <el-collapse-item title="车辆参数" name="1">
         <el-form class="vehicleParameter" ref="parametersRef" :model="parameters" label-width="100px">
             <!-- 车辆总数 -->
             <el-form-item label="车辆总数：">
@@ -28,7 +29,8 @@
                 <el-button>取消</el-button>
             </el-form-item>
         </el-form>
-        <h4>红绿灯参数</h4>
+        </el-collapse-item>
+        <el-collapse-item title="红绿灯参数" name="2">
         <div class="lightParameter">
             <!-- 上下方向红绿灯 -->
             <div class="light">
@@ -49,6 +51,8 @@
                 </el-radio-group>
             </div>
         </div>
+        </el-collapse-item>
+        </el-collapse>
     </div>
 </template>
 
@@ -85,13 +89,6 @@ h4 {
 div {
     font-size: 14px;
     font-weight: 400;
-}
-.vehicleParameter {
-    margin-bottom: 40px;
-}
-.lightParameter {
-    width: 100%;
-    margin-bottom: 60px;
 }
 .light,
 .light2 {

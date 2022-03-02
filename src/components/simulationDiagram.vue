@@ -72,7 +72,7 @@ export default {
       trafficL2.style.top = (this.H/2 + this.RoadW + 16) + "px";
       trafficL2.style.left = (this.W/2 - this.RoadW -50) + "px";
     },
-    //绘制路面
+    //绘制道路边缘线
     drawLine(x,y,x1,y1){
         this.context.moveTo(x, y);
         this.context.lineTo(x1, y1);
@@ -97,7 +97,15 @@ export default {
 
       }
     },
-
+     // 绘制路面
+    drawRoad(){
+      this.context.beginPath();
+      this.context.fillStyle = '#1851B1';//#3F6FBB
+      this.context.fillRect(100, this.H/2-this.RoadW, this.W-200, this.RoadW*2);
+      // this.context.fillStyle = '#3F6FBB';
+      this.context.fillRect(this.W/2-this.RoadW, 100, this.RoadW*2, this.H-200);
+      // this.context.rect(positions[idx].x, positions[idx].y, positions[idx].width, positions[idx].height);
+    },
     textConnection(data) {
       //获取兄弟组件中传过来的参数，通过总数和百分比计算出普通车和智能车的数量
       let smartCarTargetNum = parseInt(data.totalNum) * parseFloat(data.proportion)
@@ -224,6 +232,7 @@ export default {
     const canvas = document.querySelector('canvas');
     this.context = canvas.getContext('2d');
     this.context.beginPath();
+    this.drawRoad();
     this.context.strokeStyle = 'White'; // 线条颜色
     this.context.lineWidth = 1.0;
     // 画实线
