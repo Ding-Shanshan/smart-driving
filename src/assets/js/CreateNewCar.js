@@ -56,10 +56,22 @@ let Car = {
 
             function frame() {
                 {
-                    if (sy === 360) {
-                        // 判断路口情况 jxd
-                        sign = intersectionDTOC(sy, lightlist1);
+                    if (car.type == 'NormalCar') {
+                        // 普通车
+                        if (sy === 360) {
+                            // 判断路口情况 jxd
+                            sign = intersectionDTOA(sy, lightlist1, car.type);
+                            console.log(car.type)
+                        }
+                    } else {
+                        // 智能车
+                        if (sy === 334) {
+                            // 判断路口情况 jxd
+                            sign = intersectionDTOA(sy, lightlist1, car.type);
+                            console.log(car.type)
+                        }
                     }
+
                     // 根据车辆预计行驶状态，控制车辆进行行驶 jxd
                     //  console.log(ty)
                     switch (sign) {
@@ -68,8 +80,7 @@ let Car = {
                         case 1:
                             sy = sy - car.speed;
                             if (sy <= 310) {
-                                sign = intersectionDTOA(sy, lightlist1);
-                                console.log(sy, sign)
+                                sign = intersectionDTOA(sy, lightlist1, car.type);
                             }
                             break; //正常行驶
                         case 2:
@@ -77,9 +88,9 @@ let Car = {
                                 slowdown = 0;
                             }
                             if (slowdown <= 0) {
-                                sign = intersectionDTOA(sy, lightlist1);
+                                sign = intersectionDTOA(sy, lightlist1, car.type);
                             } else {
-                                slowdown = slowdown - 0.04;
+                                car.type == 'NormalCar' ? (slowdown = slowdown - 0.04) : (slowdown = slowdown - 0.08);
                                 sy = sy - slowdown;
                             }
                             break; //减速,每次速度减0.1，速度为0时,状态改为停车
@@ -199,7 +210,7 @@ let Car = {
             let father = document.getElementsByClassName("MyCanvas")[0];
             let normalCar = document.createElement("img");
             // jxd
-            let flag = 1; //flag表示定时器下一次预计的车辆状态，0表示车辆停止，1表示车辆行驶，2表示减速停车，3表示起步加速
+            let sign = 1; //flag表示定时器下一次预计的车辆状态，0表示车辆停止，1表示车辆行驶，2表示减速停车，3表示起步加速
             let accelerate = 0; //加速速度
             let slowdown = 2; //减速速度
             let obsFlag = 1;
@@ -240,16 +251,30 @@ let Car = {
                         obsFlag = 1;
                     }
                     // jxd
-                    console.log(sy)
-                    if (sy === 360) {
-                        // 判断路口情况 jxd
-                        flag = intersectionDTOC(sy, lightlist1);
-                    }
-                    if (obsFlag === 2 || flag === 2) {
-                        obsFlag = 2;
+                    if (car.type == 'NormalCar') {
+                        // 普通车
+                        if (sy === 360) {
+                            // 判断路口情况 jxd
+                            sign = intersectionDTOC(sy, lightlist1, car.type);
+                        }
+                        if (obsFlag === 2 || sign === 2) {
+                            obsFlag = 2;
+                        } else {
+                            obsFlag = 1;
+                        }
                     } else {
-                        obsFlag = 1;
+                        // 智能车
+                        if (sy === 334) {
+                            // 判断路口情况 jxd
+                            sign = intersectionDTOC(sy, lightlist1, car.type);
+                        }
+                        if (obsFlag === 2 || sign === 2) {
+                            obsFlag = 2;
+                        } else {
+                            obsFlag = 1;
+                        }
                     }
+
                     // 根据车辆预计行驶状态，控制车辆进行行驶 jxd
                     switch (obsFlag) {
                         case 0:
@@ -269,12 +294,12 @@ let Car = {
                                     }
                                 }
                                 if (nowLight1 == "green") {
-                                    flag = 1;
+                                    sign = 1;
                                 } else {
-                                    flag = 2;
+                                    sign = 2;
                                 }
                             }
-                            if (obsFlag === 2 || flag === 2) {
+                            if (obsFlag === 2 || sign === 2) {
                                 obsFlag = 2;
                             } else {
                                 obsFlag = 1;
@@ -290,19 +315,19 @@ let Car = {
                                 } else {
                                     obsFlag = 3
                                 }
-                                flag = intersectionDTOC(sy, lightlist1);
-                                if (obsFlag === 2 || flag === 2) {
+                                sign = intersectionDTOC(sy, lightlist1, car.type);
+                                if (obsFlag === 2 || sign === 2) {
                                     obsFlag = 2;
                                 } else {
                                     obsFlag = 3;
                                 }
                             } else {
-                                slowdown = slowdown - 0.04;
+                                car.type == 'NormalCar' ? (slowdown = slowdown - 0.04) : (slowdown = slowdown - 0.08);
                                 sy = sy - slowdown;
                             }
                             break; //减速,每次速度减0.1，速度为0时,状态改为停车
                         case 3:
-                            accelerate = accelerate + 0.04;
+                            car.type == 'NormalCar' ? (accelerate = accelerate + 0.04) : (accelerate = accelerate + 0.08);
                             sy = sy - accelerate;
                             if (accelerate >= car.speed) {
                                 if (car.y <= _self.obstructsInAllRoads[car.sourcePlace + car.targetPlace][car.pathIdx - 1] + 30) {
@@ -410,9 +435,17 @@ let Car = {
 
             function frame() {
                 {
-                    if (sx === 370) {
-                        // 判断路口情况 jxd
-                        sign = intersectionATOC(sx, lightlist);
+                    if (car.type == 'NormalCar') {
+                        if (sx === 370) {
+                            // 判断路口情况 jxd
+                            sign = intersectionATOC(sx, lightlist, car.type);
+                        }
+                    } else {
+                        if (sx === 394) {
+                            // 判断路口情况 jxd
+                            sign = intersectionATOC(sx, lightlist, car.type);
+
+                        }
                     }
                     // console.log(tx)
                     switch (sign) {
@@ -421,8 +454,7 @@ let Car = {
                         case 1:
                             sx = sx + car.speed;
                             if (sx >= 420) {
-                                sign = intersectionATOC(sx, lightlist1);
-                                console.log(sx, sign)
+                                sign = intersectionATOC(sx, lightlist1, car.type);
                             }
                             break; //正常行驶
                         case 2:
@@ -430,9 +462,9 @@ let Car = {
                                 slowdown = 0;
                             }
                             if (slowdown <= 0) {
-                                sign = intersectionATOC(sx, lightlist);
+                                sign = intersectionATOC(sx, lightlist, car.type);
                             } else {
-                                slowdown = slowdown - 0.04;
+                                car.type == 'NormalCar' ? (slowdown = slowdown - 0.04) : (slowdown = slowdown - 0.08);
                                 sx = sx + slowdown;
                                 console.log(slowdown)
                             }
@@ -533,15 +565,28 @@ let Car = {
                         obsFlag = 1;
                     }
                     // jxd
-                    if (sx === 370) {
-                        // 判断路口情况 jxd
-                        sign = intersectionATOB(sx, lightlist);
-                    }
-                    if (obsFlag === 2 || sign === 2) {
-                        obsFlag = 2;
+                    if (car.type == 'NormalCar') {
+                        if (sx === 370) {
+                            // 判断路口情况 jxd
+                            sign = intersectionATOB(sx, lightlist, car.type);
+                        }
+                        if (obsFlag === 2 || sign === 2) {
+                            obsFlag = 2;
+                        } else {
+                            obsFlag = 1;
+                        }
                     } else {
-                        obsFlag = 1;
+                        if (sx === 394) {
+                            // 判断路口情况 jxd
+                            sign = intersectionATOB(sx, lightlist, car.type);
+                        }
+                        if (obsFlag === 2 || sign === 2) {
+                            obsFlag = 2;
+                        } else {
+                            obsFlag = 1;
+                        }
                     }
+
                     // 根据车辆预计行驶状态，控制车辆进行行驶 jxd
                     switch (obsFlag) {
                         case 0:
@@ -583,19 +628,19 @@ let Car = {
                                 } else {
                                     obsFlag = 1;
                                 }
-                                sign = intersectionATOB(sx, lightlist);
+                                sign = intersectionATOB(sx, lightlist, car.type);
                                 if (obsFlag === 2 || sign === 2) {
                                     obsFlag = 2;
                                 } else {
                                     obsFlag = 3;
                                 }
                             } else {
-                                slowdown = slowdown - 0.04;
+                                car.type == 'NormalCar' ? (slowdown = slowdown - 0.04) : (slowdown = slowdown - 0.08);
                                 sx = sx + slowdown;
                             }
                             break; //减速,每次速度减0.1，速度为0时,状态改为停车
                         case 3:
-                            accelerate = accelerate + 0.04;
+                            car.type == 'NormalCar' ? (accelerate = accelerate + 0.04) : (accelerate = accelerate + 0.08);
                             sx = sx + accelerate;
                             if (accelerate >= car.speed) {
                                 if (car.x + 30 >= _self.obstructsInAllRoads[car.sourcePlace + car.targetPlace][car.pathIdx - 1]) {
@@ -644,20 +689,26 @@ let Car = {
 
             function frame() {
                 {
-                    if (sy === 118) {
-                        // 判断路口情况 jxd
-                        sign = intersectionCTOB(sy, lightlist1);
+                    if (car.type == 'NormalCar') {
+                        if (sy === 118) {
+                            // 判断路口情况 jxd
+                            sign = intersectionCTOB(sy, lightlist1, car.type);
+                        }
+                    } else {
+                        if (sy === 142) {
+                            // 判断路口情况 jxd
+                            sign = intersectionCTOB(sy, lightlist1, car.type);
+                        }
                     }
+
                     // 根据车辆预计行驶状态，控制车辆进行行驶 jxd
-                    console.log(sy)
                     switch (sign) {
                         case 0:
                             break; //停车
                         case 1:
                             sy = sy + car.speed;
                             if (sy > 168) {
-                                console.log("进入状态判断", sy)
-                                sign = intersectionCTOB(sy, lightlist1);
+                                sign = intersectionCTOB(sy, lightlist1, car.type);
                             }
                             break; //正常行驶
                         case 2:
@@ -665,17 +716,15 @@ let Car = {
                                 slowdown = 0;
                             }
                             if (slowdown <= 0) {
-                                sign = intersectionCTOB(sy, lightlist1);
+                                sign = intersectionCTOB(sy, lightlist1, car.type);
                             } else {
-                                slowdown = slowdown - 0.04;
+                                car.type == 'NormalCar' ? (slowdown = slowdown - 0.04) : (slowdown = slowdown - 0.08);
                                 sy = sy + slowdown;
                                 console.log(slowdown)
                             }
 
                             break; //减速,每次速度减0.1，速度为0时,状态改为停车
                         case 3:
-                            clearInterval(id);
-                            //加上旋转属性
                             clearInterval(id);
                             //加上旋转属性
                             let normalCar = document.getElementsByClassName(car.type + car.index)[0];
@@ -750,7 +799,7 @@ let Car = {
             let father = document.getElementsByClassName("MyCanvas")[0];
             let normalCar = document.createElement("img");
             // jxd
-            let flag = 1; //flag表示定时器下一次预计的车辆状态，0表示车辆停止，1表示车辆行驶，2表示减速停车，3表示起步加速
+            let sign = 1; //flag表示定时器下一次预计的车辆状态，0表示车辆停止，1表示车辆行驶，2表示减速停车，3表示起步加速
             let accelerate = 0; //加速速度
             let slowdown = 2; //减速速度
             let obsFlag = 1;
@@ -792,15 +841,26 @@ let Car = {
                         obsFlag = 1;
                     }
                     // jxd
-                    console.log(sy)
-                    if (sy === 118) {
-                        // 判断路口情况 jxd
-                        flag = intersectionCTOD(sy, lightlist1);
-                    }
-                    if (obsFlag === 2 || flag === 2) {
-                        obsFlag = 2;
+                    if (car.type == 'NormalCar') {
+                        if (sy === 118) {
+                            // 判断路口情况 jxd
+                            sign = intersectionCTOD(sy, lightlist1, car.type);
+                        }
+                        if (obsFlag === 2 || sign === 2) {
+                            obsFlag = 2;
+                        } else {
+                            obsFlag = 1;
+                        }
                     } else {
-                        obsFlag = 1;
+                        if (sy === 142) {
+                            // 判断路口情况 jxd
+                            sign = intersectionCTOD(sy, lightlist1, car.type);
+                        }
+                        if (obsFlag === 2 || sign === 2) {
+                            obsFlag = 2;
+                        } else {
+                            obsFlag = 1;
+                        }
                     }
                     // 根据车辆预计行驶状态，控制车辆进行行驶 jxd
                     switch (obsFlag) {
@@ -821,13 +881,12 @@ let Car = {
                                     }
                                 }
                                 if (nowLight1 == "green") {
-                                    flag = 1;
+                                    sign = 1;
                                 } else {
-                                    flag = 2;
+                                    sign = 2;
                                 }
-                                console.log(flag)
                             }
-                            if (obsFlag === 2 || flag === 2) {
+                            if (obsFlag === 2 || sign === 2) {
                                 obsFlag = 2;
                             } else {
                                 obsFlag = 1;
@@ -843,19 +902,19 @@ let Car = {
                                 } else {
                                     obsFlag = 1;
                                 }
-                                flag = intersectionCTOD(sy, lightlist1);
-                                if (obsFlag === 2 || flag === 2) {
+                                sign = intersectionCTOD(sy, lightlist1, car.type);
+                                if (obsFlag === 2 || sign === 2) {
                                     obsFlag = 2;
                                 } else {
                                     obsFlag = 3;
                                 }
                             } else {
-                                slowdown = slowdown - 0.04;
+                                car.type == 'NormalCar' ? (slowdown = slowdown - 0.04) : (slowdown = slowdown - 0.08);
                                 sy = sy + slowdown;
                             }
                             break; //减速,每次速度减0.1，速度为0时,状态改为停车
                         case 3:
-                            accelerate = accelerate + 0.04;
+                            car.type == 'NormalCar' ? (accelerate = accelerate + 0.04) : (accelerate = accelerate + 0.08);
                             sy = sy + accelerate;
                             if (accelerate >= car.speed) {
                                 if (car.y + 30 >= _self.obstructsInAllRoads[car.sourcePlace + car.targetPlace][car.pathIdx - 1]) {
@@ -951,21 +1010,26 @@ let Car = {
 
             function frame() {
                 {
-                    if (sx === 610) {
-                        // 判断路口情况 jxd
-                        sign = intersectionBTOD(sx, lightlist);
+                    if (car.type == 'NormalCar') {
+                        if (sx === 610) {
+                            // 判断路口情况 jxd
+                            sign = intersectionBTOD(sx, lightlist, car.type);
+                        }
+                    } else {
+                        if (sx === 586) {
+                            // 判断路口情况 jxd
+                            sign = intersectionBTOD(sx, lightlist, car.type);
 
+                        }
                     }
                     // 根据车辆预计行驶状态，控制车辆进行行驶 jxd
-                    // console.log(ty)
                     switch (sign) {
                         case 0:
                             break; //停车
                         case 1:
                             sx = sx - car.speed;
                             if (sx < 560) {
-                                //    console.log("进入状态判断",tx)
-                                sign = intersectionBTOD(sx, lightlist);
+                                sign = intersectionBTOD(sx, lightlist, car.type);
                             }
                             break; //正常行驶
                         case 2:
@@ -973,9 +1037,9 @@ let Car = {
                                 slowdown = 0;
                             }
                             if (slowdown <= 0) {
-                                sign = intersectionBTOD(sx, lightlist);
+                                sign = intersectionBTOD(sx, lightlist, car.type);
                             } else {
-                                slowdown = slowdown - 0.04;
+                                car.type == 'NormalCar' ? (slowdown = slowdown - 0.04) : (slowdown = slowdown - 0.08);
                                 sx = sx - slowdown;
                                 console.log(slowdown)
                             }
@@ -1053,15 +1117,29 @@ let Car = {
                     } else {
                         obsFlag = 1;
                     }
-                    if (sx === 610) {
-                        // 判断路口情况 jxd
-                        sign = intersectionBTOA(sx, lightlist);
-                    }
-                    if (obsFlag === 2 || sign === 2) {
-                        obsFlag = 2;
+                    // jxd
+                    if (car.type == 'NormalCar') {
+                        if (sx === 610) {
+                            // 判断路口情况 jxd
+                            sign = intersectionBTOA(sx, lightlist, car.type);
+                        }
+                        if (obsFlag === 2 || sign === 2) {
+                            obsFlag = 2;
+                        } else {
+                            obsFlag = 1;
+                        }
                     } else {
-                        obsFlag = 1;
+                        if (sx === 586) {
+                            // 判断路口情况 jxd
+                            sign = intersectionBTOA(sx, lightlist, car.type);
+                        }
+                        if (obsFlag === 2 || sign === 2) {
+                            obsFlag = 2;
+                        } else {
+                            obsFlag = 1;
+                        }
                     }
+
                     // 根据车辆预计行驶状态，控制车辆进行行驶 jxd
                     switch (obsFlag) {
                         case 0:
@@ -1102,19 +1180,19 @@ let Car = {
                                 } else {
                                     obsFlag = 3
                                 }
-                                sign = intersectionBTOA(sx, lightlist);
+                                sign = intersectionBTOA(sx, lightlist, car.type);
                                 if (obsFlag === 2 || sign === 2) {
                                     obsFlag = 2;
                                 } else {
                                     obsFlag = 3;
                                 }
                             } else {
-                                slowdown = slowdown - 0.04;
+                                car.type == 'NormalCar' ? (slowdown = slowdown - 0.04) : (slowdown = slowdown - 0.08);
                                 sx = sx - slowdown;
                             }
                             break; //减速,每次速度减0.1，速度为0时,状态改为停车
                         case 3:
-                            accelerate = accelerate + 0.04;
+                            car.type == 'NormalCar' ? (accelerate = accelerate + 0.04) : (accelerate = accelerate + 0.08);
                             sx = sx - accelerate;
                             if (accelerate >= car.speed) {
                                 if (car.x <= _self.obstructsInAllRoads[car.sourcePlace + car.targetPlace][car.pathIdx - 1] + 30) {

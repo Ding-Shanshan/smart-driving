@@ -1,6 +1,6 @@
 <template>
     <div>
-        <el-collapse v-model="activeNames" @change="handleChange">
+        <el-collapse>
         <el-collapse-item title="车辆参数" name="1">
         <el-form class="vehicleParameter" ref="parametersRef" :model="parameters" label-width="100px">
             <!-- 车辆总数 -->
@@ -26,7 +26,7 @@
             <!-- 运行 -->
             <el-form-item class="run">
                 <el-button type="primary" @click="run">运行</el-button>
-                <el-button>取消</el-button>
+                <el-button>重置</el-button>
             </el-form-item>
         </el-form>
         </el-collapse-item>

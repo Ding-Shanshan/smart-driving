@@ -1,4 +1,4 @@
-export function intersectionBTOA(tx,lightlist){
+export function intersectionBTOA(tx,lightlist,type){
     // 判断当前车辆预计的行驶状态
         // 1、判断当前灯的状态
         // 2、根据灯的状态以及距离灯的位置来改变车辆行驶状态
@@ -14,7 +14,7 @@ export function intersectionBTOA(tx,lightlist){
                 nowLight=lightlist[i].className; //获取红绿灯
             }
         }
-        if(tx===610)  //在x行驶到路口前20像素开始根据红绿灯来判断是否减速
+        if((type==='NormalCar'&&tx===610)||(type==='SmartCar'&&tx===586))  //在x行驶到路口前20像素开始根据红绿灯来判断是否减速
         {
             //如果为红灯并且剩余时间大于等于0.5s,减速停车
             if(nowLight=="red"&&sRedTime>=0.5)  
@@ -47,8 +47,7 @@ export function intersectionBTOA(tx,lightlist){
                     flag=2;
                 }
         }
-        if(tx>560&&tx<610){
-            // console.log("tx",nowLight)
+        if((type==='NormalCar'&&tx>560&&tx<610)||(type==='SmartCar'&&tx>560&&tx<585)){
             if(nowLight=="green")
             {
                 flag=3;
@@ -60,7 +59,7 @@ export function intersectionBTOA(tx,lightlist){
         return flag;
     };
 
-export function intersectionATOB(tx,lightlist){
+export function intersectionATOB(tx,lightlist,type){
     // 判断当前车辆预计的行驶状态
         // 1、判断当前灯的状态
         // 2、根据灯的状态以及距离灯的位置来改变车辆行驶状态
@@ -76,7 +75,7 @@ export function intersectionATOB(tx,lightlist){
                 nowLight=lightlist[i].className; //获取红绿灯
             }
         }
-        if(tx===370)  //在x行驶到路口前20像素开始根据红绿灯来判断是否减速
+        if((type==='NormalCar'&&tx===370)||(type==='SmartCar'&&tx===394))  //在x行驶到路口前20像素开始根据红绿灯来判断是否减速
         {
             //如果为红灯并且剩余时间大于等于0.5s,减速停车
             if(nowLight=="red"&&sRedTime>=0.5)  
@@ -109,7 +108,7 @@ export function intersectionATOB(tx,lightlist){
                     flag=2;
             }
         }
-        if(tx>370&&tx<420){
+        if((type==='NormalCar'&&tx>370&&tx<420)||(type==='SmartCar'&&tx>394&&tx<420)){
             if(nowLight=="green")
             {
                 flag=3;
@@ -120,7 +119,7 @@ export function intersectionATOB(tx,lightlist){
         }
         return flag;
     };
-export function intersectionCTOD(ty,lightlist){
+export function intersectionCTOD(ty,lightlist,type){
         // 判断当前车辆预计的行驶状态
             // 1、判断当前灯的状态
             // 2、根据灯的状态以及距离灯的位置来改变车辆行驶状态
@@ -136,7 +135,7 @@ export function intersectionCTOD(ty,lightlist){
                     nowLight=lightlist[i].className; //获取红绿灯
                 }
             }
-            if(ty===118)  //在x行驶到路口前20像素开始根据红绿灯来判断是否减速
+            if((type==='NormalCar'&&ty===118)||(type==='SmartCar'&&ty===142))  //在x行驶到路口前20像素开始根据红绿灯来判断是否减速
             {
                 //如果为红灯并且剩余时间大于等于0.5s,减速停车
                 if(nowLight=="red"&&sRedTime>=0.5)  
@@ -169,7 +168,7 @@ export function intersectionCTOD(ty,lightlist){
                         flag=2;
                 }
             }
-            if(ty>118&&ty<168){
+            if((type==='NormalCar'&&ty>118&&ty<171)||(type==='SmartCar'&&ty>142&&ty<171)){
                 console.log("ty",ty)
                 if(nowLight=="green")
                 {
@@ -182,7 +181,7 @@ export function intersectionCTOD(ty,lightlist){
            
             return flag;
         };
-export function intersectionDTOC(ty,lightlist){
+export function intersectionDTOC(ty,lightlist,type){
     // 判断当前车辆预计的行驶状态
             // 1、判断当前灯的状态
             // 2、根据灯的状态以及距离灯的位置来改变车辆行驶状态
@@ -198,7 +197,7 @@ export function intersectionDTOC(ty,lightlist){
                     nowLight=lightlist[i].className; //获取红绿灯
                 }
             }
-            if(ty===360)  //在x行驶到路口前20像素开始根据红绿灯来判断是否减速
+            if((type==='NormalCar'&&ty===360)||(type==='SmartCar'&&ty===334))  //在x行驶到路口前20像素开始根据红绿灯来判断是否减速
             {
                 //如果为红灯并且剩余时间大于等于0.5s,减速停车
                 if(nowLight=="red"&&sRedTime>=0.5)  
@@ -231,7 +230,7 @@ export function intersectionDTOC(ty,lightlist){
                         flag=2;
                 }
             }
-            if(ty<360&&ty>310){
+            if((type==='NormalCar'&&ty<360&&ty>306)||(type==='SmartCar'&&ty<334&&ty>306)){
                 console.log("tx",nowLight)
                 if(nowLight=="green")
                 {
@@ -243,7 +242,7 @@ export function intersectionDTOC(ty,lightlist){
             }
             return flag;
     };
- export function intersectionDTOA(ty,lightlist){
+ export function intersectionDTOA(ty,lightlist,type){
         // 判断当前车辆预计的行驶状态
                 // 1、判断当前灯的状态
                 // 2、根据灯的状态以及距离灯的位置来改变车辆行驶状态
@@ -252,6 +251,7 @@ export function intersectionDTOC(ty,lightlist){
                 var sGreenTime=0.5;     //车辆到达指定像素，绿灯剩余时间
                 var sYellowTime=0.5;     //车辆到达指定像素，绿灯剩余时间
                 var flag=1;
+              
                 for(let i=0;i<3;i++)
                 {
                     if(lightlist[i].style.opacity==1)
@@ -259,8 +259,10 @@ export function intersectionDTOC(ty,lightlist){
                         nowLight=lightlist[i].className; //获取红绿灯
                     }
                 }
-                if(ty===360)  //在x行驶到路口前20像素开始根据红绿灯来判断是否减速
+                console.log(type)
+                if((type==='NormalCar'&&ty===360)||(type==='SmartCar'&&ty===334))  //在x行驶到路口前20像素开始根据红绿灯来判断是否减速
                 {
+                 
                     //如果为红灯并且剩余时间大于等于0.5s,减速停车
                     if(nowLight=="red"&&sRedTime>=0.5)  
                     {
@@ -292,7 +294,7 @@ export function intersectionDTOC(ty,lightlist){
                             flag=2;
                     }
                 }
-                if(ty<360&&ty>306){
+                if((type==='NormalCar'&&ty<360&&ty>306)||(type==='SmartCar'&&ty<334&&ty>306)){
                     console.log("tx",nowLight)
                     if(nowLight=="green")
                     {
@@ -304,7 +306,7 @@ export function intersectionDTOC(ty,lightlist){
                 }
                 return flag;
         };
-export function intersectionATOC(tx,lightlist){
+export function intersectionATOC(tx,lightlist,type){
             // 判断当前车辆预计的行驶状态
                     // 1、判断当前灯的状态
                     // 2、根据灯的状态以及距离灯的位置来改变车辆行驶状态
@@ -321,7 +323,7 @@ export function intersectionATOC(tx,lightlist){
                         }
                     }
                     console.log(nowLight)
-                    if(tx===370)  //在x行驶到路口前20像素开始根据红绿灯来判断是否减速
+                    if((type==='NormalCar'&&tx===370)||(type==='SmartCar'&&tx===394))  //在x行驶到路口前20像素开始根据红绿灯来判断是否减速
                     {
                         //如果为红灯并且剩余时间大于等于0.5s,减速停车
                         if(nowLight=="red"&&sRedTime>=0.5)  
@@ -354,7 +356,7 @@ export function intersectionATOC(tx,lightlist){
                                 flag=2;
                         }
                     }
-                    if(tx>370&&tx<422){
+                    if((type==='NormalCar'&&tx>370&&tx<422)||(type==='SmartCar'&&tx>394&&tx<422)){
                         // console.log("tx",nowLight)
                         if(nowLight=="green")
                         {
@@ -366,7 +368,7 @@ export function intersectionATOC(tx,lightlist){
                     }
                     return flag;
             };
-export function intersectionCTOB(ty,lightlist){
+export function intersectionCTOB(ty,lightlist,type){
                 // 判断当前车辆预计的行驶状态
                         // 1、判断当前灯的状态
                         // 2、根据灯的状态以及距离灯的位置来改变车辆行驶状态
@@ -382,7 +384,7 @@ export function intersectionCTOB(ty,lightlist){
                                 nowLight=lightlist[i].className; //获取红绿灯
                             }
                         }
-                        if(ty===118)  //在x行驶到路口前20像素开始根据红绿灯来判断是否减速
+                        if((type==='NormalCar'&&ty===118)||(type==='SmartCar'&&ty===142))  //在x行驶到路口前20像素开始根据红绿灯来判断是否减速
                         {
                             //如果为红灯并且剩余时间大于等于0.5s,减速停车
                             if(nowLight=="red"&&sRedTime>=0.5)  
@@ -415,7 +417,7 @@ export function intersectionCTOB(ty,lightlist){
                                     flag=2;
                             }
                         }
-                        if(ty>118&&ty<171){
+                        if((type==='NormalCar'&&ty>118&&ty<171)||(type==='SmartCar'&&ty>142&&ty<171)){
                             // console.log("tx",nowLight)
                             if(nowLight=="green")
                             {
@@ -427,7 +429,7 @@ export function intersectionCTOB(ty,lightlist){
                         }
                         return flag;
                 };
-export function intersectionBTOD(tx,lightlist){
+export function intersectionBTOD(tx,lightlist,type){
     // 判断当前车辆预计的行驶状态
             // 1、判断当前灯的状态
             // 2、根据灯的状态以及距离灯的位置来改变车辆行驶状态
@@ -443,7 +445,7 @@ export function intersectionBTOD(tx,lightlist){
                     nowLight=lightlist[i].className; //获取红绿灯
                 }
             }
-            if(tx===610)  //在x行驶到路口前20像素开始根据红绿灯来判断是否减速
+            if((type==='NormalCar'&&tx===610)||(type==='SmartCar'&&tx===586))  //在x行驶到路口前20像素开始根据红绿灯来判断是否减速
             {
                 //如果为红灯并且剩余时间大于等于0.5s,减速停车
                 if(nowLight=="red"&&sRedTime>=0.5)  
@@ -476,7 +478,7 @@ export function intersectionBTOD(tx,lightlist){
                     flag=2;
                 }
             }
-            if(tx>550&&tx<610){
+            if((type==='NormalCar'&&tx>550&&tx<610)||(type==='SmartCar'&&tx>550&&tx<585)){
                 // console.log("tx",nowLight)
                 if(nowLight=="green")
                 {
