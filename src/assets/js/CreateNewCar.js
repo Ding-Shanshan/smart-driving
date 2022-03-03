@@ -78,7 +78,6 @@ let Car = {
                             }else{
                                 sign=2;
                             }
-                            console.log(car.type)
                         }
                     } else {
                         // 智能车
@@ -89,7 +88,6 @@ let Car = {
                             }else{
                                 sign=2;
                             }
-                            console.log(car.type)
                         }
                     }
 
@@ -284,10 +282,6 @@ let Car = {
                             }else{
                                 sign =2;
                             }
-                        }else if(sy === 310){
-                            downToUpCars.push(car.index);
-                        }else if(sy === 190){
-                            downToUpCars.shift();
                         }
                         if (obsFlag === 2 || sign === 2) {
                             obsFlag = 2;
@@ -298,7 +292,11 @@ let Car = {
                         // 智能车
                         if (sy === 334) {
                             // 判断路口情况 jxd
-                            sign = intersectionDTOC(sy, lightlist1, car.type);
+                            if(ifCar){
+                                sign = intersectionDTOC(sy, lightlist1, car.type);
+                            }else{
+                                sign =2;
+                            }
                         }
                         if (obsFlag === 2 || sign === 2) {
                             obsFlag = 2;
@@ -306,7 +304,11 @@ let Car = {
                             obsFlag = 1;
                         }
                     }
-
+                    if(sy === 310){
+                        downToUpCars.push(car.index);
+                    }else if(sy === 190){
+                        downToUpCars.shift();
+                    }
                     // 根据车辆预计行驶状态，控制车辆进行行驶 jxd
                     switch (obsFlag) {
                         case 0:
@@ -325,7 +327,7 @@ let Car = {
                                         nowLight1 = lightlist[i].className; //获取红绿灯
                                     }
                                 }
-                                if (nowLight1 == "green") {
+                                if (nowLight1 == "green"&&ifCar) {
                                     sign = 1;
                                 } else {
                                     sign = 2;
@@ -387,6 +389,7 @@ let Car = {
                 }
             }
         };
+        // 从左到下 右转
         car.drawAToD = function(_self, sx, sy) {
             let father = document.getElementsByClassName("MyCanvas")[0];
             let normalCar = document.createElement("img");
@@ -558,6 +561,7 @@ let Car = {
                 }
             }
         };
+        // 左到右直行
         car.drawAToB = function(_self, sx, sy) {
             let father = document.getElementsByClassName("MyCanvas")[0];
             let normalCar = document.createElement("img");
@@ -622,13 +626,22 @@ let Car = {
                     } else {
                         if (sx === 394) {
                             // 判断路口情况 jxd
-                            sign = intersectionATOB(sx, lightlist, car.type);
+                            if(ifCar){
+                                sign = intersectionATOB(sx, lightlist, car.type);
+                            }else{
+                                sign=2;
+                            }
                         }
                         if (obsFlag === 2 || sign === 2) {
                             obsFlag = 2;
                         } else {
                             obsFlag = 1;
                         }
+                    }
+                    if(sx ===440){
+                        leftToRightCars.push(car.index);
+                    }else if(sx===560){
+                        leftToRightCars.shift();
                     }
 
                     // 根据车辆预计行驶状态，控制车辆进行行驶 jxd
@@ -649,7 +662,7 @@ let Car = {
                                         nowLight1 = lightlist[i].className; //获取红绿灯
                                     }
                                 }
-                                if (nowLight1 == "green") {
+                                if (nowLight1 == "green"&&ifCar) {
                                     sign = 1;
                                 } else {
                                     sign = 2;
@@ -806,6 +819,7 @@ let Car = {
                 }
             }
         };
+        // 上到左 右转
         car.drawCToA = function(_self, sx, sy) {
             let father = document.getElementsByClassName("MyCanvas")[0];
             let normalCar = document.createElement("img");
@@ -873,7 +887,7 @@ let Car = {
             car.y = sy;
             car.pathIdx = _self.obstructsInAllRoads[car.sourcePlace + car.targetPlace].length;
             _self.obstructsInAllRoads[car.sourcePlace + car.targetPlace].push(car.y);
-            console.log(_self.obstructsInAllRoads[car.sourcePlace + car.targetPlace]);
+            // console.log(_self.obstructsInAllRoads[car.sourcePlace + car.targetPlace]);
             try {
                 father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
             } catch (err) {
@@ -905,13 +919,9 @@ let Car = {
                             if(ifCar){
                                 sign = intersectionCTOD(sy, lightlist1, car.type);
                             }else{
-                                flag=2;
+                                sign=2;
                             }
-                        }else if(sy===170){
-                            upToDownCars.push(car.index);
-                        }else if(sy===310){
-                            upToDownCars.shift();
-                        }
+                        } 
                         if (obsFlag === 2 || sign === 2) {
                             obsFlag = 2;
                         } else {
@@ -920,13 +930,22 @@ let Car = {
                     } else {
                         if (sy === 142) {
                             // 判断路口情况 jxd
-                            sign = intersectionCTOD(sy, lightlist1, car.type);
+                            if(ifCar){
+                                sign = intersectionCTOD(sy, lightlist1, car.type);
+                            }else{
+                                sign=2;
+                            }
                         }
                         if (obsFlag === 2 || sign === 2) {
                             obsFlag = 2;
                         } else {
                             obsFlag = 1;
                         }
+                    }
+                    if(sy===170){
+                        upToDownCars.push(car.index);
+                    }else if(sy===310){
+                        upToDownCars.shift();
                     }
                     // 根据车辆预计行驶状态，控制车辆进行行驶 jxd
                     switch (obsFlag) {
@@ -946,7 +965,7 @@ let Car = {
                                         nowLight1 = lightlist[i].className; //获取红绿灯
                                     }
                                 }
-                                if (nowLight1 == "green") {
+                                if (nowLight1 == "green"&&ifCar) {
                                     sign = 1;
                                 } else {
                                     sign = 2;
@@ -1009,6 +1028,7 @@ let Car = {
             }
             
         };
+        // 右到上右转
         car.drawBToC = function(_self, sx, sy) {
             let father = document.getElementsByClassName("MyCanvas")[0];
             let normalCar = document.createElement("img");
@@ -1206,10 +1226,6 @@ let Car = {
                             }else{
                                 sign=2;
                             }
-                        }else if(sx===560){
-                            rightToLeftCars.push(car.index);
-                        }else if(sx===420){
-                            rightToLeftCars.shift();
                         }
                         if (obsFlag === 2 || sign === 2) {
                             obsFlag = 2;
@@ -1219,13 +1235,22 @@ let Car = {
                     } else {
                         if (sx === 586) {
                             // 判断路口情况 jxd
-                            sign = intersectionBTOA(sx, lightlist, car.type);
+                            if(ifCar){
+                                sign = intersectionBTOA(sx, lightlist, car.type);
+                            }else{
+                                sign=2;
+                            }
                         }
                         if (obsFlag === 2 || sign === 2) {
                             obsFlag = 2;
                         } else {
                             obsFlag = 1;
                         }
+                    }
+                    if(sx===560){
+                        rightToLeftCars.push(car.index);
+                    }else if(sx===420){
+                        rightToLeftCars.shift();
                     }
 
                     // 根据车辆预计行驶状态，控制车辆进行行驶 jxd
@@ -1246,7 +1271,7 @@ let Car = {
                                         nowLight1 = lightlist[i].className; //获取红绿灯
                                     }
                                 }
-                                if (nowLight1 == "green") {
+                                if (nowLight1 == "green"&&ifCar) {
                                     sign = 1;
                                 } else {
                                     sign = 2;
