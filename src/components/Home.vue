@@ -50,13 +50,13 @@ export default {
         isRun(val) {
             this.isrun = val[0]
             var vm = this
-            if(number === val[1].totalNum*1)
-            Vue.prototype.$number = number
             var int;
             int = setInterval(judgeIsRun,50);
             function judgeIsRun(){
-                if(number === val[1].totalNum*1)
-                vm.isrun = false;
+                if(window.number === val[1].totalNum*1){
+                    vm.isrun = false
+                    window.number = 0
+                }
             }
         }
     }

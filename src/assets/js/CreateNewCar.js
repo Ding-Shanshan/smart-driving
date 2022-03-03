@@ -1,11 +1,11 @@
 import { createStructuralDirectiveTransform } from "@vue/compiler-core";
 import { del } from "vue-demi";
 import { intersectionBTOA, intersectionATOB, intersectionCTOD, intersectionDTOC, intersectionDTOA, intersectionATOC, intersectionCTOB, intersectionBTOD } from "./intersection.js"
-var number = 0;
+window.number = 0;
 
 function carNumber() {
-    number = number + 1;
-    console.log(number);
+    window.number = window.number + 1;
+    console.log(window.number);
 }
 
 let Car = {
@@ -1227,5 +1227,4 @@ let Car = {
 
 export {
     Car,
-    number
 }
