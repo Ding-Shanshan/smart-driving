@@ -13,7 +13,7 @@
         </div>
       </div>
       <div class="Light">
-        <trafficLight :isRun="isR" :trLight2="light2" :Moren="isMr" class="trL" id="trafficL0" ></trafficLight>
+        <trafficLight  class="trafficLight" id="trafficL0"></trafficLight>
         <!-- 左右向红绿灯 -->
         <!-- <trafficLight2  class="trafficLight" id="trafficL1" ></trafficLight2> -->
         <!-- 上下向红绿灯 -->
@@ -29,7 +29,6 @@
 </template>
 
 <script>
-import { watch } from 'vue'
 import { Car } from "../assets/js/CreateNewCar"
 import trafficLight from "@/components/trafficLight.vue"
 import trafficLight2 from "@/components/trafficLight2.vue"
@@ -39,7 +38,9 @@ export default {
       trafficLight,
       trafficLight2
     },
-    props:['isRun','changeL1','changeL2','mr'],
+  props: {
+    msg: String
+  },
   data() {
     return {
       // H : Math.trunc((window.screen.availHeight - 200)/100)*100,
@@ -54,32 +55,8 @@ export default {
       AllCar : [],
       carIdx : 0,
       obstructsInAllRoads : {
-      },
-      isR: this.isRun,
-      light1:this.changeL1,
-      light2:this.changeL2,
-      isMr:this.mr
+
       }
-  },
-  setup(props) {
-    watch([props],
-      (newValue,oldValue)=>{
-        }
-    )
-    return{}
-  },
-  watch: {
-      isRun(val) {
-        this.isR=val;
-      },
-      changeL1(val){
-        this.light1=val;
-      },
-      changeL2(val){
-        this.light2=val;
-      },
-      mr(val){
-        this.isMr=val;
       }
   },
   methods: {
@@ -294,16 +271,15 @@ export default {
     this.drawLine(100, this.H/2,this.W/2-this.RoadW, this.H/2)
     this.drawLine(this.W/2+this.RoadW, this.H/2,this.W-100, this.H/2)
 
-    //绘制位置坐标：A、B、C、D作为左右上下的路口起始位置
+    //绘制位置坐标：A、B、C、D作为上右下左的路口起始位置
     let startPositions = [
       {x: 40, y: this.H/2 - this.RoadW - 10, width: 60, height: 140, color: "#abb8c3"},//左
-      {x: this.W - 100, y: this.H/2 - this.RoadW - 10, width: 60, height: 140, color: "IndianRed  "},//右 #cf2e2e
-      {x: this.W/2-this.RoadW - 10, y: 40, width: 140, height: 60, color: 'CadetBlue '},//上 "#00d084"
-      {x: this.W/2-this.RoadW - 10, y: this.H - 100, width: 140, height: 60, color: "DarkSlateBlue "}//下 #9b51e0
+      {x: this.W - 100, y: this.H/2 - this.RoadW - 10, width: 60, height: 140, color: "#cf2e2e"},//右
+      {x: this.W/2-this.RoadW - 10, y: 40, width: 140, height: 60, color: "#00d084"},//上
+      {x: this.W/2-this.RoadW - 10, y: this.H - 100, width: 140, height: 60, color: "#9b51e0"}//下
     ]
     this.startPositions = startPositions;
     this.drawStartPosition(startPositions);
-    
     //绑定点击事件，当点击彩色区域时，会创建新的车的实例
     // this.initClickEvent();
     this.setTrafficLXAndY();
@@ -322,7 +298,7 @@ export default {
   // width:1008px;
   // height:540px;
   position: absolute;
-  background: #283a77;//#3F6FBB#1f3a66
+  background: #3F6FBB;
 }
 .MyCanvas {
   position: relative;
@@ -351,7 +327,7 @@ p{
 .NormalCar {
     position: absolute;
 }
-.trL {
+.trafficLight {
   position: absolute;
   top: 50%;
   left: 48%;

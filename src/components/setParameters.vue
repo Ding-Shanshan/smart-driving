@@ -71,42 +71,12 @@ export default {
             isruning : false
         }
     },
-    watch:{
-        light(val){
-            if(val=='默认'){
-                this.$emit('moren',true);
-                this.light2='默认';
-                this.trLight2();
-            }else{
-                this.$emit('moren',false);
-            }
-        },
-        light2(val){
-            if(val=='默认'){
-                this.$emit('moren',true);
-                this.light='默认';
-                this.trLight1();
-            }else{
-                this.$emit('moren',false);
-            }
-        }
-    },
     methods: {
         run() {
             console.log(this.parameters);
             this.$emit('createCar',this.parameters);
             this.isruning = true
-            this.$emit('runchange',[this.isruning,this.parameters]);
-        },
-        reset(){
-            this.isruning = false
-            this.$emit('runchange',this.isruning);
-        },
-        trLight1(){
-            this.$emit('trLight1',this.light);
-        },
-        trLight2(){
-            this.$emit('trLight2',this.light2);
+            this.$emit('runchange',[this.isruning,this.parameters])
         }
     },
     setup() {

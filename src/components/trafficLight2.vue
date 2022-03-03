@@ -14,8 +14,7 @@ import { MyTrafficLight } from "../assets/js/trafficLightTest.js"
 
 export default {
   name: "TrafficLight2",
-  props:['isRun','trLight1'],
-  setup(props) {
+  setup() {
     const myTraffic = ref(null)
 
     const store = useStore()

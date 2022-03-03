@@ -304,7 +304,7 @@ let Car = {
                             obsFlag = 1;
                         }
                     }
-                    if(sy === 310){
+                    if(sy === 312){
                         downToUpCars.push(car.index);
                     }else if(sy === 190){
                         downToUpCars.shift();

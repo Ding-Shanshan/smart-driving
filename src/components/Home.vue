@@ -8,14 +8,14 @@
             <!-- 主体 -->
             <el-main>
                 <div class="simulationDiagram">
-                    <simulationDiagram ref="moving" :isRun="isrun" :changeL1="light1" :changeL2="light2" :mr="isMoren"></simulationDiagram>
+                    <simulationDiagram ref="moving"></simulationDiagram>
                 </div>
             </el-main>
             <!-- 侧边栏 -->
             <el-aside width="300px">
                 <!-- 参数调节面板 -->
                 <div class="setParameters">
-                    <setParameters  @createCar="createCar" @runchange="isRun" @trLight1="changeL1" @trLight2="changeL2" @moren="mr"></setParameters>
+                    <setParameters  @createCar="createCar" @runchange="isRun"></setParameters>
                 </div>
                 <!-- 运行结果面板 -->
                 <div class="printResult">
@@ -34,10 +34,7 @@ import printResult from "@/components/printResult.vue"
 export default {
     data(){
         return{
-            isrun:false,
-            light1:'默认',
-            light2:'默认',
-            isMoren:false
+            isrun:false
         }
     },
     components:{
@@ -47,7 +44,7 @@ export default {
     },
     methods : {
         createCar(data) {
-            // console.log(data);
+            console.log(data);
             this.$refs.moving.textConnection(data);
         },
         isRun(val) {
@@ -61,16 +58,6 @@ export default {
                 if(number === val[1].totalNum*1)
                 vm.isrun = false;
             }
-        },
-        changeL1(val){
-            this.light1=val
-        },
-        changeL2(val){
-            this.light2=val
-        },
-        mr(val){
-            this.isMoren=val
-            
         }
     }
 }
