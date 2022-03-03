@@ -62,9 +62,8 @@ export default {
         return {
             // 参数对象
             parameters: {
-                totalNum: '',
-                proportion:'',
-                smartCarSpeed:'',
+                totalNum: '30',
+                proportion:'0.5',
             },
             light:'默认',
             light2:'默认',
@@ -96,7 +95,7 @@ export default {
             console.log(this.parameters);
             this.$emit('createCar',this.parameters);
             this.isruning = true
-            this.$emit('runchange',this.isruning)
+            this.$emit('runchange',[this.isruning,this.parameters]);
         },
         reset(){
             this.isruning = false
