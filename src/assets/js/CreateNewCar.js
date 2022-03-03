@@ -1,26 +1,27 @@
 import { createStructuralDirectiveTransform } from "@vue/compiler-core";
 import { del } from "vue-demi";
 import { intersectionBTOA, intersectionATOB, intersectionCTOD, intersectionDTOC, intersectionDTOA, intersectionATOC, intersectionCTOB, intersectionBTOD } from "./intersection.js"
-var number = 0;
+window.number = 0;
 
 function carNumber() {
-    number = number + 1;
+    window.number = window.number + 1;
+    console.log(window.number);
 }
 // 路口直行车组
-let downToUpCars=new Array(); // 路口中从下到上的车
-let upToDownCars=new Array(); // 路口中从上到下的车
-let rightToLeftCars=new Array(); // 路口中从右到左的车
-let leftToRightCars=new Array(); // 路口中从左到右的车
+let downToUpCars = new Array(); // 路口中从下到上的车
+let upToDownCars = new Array(); // 路口中从上到下的车
+let rightToLeftCars = new Array(); // 路口中从右到左的车
+let leftToRightCars = new Array(); // 路口中从左到右的车
 // 右转大队
-let downToRightCars=new Array();
-let upToLeftCars=new Array();
-let leftToDownCars=new Array(); // 路口中从左到下的车
-let rightToUpCars=new Array(); // 路口中右到上的车
+let downToRightCars = new Array();
+let upToLeftCars = new Array();
+let leftToDownCars = new Array(); // 路口中从左到下的车
+let rightToUpCars = new Array(); // 路口中右到上的车
 // 左转大队
-let downToLeftCars=new Array(); // 路口中从下到左的车
-let upToRightCars=new Array();
-let rightToDownCars=new Array();
-let leftToUpCars=new Array();
+let downToLeftCars = new Array(); // 路口中从下到左的车
+let upToRightCars = new Array();
+let rightToDownCars = new Array();
+let leftToUpCars = new Array();
 
 let Car = {
     createNewCar: function(rootSelf, type, sourcePlace, targetPlace, index) {
@@ -42,8 +43,7 @@ let Car = {
         let lightlist = light[0].childNodes;
         let light1 = document.querySelectorAll('#trafficL1')
         let lightlist1 = light1[0].childNodes;
-        car.showInfo = function() {
-        };
+        car.showInfo = function() {};
         // 下到左左转
         car.drawDToA = function(_self, sx, sy) {
             let father = document.getElementsByClassName("MyCanvas")[0];
@@ -61,32 +61,31 @@ let Car = {
             normalCar.style.top = sy + "px";
             try {
                 father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
-            } catch (err) {
-            }
+            } catch (err) {}
             father.appendChild(normalCar);
             let id = setInterval(frame, 30);
 
             function frame() {
                 {
-                    let ifCar=upToDownCars.length===0&&upToLeftCars.length===0&&upToRightCars.length===0;
+                    let ifCar = upToDownCars.length === 0 && upToLeftCars.length === 0 && upToRightCars.length === 0;
                     if (car.type == 'NormalCar') {
                         // 普通车
                         if (sy === 360) {
                             // 判断路口情况 jxd
-                            if(ifCar){
+                            if (ifCar) {
                                 sign = intersectionDTOA(sy, lightlist1, car.type);
-                            }else{
-                                sign=2;
+                            } else {
+                                sign = 2;
                             }
                         }
                     } else {
                         // 智能车
                         if (sy === 334) {
                             // 判断路口情况 jxd
-                            if(ifCar){
+                            if (ifCar) {
                                 sign = intersectionDTOA(sy, lightlist1, car.type);
-                            }else{
-                                sign=2;
+                            } else {
+                                sign = 2;
                             }
                         }
                     }
@@ -106,7 +105,7 @@ let Car = {
                                 slowdown = 0;
                             }
                             if (slowdown <= 0) {
-                                if(ifCar){
+                                if (ifCar) {
                                     sign = intersectionDTOA(sy, lightlist1, car.type);
                                 }
                             } else {
@@ -175,8 +174,7 @@ let Car = {
             normalCar.style.top = sy + "px";
             try {
                 father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
-            } catch (err) {
-            }
+            } catch (err) {}
             father.appendChild(normalCar);
             let id = setInterval(frame, 30);
 
@@ -250,13 +248,12 @@ let Car = {
             _self.obstructsInAllRoads[car.sourcePlace + car.targetPlace].push(car.y);
             try {
                 father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
-            } catch (err) {
-            }
+            } catch (err) {}
             father.appendChild(normalCar);
             let id = setInterval(frame, 30);
 
             function frame() {
-                let ifCar=upToRightCars.length===0&&rightToUpCars.length===0;
+                let ifCar = upToRightCars.length === 0 && rightToUpCars.length === 0;
                 if (sy <= 100) {
                     clearInterval(id);
                     carNumber();
@@ -277,10 +274,10 @@ let Car = {
                         // 普通车
                         if (sy === 360) {
                             // 判断路口情况 jxd
-                            if(ifCar){
+                            if (ifCar) {
                                 sign = intersectionDTOC(sy, lightlist1, car.type);
-                            }else{
-                                sign =2;
+                            } else {
+                                sign = 2;
                             }
                         }
                         if (obsFlag === 2 || sign === 2) {
@@ -292,10 +289,10 @@ let Car = {
                         // 智能车
                         if (sy === 334) {
                             // 判断路口情况 jxd
-                            if(ifCar){
+                            if (ifCar) {
                                 sign = intersectionDTOC(sy, lightlist1, car.type);
-                            }else{
-                                sign =2;
+                            } else {
+                                sign = 2;
                             }
                         }
                         if (obsFlag === 2 || sign === 2) {
@@ -304,9 +301,9 @@ let Car = {
                             obsFlag = 1;
                         }
                     }
-                    if(sy === 312){
+                    if (sy === 312) {
                         downToUpCars.push(car.index);
-                    }else if(sy === 190){
+                    } else if (sy === 190) {
                         downToUpCars.shift();
                     }
                     // 根据车辆预计行驶状态，控制车辆进行行驶 jxd
@@ -327,7 +324,7 @@ let Car = {
                                         nowLight1 = lightlist[i].className; //获取红绿灯
                                     }
                                 }
-                                if (nowLight1 == "green"&&ifCar) {
+                                if (nowLight1 == "green" && ifCar) {
                                     sign = 1;
                                 } else {
                                     sign = 2;
@@ -349,7 +346,7 @@ let Car = {
                                 } else {
                                     obsFlag = 3
                                 }
-                                if(ifCar){
+                                if (ifCar) {
                                     sign = intersectionDTOC(sy, lightlist1, car.type);
                                 }
                                 if (obsFlag === 2 || sign === 2) {
@@ -402,8 +399,7 @@ let Car = {
             normalCar.style.top = sy + "px";
             try {
                 father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
-            } catch (err) {
-            }
+            } catch (err) {}
             father.appendChild(normalCar);
             let id = setInterval(frame, 30);
 
@@ -433,7 +429,7 @@ let Car = {
                     normalCar.style.top = sy + "px";
                 }
             }
-            
+
         };
         car.drawTopToDownLines = function(_self, sx, sy) {
             let father = document.getElementsByClassName("MyCanvas")[0];
@@ -467,30 +463,29 @@ let Car = {
             normalCar.style.top = sy + "px";
             try {
                 father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
-            } catch (err) {
-            }
+            } catch (err) {}
             father.appendChild(normalCar);
             let id = setInterval(frame, 30);
 
             function frame() {
                 {
-                    let ifCar=rightToLeftCars.length===0&&rightToUpCars.length===0&&rightToDownCars.length===0;
+                    let ifCar = rightToLeftCars.length === 0 && rightToUpCars.length === 0 && rightToDownCars.length === 0;
                     if (car.type == 'NormalCar') {
                         if (sx === 370) {
                             // 判断路口情况 jxd
-                            if(ifCar){
+                            if (ifCar) {
                                 sign = intersectionATOC(sx, lightlist, car.type);
-                            }else{
-                                sign=2;
+                            } else {
+                                sign = 2;
                             }
                         }
                     } else {
                         if (sx === 394) {
                             // 判断路口情况 jxd
-                            if(ifCar){
+                            if (ifCar) {
                                 sign = intersectionATOC(sx, lightlist, car.type);
-                            }else{
-                                sign=2;
+                            } else {
+                                sign = 2;
                             }
                         }
                     }
@@ -508,7 +503,7 @@ let Car = {
                                 slowdown = 0;
                             }
                             if (slowdown <= 0) {
-                                if(ifCar){
+                                if (ifCar) {
                                     sign = intersectionATOC(sx, lightlist, car.type);
                                 }
                             } else {
@@ -586,13 +581,12 @@ let Car = {
             _self.obstructsInAllRoads[car.sourcePlace + car.targetPlace].push(car.x);
             try {
                 father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
-            } catch (err) {
-            }
+            } catch (err) {}
             father.appendChild(normalCar);
             let id = setInterval(frame, 30);
 
             function frame() {
-                let ifCar=rightToDownCars.length===0&&downToRightCars.length===0;
+                let ifCar = rightToDownCars.length === 0 && downToRightCars.length === 0;
                 if (sx >= _self.W - 100) {
                     clearInterval(id);
                     carNumber();
@@ -612,10 +606,10 @@ let Car = {
                     if (car.type == 'NormalCar') {
                         if (sx === 370) {
                             // 判断路口情况 jxd
-                            if(ifCar){
+                            if (ifCar) {
                                 sign = intersectionATOB(sx, lightlist, car.type);
-                            }else{
-                                sign=2;
+                            } else {
+                                sign = 2;
                             }
                         }
                         if (obsFlag === 2 || sign === 2) {
@@ -626,10 +620,10 @@ let Car = {
                     } else {
                         if (sx === 394) {
                             // 判断路口情况 jxd
-                            if(ifCar){
+                            if (ifCar) {
                                 sign = intersectionATOB(sx, lightlist, car.type);
-                            }else{
-                                sign=2;
+                            } else {
+                                sign = 2;
                             }
                         }
                         if (obsFlag === 2 || sign === 2) {
@@ -638,9 +632,9 @@ let Car = {
                             obsFlag = 1;
                         }
                     }
-                    if(sx ===440){
+                    if (sx === 440) {
                         leftToRightCars.push(car.index);
-                    }else if(sx===560){
+                    } else if (sx === 560) {
                         leftToRightCars.shift();
                     }
 
@@ -662,7 +656,7 @@ let Car = {
                                         nowLight1 = lightlist[i].className; //获取红绿灯
                                     }
                                 }
-                                if (nowLight1 == "green"&&ifCar) {
+                                if (nowLight1 == "green" && ifCar) {
                                     sign = 1;
                                 } else {
                                     sign = 2;
@@ -684,7 +678,7 @@ let Car = {
                                 } else {
                                     obsFlag = 1;
                                 }
-                                if(ifCar){
+                                if (ifCar) {
                                     sign = intersectionATOB(sx, lightlist, car.type);
                                 }
                                 if (obsFlag === 2 || sign === 2) {
@@ -740,30 +734,29 @@ let Car = {
             normalCar.style.top = sy + "px";
             try {
                 father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
-            } catch (err) {
-            }
+            } catch (err) {}
             father.appendChild(normalCar);
             let id = setInterval(frame, 30);
 
             function frame() {
                 {
-                    let ifCar=downToUpCars.length===0&&downToLeftCars.length===0&&downToRightCars.length===0;
+                    let ifCar = downToUpCars.length === 0 && downToLeftCars.length === 0 && downToRightCars.length === 0;
                     if (car.type == 'NormalCar') {
                         if (sy === 118) {
                             // 判断路口情况 jxd
-                            if(ifCar){
+                            if (ifCar) {
                                 sign = intersectionCTOB(sy, lightlist1, car.type);
-                            }else{
-                                sign=2;
+                            } else {
+                                sign = 2;
                             }
                         }
                     } else {
                         if (sy === 142) {
                             // 判断路口情况 jxd
-                            if(ifCar){
+                            if (ifCar) {
                                 sign = intersectionCTOB(sy, lightlist1, car.type);
-                            }else{
-                                sign=2;
+                            } else {
+                                sign = 2;
                             }
                         }
                     }
@@ -783,7 +776,7 @@ let Car = {
                                 slowdown = 0;
                             }
                             if (slowdown <= 0) {
-                                if(ifCar){
+                                if (ifCar) {
                                     sign = intersectionCTOB(sy, lightlist1, car.type);
                                 }
                             } else {
@@ -833,14 +826,13 @@ let Car = {
             normalCar.style.top = sy + "px";
             try {
                 father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
-            } catch (err) {
-            }
+            } catch (err) {}
             father.appendChild(normalCar);
             let id = setInterval(frame, 30);
 
             function frame() {
                 if (sy === _self.H / 2 - _self.RoadW - _self.carH) {
-                    upToLeftCars.push(car.index);                    
+                    upToLeftCars.push(car.index);
                     clearInterval(id);
                     //加上旋转属性
                     let normalCar = document.getElementsByClassName(car.type + car.index)[0];
@@ -890,13 +882,12 @@ let Car = {
             // console.log(_self.obstructsInAllRoads[car.sourcePlace + car.targetPlace]);
             try {
                 father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
-            } catch (err) {
-            }
+            } catch (err) {}
             father.appendChild(normalCar);
             let id = setInterval(frame, 30);
 
             function frame() {
-                let ifCar=downToLeftCars.length===0&&leftToDownCars.length===0;
+                let ifCar = downToLeftCars.length === 0 && leftToDownCars.length === 0;
                 if (sy >= _self.H - 100) {
                     clearInterval(id);
                     carNumber();
@@ -916,12 +907,12 @@ let Car = {
                     if (car.type == 'NormalCar') {
                         if (sy === 118) {
                             // 判断路口情况 jxd
-                            if(ifCar){
+                            if (ifCar) {
                                 sign = intersectionCTOD(sy, lightlist1, car.type);
-                            }else{
-                                sign=2;
+                            } else {
+                                sign = 2;
                             }
-                        } 
+                        }
                         if (obsFlag === 2 || sign === 2) {
                             obsFlag = 2;
                         } else {
@@ -930,10 +921,10 @@ let Car = {
                     } else {
                         if (sy === 142) {
                             // 判断路口情况 jxd
-                            if(ifCar){
+                            if (ifCar) {
                                 sign = intersectionCTOD(sy, lightlist1, car.type);
-                            }else{
-                                sign=2;
+                            } else {
+                                sign = 2;
                             }
                         }
                         if (obsFlag === 2 || sign === 2) {
@@ -942,9 +933,9 @@ let Car = {
                             obsFlag = 1;
                         }
                     }
-                    if(sy===170){
+                    if (sy === 170) {
                         upToDownCars.push(car.index);
-                    }else if(sy===310){
+                    } else if (sy === 310) {
                         upToDownCars.shift();
                     }
                     // 根据车辆预计行驶状态，控制车辆进行行驶 jxd
@@ -965,7 +956,7 @@ let Car = {
                                         nowLight1 = lightlist[i].className; //获取红绿灯
                                     }
                                 }
-                                if (nowLight1 == "green"&&ifCar) {
+                                if (nowLight1 == "green" && ifCar) {
                                     sign = 1;
                                 } else {
                                     sign = 2;
@@ -987,7 +978,7 @@ let Car = {
                                 } else {
                                     obsFlag = 1;
                                 }
-                                if(ifCar){
+                                if (ifCar) {
                                     sign = intersectionCTOD(sy, lightlist1, car.type);
                                 }
                                 if (obsFlag === 2 || sign === 2) {
@@ -1026,7 +1017,7 @@ let Car = {
                     _self.obstructsInAllRoads[car.sourcePlace + car.targetPlace][car.pathIdx] = car.y;
                 }
             }
-            
+
         };
         // 右到上右转
         car.drawBToC = function(_self, sx, sy) {
@@ -1042,8 +1033,7 @@ let Car = {
             normalCar.style.top = sy + "px";
             try {
                 father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
-            } catch (err) {
-            }
+            } catch (err) {}
             father.appendChild(normalCar);
             let id = setInterval(frame, 30);
 
@@ -1093,30 +1083,29 @@ let Car = {
             normalCar.style.top = sy + "px";
             try {
                 father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
-            } catch (err) {
-            }
+            } catch (err) {}
             father.appendChild(normalCar);
             let id = setInterval(frame, 30);
 
             function frame() {
                 {
-                    let ifCar = leftToRightCars.length===0&&leftToUpCars.length===0&&leftToDownCars.length===0;
+                    let ifCar = leftToRightCars.length === 0 && leftToUpCars.length === 0 && leftToDownCars.length === 0;
                     if (car.type == 'NormalCar') {
                         if (sx === 610) {
                             // 判断路口情况 jxd
-                            if(ifCar){
+                            if (ifCar) {
                                 sign = intersectionBTOD(sx, lightlist, car.type);
-                            }else{
-                                sign=2;
+                            } else {
+                                sign = 2;
                             }
                         }
                     } else {
                         if (sx === 586) {
                             // 判断路口情况 jxd
-                            if(ifCar){
+                            if (ifCar) {
                                 sign = intersectionBTOD(sx, lightlist, car.type);
-                            }else{
-                                sign=2;
+                            } else {
+                                sign = 2;
                             }
                         }
                     }
@@ -1135,7 +1124,7 @@ let Car = {
                                 slowdown = 0;
                             }
                             if (slowdown <= 0) {
-                                if(ifCar){
+                                if (ifCar) {
                                     sign = intersectionBTOD(sx, lightlist, car.type);
                                 }
                             } else {
@@ -1195,13 +1184,12 @@ let Car = {
             _self.obstructsInAllRoads[car.sourcePlace + car.targetPlace].push(car.x);
             try {
                 father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
-            } catch (err) {
-            }
+            } catch (err) {}
             father.appendChild(normalCar);
             let id = setInterval(frame, 30);
 
             function frame() {
-                let ifCar=leftToUpCars.length===0&&upToLeftCars.length===0;
+                let ifCar = leftToUpCars.length === 0 && upToLeftCars.length === 0;
                 if (sx <= 100) {
                     carNumber();
                     clearInterval(id);
@@ -1221,10 +1209,10 @@ let Car = {
                     if (car.type == 'NormalCar') {
                         if (sx === 610) {
                             // 判断路口情况 jxd
-                            if(ifCar){
+                            if (ifCar) {
                                 sign = intersectionBTOA(sx, lightlist, car.type);
-                            }else{
-                                sign=2;
+                            } else {
+                                sign = 2;
                             }
                         }
                         if (obsFlag === 2 || sign === 2) {
@@ -1235,10 +1223,10 @@ let Car = {
                     } else {
                         if (sx === 586) {
                             // 判断路口情况 jxd
-                            if(ifCar){
+                            if (ifCar) {
                                 sign = intersectionBTOA(sx, lightlist, car.type);
-                            }else{
-                                sign=2;
+                            } else {
+                                sign = 2;
                             }
                         }
                         if (obsFlag === 2 || sign === 2) {
@@ -1247,9 +1235,9 @@ let Car = {
                             obsFlag = 1;
                         }
                     }
-                    if(sx===560){
+                    if (sx === 560) {
                         rightToLeftCars.push(car.index);
-                    }else if(sx===420){
+                    } else if (sx === 420) {
                         rightToLeftCars.shift();
                     }
 
@@ -1271,7 +1259,7 @@ let Car = {
                                         nowLight1 = lightlist[i].className; //获取红绿灯
                                     }
                                 }
-                                if (nowLight1 == "green"&&ifCar) {
+                                if (nowLight1 == "green" && ifCar) {
                                     sign = 1;
                                 } else {
                                     sign = 2;
@@ -1293,7 +1281,7 @@ let Car = {
                                 } else {
                                     obsFlag = 3
                                 }
-                                if(ifCar){
+                                if (ifCar) {
                                     sign = intersectionBTOA(sx, lightlist, car.type);
                                 }
                                 if (obsFlag === 2 || sign === 2) {
@@ -1342,5 +1330,4 @@ let Car = {
 
 export {
     Car,
-    number
 }
