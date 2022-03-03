@@ -1,6 +1,6 @@
 <template>
     <div>
-        <el-collapse v-model="activeNames" @change="handleChange">
+        <el-collapse>
         <el-collapse-item title="车辆参数" name="1">
         <el-form class="vehicleParameter" ref="parametersRef" :model="parameters" label-width="100px">
             <!-- 车辆总数 -->
@@ -26,7 +26,7 @@
             <!-- 运行 -->
             <el-form-item class="run">
                 <el-button type="primary" @click="run">运行</el-button>
-                <el-button>取消</el-button>
+                <el-button>重置</el-button>
             </el-form-item>
         </el-form>
         </el-collapse-item>
@@ -35,7 +35,7 @@
             <!-- 上下方向红绿灯 -->
             <div class="light">
                 <span>纵向红绿灯：</span>
-                <el-radio-group v-model="light">
+                <el-radio-group v-model="light" @click="changeLightTwo">
                     <el-radio-button label="红灯"></el-radio-button>
                     <el-radio-button label="绿灯"></el-radio-button>
                     <el-radio-button label="默认"></el-radio-button>
@@ -44,7 +44,7 @@
             <!-- 左右方向红绿灯 -->
             <div class="light2">
                 <span>横向红绿灯：</span>
-                <el-radio-group v-model="light2">
+                <el-radio-group v-model="light2" @click="changeLightOne">
                     <el-radio-button label="红灯"></el-radio-button>
                     <el-radio-button label="绿灯"></el-radio-button>
                     <el-radio-button label="默认"></el-radio-button>
@@ -57,6 +57,7 @@
 </template>
 
 <script>
+import { useStore } from "vuex"
 export default {
     data() {
         return {
@@ -107,7 +108,20 @@ export default {
         trLight2(){
             this.$emit('trLight2',this.light2);
         }
-    }
+    },
+    setup() {
+        const store = useStore()
+        const changeLightOne = (e) => {
+            store.commit("changeLightOne", e.target.value)
+        }
+        const changeLightTwo = (e) => {
+            store.commit("changeLightTwo", e.target.value)
+        }
+        return {
+            changeLightOne,
+            changeLightTwo,
+        }
+    },
 }
 </script>
 

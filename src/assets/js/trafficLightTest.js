@@ -14,11 +14,8 @@ export class MyTrafficLight {
     this.count = 0;
     // 当前灯状态
     this.state = 'green';
-    // 
+    // 计时器
     this.timer = null;
-
-    // 默认执行
-    this.default();
   }
 
   // 获取当前灯的状态
@@ -26,79 +23,94 @@ export class MyTrafficLight {
     return this.state;
   }
 
+  // 更改默认颜色
+  changeDefaultColor(color) {
+    this.state = color
+    console.log(this.state);
+  }
+
   // 排他
   antiElse(color) {
     ['.green', '.yellow', '.red'].forEach(item => {
       this.contrainer.querySelector(item).style.opacity = 0.1;
     })
-    this.contrainer.querySelector(color).style.opacity = 1;
+    // console.log(this.contrainer.querySelector(color).style.opacity = 1)
+    this.contrainer.querySelector(`.${color}`).style.opacity = 1;
   }
 
   // 默认效果
-  default() {
-    clearInterval(this.timer);
+  default(color) {
     // 默认从绿灯开始，如果需要其他颜色，修改下面两行
-    this.count = this.greenTime;
-    this.antiElse('.green');
+    switch (color) {
+      case 'green':
+        this.count = this.greenTime;
+        this.state = "green"
+        break;
+
+      case 'yellow':
+        this.count = this.yellowTime;
+        this.state = "yellow"
+        break;
+
+      case 'red':
+        this.count = this.redTime;
+        this.state = "red"
+        break;
+
+      default:
+        break;
+    }
+    // this.count = this.greenTime;
+    // this.antiElse(this.state);
+    this.changeColor(this.state)
     // 更换思路，每隔一秒判断一次灯是否到时间
     this.timer = setInterval(() => {
       switch (this.state) {
         case 'green':
           if (this.count) {
-            // this.count--
-            this.count-=0.5
+            this.count -= 10;
           } else {
             this.count = this.yellowTime;
             this.state = 'yellow';
-            this.antiElse('.yellow');
+            this.antiElse('yellow');
           }
           break;
 
         case 'yellow':
           if (this.count) {
-            this.count-=0.5
+            this.count -= 10
           } else {
             this.count = this.redTime;
             this.state = 'red';
-            this.antiElse('.red');
+            this.antiElse('red');
           }
           break;
 
         case 'red':
           if (this.count) {
-            this.count-=0.5
+            this.count -= 10
           } else {
-            this.count = this.yellowTime;
-            this.state = 'yellow2';
-            this.antiElse('.yellow');
+            this.count = this.greenTime;
+            this.state = 'green';
+            this.antiElse('green');
           }
           break;
-        
-        case 'yellow2':
-        if (this.count) {
-          this.count-=0.5
-        } else {
-          this.count = this.greenTime;
-          this.state = 'green';
-          this.antiElse('.green');
-        }
-        break;
 
         default:
           break;
       }
-    }, 500)
+    }, 10)
   }
 
   // 更改颜色
   changeColor(color) {
     /**
-     * @param {string} color 颜色的类名('.red')
+     * @param {string} color 颜色('red')
      */
     // 清除默认效果
-    clearInterval(this.timer);
+    // clearInterval(this.timer);
+    this.timer = clearInterval(this.timer);
     // 改变颜色
     this.antiElse(color);
   }
 }
-

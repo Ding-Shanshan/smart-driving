@@ -15,7 +15,7 @@
       <div class="Light">
         <trafficLight :isRun="isR" :trLight2="light2" :Moren="isMr" class="trL" id="trafficL0" ></trafficLight>
         <!-- 左右向红绿灯 -->
-        <trafficLight2 :isRun="isR" :trLight1="light1" :Moren="isMr" class="trL" id="trafficL1" ></trafficLight2>
+        <!-- <trafficLight2  class="trafficLight" id="trafficL1" ></trafficLight2> -->
         <!-- 上下向红绿灯 -->
       </div>
       <!-- <div class="trafficLight">
@@ -90,13 +90,17 @@ export default {
     },
     setTrafficLXAndY(){
       // 上下方向红绿灯
-      let trafficL = document.getElementsByClassName("trL")[1];
-      trafficL.style.top = (this.H/2-this.RoadW-32) + "px";
-      trafficL.style.left = (this.W/2+this.RoadW - 4) + "px"; 
+      let trafficL = document.getElementsByClassName("trafficLight")[1];
+      // trafficL.style.top = (this.H/2-this.RoadW-32) + "px";
+      // trafficL.style.left = (this.W/2+this.RoadW - 4) + "px"; 
+      trafficL.style.top = 180 + "px"
+      trafficL.style.left = 465 + "px"
       // 左右方向红绿灯
-      let trafficL2 = document.getElementsByClassName("trL")[0];
-      trafficL2.style.top = (this.H/2 + this.RoadW + 16) + "px";
-      trafficL2.style.left = (this.W/2 - this.RoadW -50) + "px";
+      let trafficL2 = document.getElementsByClassName("trafficLight")[0];
+      // trafficL2.style.top = (this.H/2 + this.RoadW + 16) + "px";
+      // trafficL2.style.left = (this.W/2 - this.RoadW -50) + "px";
+      trafficL2.style.top = 210 + "px"
+      trafficL2.style.left = 430 + "px"
     },
     //绘制道路边缘线
     drawLine(x,y,x1,y1){
@@ -154,16 +158,16 @@ export default {
         else{
         let Places = ["A","B","C","D"];
           // 测试注释
-        let sourceIdx = Math.floor(Math.random()*4);
-        let targetIdx = Math.floor(Math.random()*4);
-        // 避免起点终点重叠
-        if(targetIdx===sourceIdx){
-          targetIdx=(targetIdx+1)%4;
-        }
-        let targetPlace = Places[targetIdx];
-        let sourcePlace = Places[sourceIdx];
-        // let sourcePlace = Places[0];
-        //  let targetPlace = Places[1];
+         let sourceIdx = Math.floor(Math.random()*4);
+         let targetIdx = Math.floor(Math.random()*4);
+         // 避免起点终点重叠
+         if(targetIdx===sourceIdx){
+           targetIdx=(targetIdx+1)%4;
+         }
+         let targetPlace = Places[targetIdx];
+         let sourcePlace = Places[sourceIdx];
+      //  let sourcePlace = Places[3];
+       //  let targetPlace = Places[2];
         // let carIdx = document.getElementsByTagName("img").length-2;
         // let car = Car.createNewCar("Normal","A",targetPlace,carIdx);
         let car = undefined
@@ -205,23 +209,23 @@ export default {
         
         // car.showInfo();
         if(rootSelf.AllCar[rootSelf.carIdx].sourcePlace === "D" && rootSelf.AllCar[rootSelf.carIdx].targetPlace ==="A"){
-          // rootSelf.AllCar[rootSelf.carIdx].drawDToA(rootSelf,rootSelf.W / 2 + (rootSelf.RoadW-rootSelf.carW)/2 ,rootSelf.H - 100);
+          rootSelf.AllCar[rootSelf.carIdx].drawDToA(rootSelf,rootSelf.W / 2 + (rootSelf.RoadW-rootSelf.carW)/2 ,rootSelf.H - 100);
         }
         if(rootSelf.AllCar[rootSelf.carIdx].sourcePlace === "D" && rootSelf.AllCar[rootSelf.carIdx].targetPlace==="C") {
           rootSelf.AllCar[rootSelf.carIdx].drawDToC(rootSelf,rootSelf.W / 2 + (rootSelf.RoadW-rootSelf.carW)/2 ,rootSelf.H - 100);
         }
         if(rootSelf.AllCar[rootSelf.carIdx].sourcePlace === "D" && rootSelf.AllCar[rootSelf.carIdx].targetPlace==="B") {
-          // rootSelf.AllCar[rootSelf.carIdx].drawDToB(rootSelf,rootSelf.W / 2 + (rootSelf.RoadW-rootSelf.carW)/2 ,rootSelf.H - 100);
+          rootSelf.AllCar[rootSelf.carIdx].drawDToB(rootSelf,rootSelf.W / 2 + (rootSelf.RoadW-rootSelf.carW)/2 ,rootSelf.H - 100);
         } 
         if(rootSelf.AllCar[rootSelf.carIdx].sourcePlace === "D" && rootSelf.AllCar[rootSelf.carIdx].targetPlace==="D") {
           ;
         }
 
         if(rootSelf.AllCar[rootSelf.carIdx].sourcePlace === "A" && rootSelf.AllCar[rootSelf.carIdx].targetPlace==="D") {
-          // rootSelf.AllCar[rootSelf.carIdx].drawAToD(rootSelf, 100, rootSelf.H / 2 + 20);
+          rootSelf.AllCar[rootSelf.carIdx].drawAToD(rootSelf, 100, rootSelf.H / 2 + 20);
         }
         if(rootSelf.AllCar[rootSelf.carIdx].sourcePlace === "A" && rootSelf.AllCar[rootSelf.carIdx].targetPlace==="C") {
-          // rootSelf.AllCar[rootSelf.carIdx].drawAToC(rootSelf, 100, rootSelf.H / 2 + 20);
+          rootSelf.AllCar[rootSelf.carIdx].drawAToC(rootSelf, 100, rootSelf.H / 2 + 20);
         }
         if(rootSelf.AllCar[rootSelf.carIdx].sourcePlace === "A" && rootSelf.AllCar[rootSelf.carIdx].targetPlace==="B") {
           rootSelf.AllCar[rootSelf.carIdx].drawAToB(rootSelf, 100, rootSelf.H / 2 + 20);
@@ -234,17 +238,17 @@ export default {
           rootSelf.AllCar[rootSelf.carIdx].drawCToD(rootSelf, rootSelf.W / 2 -rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2), 100);
         }
         if(rootSelf.AllCar[rootSelf.carIdx].sourcePlace === "C" && rootSelf.AllCar[rootSelf.carIdx].targetPlace==="A") {
-          // rootSelf.AllCar[rootSelf.carIdx].drawCToA(rootSelf, rootSelf.W / 2 -rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2), 100);
+          rootSelf.AllCar[rootSelf.carIdx].drawCToA(rootSelf, rootSelf.W / 2 -rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2), 100);
         }
         if(rootSelf.AllCar[rootSelf.carIdx].sourcePlace === "C" && rootSelf.AllCar[rootSelf.carIdx].targetPlace==="B") {
-          // rootSelf.AllCar[rootSelf.carIdx].drawCToB(rootSelf, rootSelf.W / 2 -rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2), 100);
+          rootSelf.AllCar[rootSelf.carIdx].drawCToB(rootSelf, rootSelf.W / 2 -rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2), 100);
         }
         if(rootSelf.AllCar[rootSelf.carIdx].sourcePlace === "C" && rootSelf.AllCar[rootSelf.carIdx].targetPlace==="C") {
           ;
         }
 
         if(rootSelf.AllCar[rootSelf.carIdx].sourcePlace === "B" && rootSelf.AllCar[rootSelf.carIdx].targetPlace==="D") {
-          // rootSelf.AllCar[rootSelf.carIdx].drawBToD(rootSelf, rootSelf.W - 100, rootSelf.H / 2 - rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2));
+          rootSelf.AllCar[rootSelf.carIdx].drawBToD(rootSelf, rootSelf.W - 100, rootSelf.H / 2 - rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2));
         }
         if(rootSelf.AllCar[rootSelf.carIdx].sourcePlace === "B" && rootSelf.AllCar[rootSelf.carIdx].targetPlace==="A") {
           rootSelf.AllCar[rootSelf.carIdx].drawBToA(rootSelf, rootSelf.W - 100, rootSelf.H / 2 - rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2));
@@ -253,7 +257,7 @@ export default {
           ;
         }
         if(rootSelf.AllCar[rootSelf.carIdx].sourcePlace === "B" && rootSelf.AllCar[rootSelf.carIdx].targetPlace==="C") {
-          // rootSelf.AllCar[rootSelf.carIdx].drawBToC(rootSelf, rootSelf.W - 100, rootSelf.H / 2 - rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2));
+          rootSelf.AllCar[rootSelf.carIdx].drawBToC(rootSelf, rootSelf.W - 100, rootSelf.H / 2 - rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2));
         }
         }
         rootSelf.carIdx++;

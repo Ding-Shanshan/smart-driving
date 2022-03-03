@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-collapse v-model="activeNames" @change="handleChange">
+    <el-collapse>
       <el-collapse-item title="运行结果" name="1">
         <!-- <h4>运行结果</h4> -->
         <h4 id=mytime>{{runtime}}</h4>
