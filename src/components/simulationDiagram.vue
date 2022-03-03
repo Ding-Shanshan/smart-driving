@@ -177,7 +177,7 @@ export default {
         else{
           rootSelf.obstructsInAllRoads[sourcePlace+targetPlace] = [];
         }
-        console.log(rootSelf.obstructsInAllRoads[sourcePlace+targetPlace]);
+        // console.log(rootSelf.obstructsInAllRoads[sourcePlace+targetPlace]);
         //两者都少于预期生成的数量时，随机生成
         if( normalCarCurNum < normalCarTargetNum && smartCarCurNum < smartCarTargetNum){
           let carTypeIdx = Math.floor(Math.random() * Types.length);
@@ -189,19 +189,19 @@ export default {
           }
           car = Car.createNewCar(rootSelf,Types[carTypeIdx],sourcePlace,targetPlace,rootSelf.carIdx);
           rootSelf.AllCar[rootSelf.carIdx] = car; 
-          console.log(normalCarTargetNum,smartCarTargetNum,normalCarCurNum,smartCarCurNum)
+          // console.log(normalCarTargetNum,smartCarTargetNum,normalCarCurNum,smartCarCurNum)
         }//一旦有一个生成数量够了，就只生成另一种
         else if(normalCarCurNum < normalCarTargetNum){
           car = Car.createNewCar(rootSelf, "NormalCar",sourcePlace,targetPlace,rootSelf.carIdx); 
           normalCarCurNum++;
           rootSelf.AllCar[rootSelf.carIdx] = car; 
-          console.log(normalCarTargetNum,smartCarTargetNum,normalCarCurNum,smartCarCurNum)
+          // console.log(normalCarTargetNum,smartCarTargetNum,normalCarCurNum,smartCarCurNum)
         }
         else if(smartCarCurNum < smartCarTargetNum){
           car = Car.createNewCar(rootSelf, "SmartCar",sourcePlace,targetPlace,rootSelf.carIdx); 
           smartCarCurNum++;
           rootSelf.AllCar[rootSelf.carIdx] = car; 
-          console.log(normalCarTargetNum,smartCarTargetNum,normalCarCurNum,smartCarCurNum)
+          // console.log(normalCarTargetNum,smartCarTargetNum,normalCarCurNum,smartCarCurNum)
         }
         // let car = Car.createNewCar("Normal",sourcePlace,targetPlace,carIdx);  
 

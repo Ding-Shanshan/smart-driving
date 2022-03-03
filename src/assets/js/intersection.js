@@ -259,7 +259,7 @@ export function intersectionDTOC(ty,lightlist,type){
                         nowLight=lightlist[i].className; //获取红绿灯
                     }
                 }
-                console.log(type)
+                // console.log(type)
                 if((type==='NormalCar'&&ty===360)||(type==='SmartCar'&&ty===334))  //在x行驶到路口前20像素开始根据红绿灯来判断是否减速
                 {
                  
