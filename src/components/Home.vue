@@ -48,17 +48,15 @@ export default {
             this.$refs.moving.textConnection(data);
         },
         isRun(val) {
-            this.isrun = val
-            console.log(this)
+            this.isrun = val[0]
             var vm = this
-            if(number === 3)
+            if(number === val[1].totalNum*1)
             Vue.prototype.$number = number
             var int;
             int = setInterval(judgeIsRun,50);
             function judgeIsRun(){
-                if(number === 1)
+                if(number === val[1].totalNum*1)
                 vm.isrun = false;
-                //console.log(vm.isrun)
             }
         }
     }

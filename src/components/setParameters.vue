@@ -1,6 +1,7 @@
 <template>
     <div>
-        <h4>车辆参数</h4>
+        <el-collapse>
+        <el-collapse-item title="车辆参数" name="1">
         <el-form class="vehicleParameter" ref="parametersRef" :model="parameters" label-width="100px">
             <!-- 车辆总数 -->
             <el-form-item label="车辆总数：">
@@ -25,15 +26,16 @@
             <!-- 运行 -->
             <el-form-item class="run">
                 <el-button type="primary" @click="run">运行</el-button>
-                <el-button>取消</el-button>
+                <el-button>重置</el-button>
             </el-form-item>
         </el-form>
-        <h4>红绿灯参数</h4>
+        </el-collapse-item>
+        <el-collapse-item title="红绿灯参数" name="2">
         <div class="lightParameter">
             <!-- 上下方向红绿灯 -->
             <div class="light">
                 <span>纵向红绿灯：</span>
-                <el-radio-group v-model="light">
+                <el-radio-group v-model="light" @click="changeLightTwo">
                     <el-radio-button label="红灯"></el-radio-button>
                     <el-radio-button label="绿灯"></el-radio-button>
                     <el-radio-button label="默认"></el-radio-button>
@@ -42,17 +44,20 @@
             <!-- 左右方向红绿灯 -->
             <div class="light2">
                 <span>横向红绿灯：</span>
-                <el-radio-group v-model="light2">
+                <el-radio-group v-model="light2" @click="changeLightOne">
                     <el-radio-button label="红灯"></el-radio-button>
                     <el-radio-button label="绿灯"></el-radio-button>
                     <el-radio-button label="默认"></el-radio-button>
                 </el-radio-group>
             </div>
         </div>
+        </el-collapse-item>
+        </el-collapse>
     </div>
 </template>
 
 <script>
+import { useStore } from "vuex"
 export default {
     data() {
         return {
@@ -60,7 +65,6 @@ export default {
             parameters: {
                 totalNum: '30',
                 proportion:'0.5',
-                smartCarSpeed:'',
             },
             light:'默认',
             light2:'默认',
@@ -72,9 +76,22 @@ export default {
             console.log(this.parameters);
             this.$emit('createCar',this.parameters);
             this.isruning = true
-            this.$emit('runchange',this.isruning)
+            this.$emit('runchange',[this.isruning,this.parameters])
         }
-    }
+    },
+    setup() {
+        const store = useStore()
+        const changeLightOne = (e) => {
+            store.commit("changeLightOne", e.target.value)
+        }
+        const changeLightTwo = (e) => {
+            store.commit("changeLightTwo", e.target.value)
+        }
+        return {
+            changeLightOne,
+            changeLightTwo,
+        }
+    },
 }
 </script>
 
@@ -85,13 +102,6 @@ h4 {
 div {
     font-size: 14px;
     font-weight: 400;
-}
-.vehicleParameter {
-    margin-bottom: 40px;
-}
-.lightParameter {
-    width: 100%;
-    margin-bottom: 60px;
 }
 .light,
 .light2 {

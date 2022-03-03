@@ -57,7 +57,7 @@ body,
 }
 
 .transTopToRight {
-  transform-origin: 95px 10px;
+  transform-origin: 95px 0px;
   animation: transTopToRight 3.5s linear;
   animation-fill-mode : forwards;/*保持结束位置*/
 } 

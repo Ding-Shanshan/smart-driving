@@ -5,7 +5,6 @@ var number = 0;
 
 function carNumber() {
     number = number + 1;
-    console.log(number);
 }
 
 let Car = {
@@ -16,11 +15,10 @@ let Car = {
         car.targetPlace = targetPlace;
         car.index = index;
         car.rootSelf = rootSelf
-        if(car.type === "NormalCar") {
+        if (car.type === "NormalCar") {
             car.img = "cars_normal";
             car.speed = 1;
-        }
-        else {
+        } else {
             car.img = "cars_smart";
             car.speed = 2;
         }
@@ -29,7 +27,6 @@ let Car = {
         let lightlist = light[0].childNodes;
         let light1 = document.querySelectorAll('#trafficL1')
         let lightlist1 = light1[0].childNodes;
-        // console.log(lightlist[0].style.opacity)
         car.showInfo = function() {
             console.log(car.type, car.sourcePlace, car.targetPlace);
         };
@@ -40,6 +37,7 @@ let Car = {
             let sign = 1;
             let accelerate = 0; //加速速度
             let slowdown = 2; //减速速度
+            let obsFlag = 1;
             normalCar.setAttribute("src", require("../images/" + car.img + ".png"));
             normalCar.setAttribute("width", "10");
             normalCar.setAttribute("height", "20");
@@ -47,6 +45,11 @@ let Car = {
             normalCar.style.position = "absolute";
             normalCar.style.left = sx + "px";
             normalCar.style.top = sy + "px";
+            car.curPath = car.sourcePlace;
+            car.x = sx;
+            car.y = sy;
+            car.pathIdx = _self.obstructsInAllRoads.length;
+            _self.obstructsInAllRoads.push([car.x,car.y,car.curPath]);
             try {
                 father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
             } catch (err) {
@@ -56,59 +59,167 @@ let Car = {
             let id = setInterval(frame, 30);
 
             function frame() {
-                {
-                    if (sy === 360) {
-                        // 判断路口情况 jxd
-                        sign = intersectionDTOC(sy, lightlist1);
+                if(sy <= _self.H / 2 + _self.RoadW){
+                    clearInterval(id);
+                    //加上旋转属性
+                    let normalCar = document.getElementsByClassName(car.type + car.index)[0];
+                    normalCar.classList.add("trans");
+                    let flag = 0;
+                    setTimeout(function() {
+                        car.curPath = "-" + car.targetPlace;
+                        _self.obstructsInAllRoads[car.pathIdx][2] = car.curPath;
+                    }, 500);
+                    setTimeout(function() {
+                        flag = 1;
+                    }, 3500);
+
+                    function checkFlag() {
+                        if (flag === 1) {
+                            clearInterval(checkIdx);
+                            car.drawRightToLeftLines(_self, _self.W / 2 + (_self.RoadW - _self.carW) / 2, _self.H / 2 + _self.RoadW, car.index);
+                        }
                     }
+                    let checkIdx = setInterval(checkFlag, 80);
+                }
+                else{
+                    let former = undefined;
+                    for(let i=0;i<car.pathIdx;i++){
+                        if(_self.obstructsInAllRoads[i] === undefined){
+                            ;//如果前面某辆车到达目的地，不再判断
+                        }
+                        else{//在路上的就判断是否和当前车在同一路段
+                            if(_self.obstructsInAllRoads[i][2] === car.curPath){
+                                former = i;
+                            }
+                        }
+                    }
+                    if (former !== undefined) {//如果找到了，当前车不是所在路段的第一辆车，就可以根据前方是否有车判断是否要停车
+                        if (car.y <= _self.obstructsInAllRoads[former][1] + 30) {
+                            obsFlag = 2;
+                        } else {
+                            obsFlag = 1;
+                        }
+                    } else {//如果是第一辆车，那么可以不需要判断，直接正常行驶
+                        obsFlag = 1;
+                    }
+                    if (car.type == 'NormalCar') {
+                        // 普通车
+                        if (sy === 360) {
+                            // 判断路口情况 jxd
+                            sign = intersectionDTOA(sy, lightlist1, car.type);
+                        }
+                        if (obsFlag === 2 || sign === 2) {
+                            obsFlag = 2;
+                        } else {
+                            obsFlag = 1;
+                        }
+                    } else {
+                        // 智能车
+                        if (sy === 334) {
+                            // 判断路口情况 jxd
+                            sign = intersectionDTOA(sy, lightlist1, car.type);
+                        }
+                        if (obsFlag === 2 || sign === 2) {
+                            obsFlag = 2;
+                        } else {
+                            obsFlag = 1;
+                        }
+                    }
+
                     // 根据车辆预计行驶状态，控制车辆进行行驶 jxd
-                    //  console.log(ty)
-                    switch (sign) {
+                    switch (obsFlag) {
                         case 0:
                             break; //停车
                         case 1:
                             sy = sy - car.speed;
+                            if(former === undefined){//第一辆车，正常行驶
+                                obsFlag = 1;
+                            }
+                            else{
+                                if (car.y <= _self.obstructsInAllRoads[former][1] + 30) {
+                                    obsFlag = 2;
+                                } else {
+                                    obsFlag = 1;
+                                }
+                            }
                             if (sy <= 310) {
-                                sign = intersectionDTOA(sy, lightlist1);
-                                console.log(sy, sign)
+                                sign = intersectionDTOA(sy, lightlist1, car.type);
+                            }
+                            if (obsFlag === 2 || sign === 2) {
+                                obsFlag = 2;
+                            } else {
+                                obsFlag = 1;
                             }
                             break; //正常行驶
                         case 2:
-                            if (sy <= 310) {
-                                slowdown = 0;
+                            if(former === undefined){
+                                if (sy <= 310) {
+                                    slowdown = 0;
+                                }
+                            }
+                            else{
+                                if (car.y <= _self.obstructsInAllRoads[former][1] + 30 || sy == 310) {
+                                    slowdown = 0;
+                                }
                             }
                             if (slowdown <= 0) {
-                                sign = intersectionDTOA(sy, lightlist1);
+                                if(former === undefined){
+                                    obsFlag = 3
+                                }
+                                else{
+                                    if (car.y <= _self.obstructsInAllRoads[former][1] + 30) {
+                                        obsFlag = 2;
+                                    } else {
+                                        obsFlag = 3;
+                                    }
+                                }
+                                sign = intersectionDTOA(sy, lightlist1, car.type);
+                                if (obsFlag === 2 || sign === 2) {
+                                    obsFlag = 2;
+                                } else {
+                                    obsFlag = 3;
+                                }
                             } else {
-                                slowdown = slowdown - 0.04;
+                                car.type == 'NormalCar' ? (slowdown = slowdown - 0.04) : (slowdown = slowdown - 0.08);
                                 sy = sy - slowdown;
                             }
                             break; //减速,每次速度减0.1，速度为0时,状态改为停车
                         case 3:
-                            clearInterval(id);
-                            //加上旋转属性
-                            console.log("开始xuanzhuan")
-                            let normalCar = document.getElementsByClassName(car.type + car.index)[0];
-                            normalCar.classList.add("trans");
-                            let flag = 0;
-                            setTimeout(function() {
-                                flag = 1;
-                            }, 3500);
-
-                            function checkFlag() {
-                                if (flag === 1) {
-                                    clearInterval(checkIdx);
-                                    car.drawRightToLeftLines(_self, _self.W / 2 + (_self.RoadW - _self.carW) / 2, _self.H / 2 + _self.RoadW, car.index);
+                            car.type == 'NormalCar' ? (accelerate = accelerate + 0.04) : (accelerate = accelerate + 0.08);
+                            sy = sy - accelerate;
+                            if (accelerate >= car.speed) {
+                                if(former === undefined){
+                                    obsFlag = 1;
+                                }
+                                else{
+                                    if (car.y <= _self.obstructsInAllRoads[former][1] + 30) {
+                                        obsFlag = 2;
+                                    } else {
+                                        obsFlag = 1;
+                                    }
+                                }
+                            } else {
+                                if(former === undefined){
+                                    obsFlag = 3;
+                                }
+                                else{
+                                    if (car.y <= _self.obstructsInAllRoads[former][1] + 30) {
+                                        obsFlag = 2;
+                                    } else {
+                                        obsFlag = 3;
+                                    }
                                 }
                             }
-                            let checkIdx = setInterval(checkFlag, 80);
+                            break;
                         default:
                             break;
                     }
-                    //  console.log(sign)
                     normalCar.style.left = sx + "px";
                     normalCar.style.top = sy + "px";
-
+                    car.x = sx;
+                    car.y = sy;
+                    _self.obstructsInAllRoads[car.pathIdx][0] = car.x;
+                    _self.obstructsInAllRoads[car.pathIdx][1] = car.y;
                 }
             }
         };
@@ -116,6 +227,11 @@ let Car = {
         car.drawRightToLeftLines = function(_self, sx, sy) {
             let father = document.getElementsByClassName("MyCanvas")[0];
             let normalCar = document.getElementsByClassName(car.type + car.index)[0];
+            let accelerate = 0; //加速速度
+            let slowdown = 2; //减速速度
+            let obsFlag = 1;
+            car.y = sy;
+            car.x = sx;
             let r2l = setInterval(frame, 30);
 
             function frame() {
@@ -123,17 +239,116 @@ let Car = {
                     clearInterval(r2l);
                     carNumber();
                     father.removeChild(normalCar);
+                    delete _self.obstructsInAllRoads[car.pathIdx];
                 } else {
+                    let former = undefined;
+                    for(let i=0;i<car.pathIdx;i++){
+                        if(_self.obstructsInAllRoads[i] === undefined){
+                            ;//如果前面某辆车到达目的地，不再判断
+                        }
+                        else{//在路上的就判断是否和当前车在同一路段
+                            if(_self.obstructsInAllRoads[i][2] === car.curPath){
+                                former = i;
+                            }
+                        }
+                    }
+                    if (former !== undefined) {
+                        if (car.x <= _self.obstructsInAllRoads[former][0]+30) {
+                            obsFlag = 2;
+                        } else {
+                            obsFlag = 1;
+                        }
+                    } else {
+                        obsFlag = 1;
+                    }
+                                        // 根据车辆预计行驶状态，控制车辆进行行驶 jxd
+                    switch (obsFlag) {
+                        case 0:
+                            break; //停车
+                        case 1:
+                            sx = sx - car.speed;
+                            if(former === undefined){//第一辆车，正常行驶
+                                obsFlag = 1;
+                            }
+                            else{
+                                if (car.x <= _self.obstructsInAllRoads[former][0] + 30) {
+                                    obsFlag = 2;
+                                } else {
+                                    obsFlag = 1;
+                                }
+                            }
+                            break; //正常行驶
+                        case 2:
+                            if(former === undefined){
+                                slowdown = 0;
+                            }
+                            else{
+                                if (car.x <= _self.obstructsInAllRoads[former][0] + 30) {
+                                    slowdown = 0;
+                                }
+                            }
+                            if (slowdown <= 0) {
+                                if(former === undefined){
+                                    obsFlag = 3
+                                }
+                                else{
+                                    if (car.x <= _self.obstructsInAllRoads[former][0] + 30) {
+                                        obsFlag = 2;
+                                    } else {
+                                        obsFlag = 3;
+                                    }
+                                }
+                            } else {
+                                car.type == 'NormalCar' ? (slowdown = slowdown - 0.04) : (slowdown = slowdown - 0.08);
+                                sx = sx - slowdown;
+                            }
+                            break; //减速,每次速度减0.1，速度为0时,状态改为停车
+                        case 3:
+                            car.type == 'NormalCar' ? (accelerate = accelerate + 0.04) : (accelerate = accelerate + 0.08);
+                            sx = sx - accelerate;
+                            if (accelerate >= car.speed) {
+                                if(former === undefined){
+                                    obsFlag = 1;
+                                }
+                                else{
+                                    if (car.x <= _self.obstructsInAllRoads[former][0] + 30) {
+                                        obsFlag = 2;
+                                    } else {
+                                        obsFlag = 1;
+                                    }
+                                }
+                            } else {
+                                if(former === undefined){
+                                    obsFlag = 3;
+                                }
+                                else{
+                                    if (car.x <= _self.obstructsInAllRoads[former][0] + 30) {
+                                        obsFlag = 2;
+                                    } else {
+                                        obsFlag = 3;
+                                    }
+                                }
+                            }
+                            break; //加速,速度到达2时，状态变为正常行驶
+                        default:
+                            break;
+                    }
                     // 红绿灯
                     normalCar.style.left = sx + "px";
                     normalCar.style.top = sy + "px";
-                    sx = sx - car.speed;
+                    car.x = sx;
+                    car.y = sy;
+                    _self.obstructsInAllRoads[car.pathIdx][0] = car.x;
+                    _self.obstructsInAllRoads[car.pathIdx][1] = car.y;
                 }
             }
         };
         car.drawDToB = function(_self, sx, sy) {
             let father = document.getElementsByClassName("MyCanvas")[0];
             let normalCar = document.createElement("img");
+            let accelerate = 0; //加速速度
+            let slowdown = 2; //减速速度
+            let obsFlag = 1;
             normalCar.setAttribute("src", require("../images/" + car.img + ".png"));
             normalCar.setAttribute("width", "10");
             normalCar.setAttribute("height", "20");
@@ -142,6 +357,11 @@ let Car = {
             normalCar.style.position = "absolute";
             normalCar.style.left = sx + "px";
             normalCar.style.top = sy + "px";
+            car.curPath = car.sourcePlace;
+            car.x = sx;
+            car.y = sy;
+            car.pathIdx = _self.obstructsInAllRoads.length;
+            _self.obstructsInAllRoads.push([car.x,car.y,car.curPath]);
             try {
                 father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
             } catch (err) {
@@ -158,6 +378,10 @@ let Car = {
                     normalCar.classList.add("transToRight");
                     let flag = 0;
                     setTimeout(function() {
+                        car.curPath = "-" + car.targetPlace;
+                        _self.obstructsInAllRoads[car.pathIdx][2] = car.curPath;
+                    }, 1000);
+                    setTimeout(function() {
                         flag = 1;
                     }, 3500);
 
@@ -170,9 +394,103 @@ let Car = {
                     let checkIdx = setInterval(checkFlag, 80);
 
                 } else {
-                    sy = sy - car.speed;
+                    let former = undefined;
+                    for(let i=0;i<car.pathIdx;i++){
+                        if(_self.obstructsInAllRoads[i] === undefined){
+                            ;//如果前面某辆车到达目的地，不再判断
+                        }
+                        else{//在路上的就判断是否和当前车在同一路段
+                            if(_self.obstructsInAllRoads[i][2] === car.curPath){
+                                former = i;
+                            }
+                        }
+                    }
+                    if (former !== undefined) {//如果找到了，当前车不是所在路段的第一辆车，就可以根据前方是否有车判断是否要停车
+                        if (car.y <= _self.obstructsInAllRoads[former][1] + 30) {
+                            obsFlag = 2;
+                        } else {
+                            obsFlag = 1;
+                        }
+                    } else {//如果是第一辆车，那么可以不需要判断，直接正常行驶
+                        obsFlag = 1;
+                    }
+                    switch (obsFlag) {
+                        case 0:
+                            break; //停车
+                        case 1:
+                            sy = sy - car.speed;
+                            if(former === undefined){//第一辆车，正常行驶
+                                obsFlag = 1;
+                            }
+                            else{
+                                if (car.y <= _self.obstructsInAllRoads[former][1] + 30) {
+                                    obsFlag = 2;
+                                } else {
+                                    obsFlag = 1;
+                                }
+                            }
+                            break; //正常行驶
+                        case 2:
+                            if(former === undefined){
+                                    slowdown = 0;
+                            }
+                            else{
+                                if (car.y <= _self.obstructsInAllRoads[former][1] + 30) {
+                                    slowdown = 0;
+                                }
+                            }
+                            if (slowdown <= 0) {
+                                if(former === undefined){
+                                    obsFlag = 3
+                                }
+                                else{
+                                    if (car.y <= _self.obstructsInAllRoads[former][1] + 30) {
+                                        obsFlag = 2;
+                                    } else {
+                                        obsFlag = 3;
+                                    }
+                                }
+                            } else {
+                                car.type == 'NormalCar' ? (slowdown = slowdown - 0.04) : (slowdown = slowdown - 0.08);
+                                sy = sy - slowdown;
+                            }
+                            break; //减速,每次速度减0.1，速度为0时,状态改为停车
+                        case 3:
+                            car.type == 'NormalCar' ? (accelerate = accelerate + 0.04) : (accelerate = accelerate + 0.08);
+                            sy = sy - accelerate;
+                            if (accelerate >= car.speed) {
+                                if(former === undefined){
+                                    obsFlag = 1;
+                                }
+                                else{
+                                    if (car.y <= _self.obstructsInAllRoads[former][1] + 30) {
+                                        obsFlag = 2;
+                                    } else {
+                                        obsFlag = 1;
+                                    }
+                                }
+                            } else {
+                                if(former === undefined){
+                                    obsFlag = 3;
+                                }
+                                else{
+                                    if (car.y <= _self.obstructsInAllRoads[former][1] + 30) {
+                                        obsFlag = 2;
+                                    } else {
+                                        obsFlag = 3;
+                                    }
+                                }
+                            }
+                            break;
+                        default:
+                            break;
+                    }
                     normalCar.style.left = sx + "px";
                     normalCar.style.top = sy + "px";
+                    car.x = sx;
+                    car.y = sy;
+                    _self.obstructsInAllRoads[car.pathIdx][0] = car.x;
+                    _self.obstructsInAllRoads[car.pathIdx][1] = car.y;
                 }
             }
         };
@@ -180,6 +498,11 @@ let Car = {
         car.drawLeftToRightLines = function(_self, sx, sy) {
             let father = document.getElementsByClassName("MyCanvas")[0];
             let normalCar = document.getElementsByClassName(car.type + car.index)[0];
+            let accelerate = 0; //加速速度
+            let slowdown = 2; //减速速度
+            let obsFlag = 1;
+            car.y = sy;
+            car.x = sx;
             let r2l = setInterval(frame, 30);
 
             function frame() {
@@ -187,11 +510,106 @@ let Car = {
                     clearInterval(r2l);
                     carNumber();
                     father.removeChild(normalCar);
-
+                    delete _self.obstructsInAllRoads[car.pathIdx];
                 } else {
+                    let former = undefined;
+                    for(let i=0;i<car.pathIdx;i++){
+                        if(_self.obstructsInAllRoads[i] === undefined){
+                            ;//如果前面某辆车到达目的地，不再判断
+                        }
+                        else{//在路上的就判断是否和当前车在同一路段
+                            if(_self.obstructsInAllRoads[i][2] === car.curPath){
+                                former = i;
+                            }
+                        }
+                    }
+                    if (former !== undefined) {
+                        if (car.x + 30 >= _self.obstructsInAllRoads[former][0]) {
+                            obsFlag = 2;
+                        } else {
+                            obsFlag = 1;
+                        }
+                    } else {
+                        obsFlag = 1;
+                    }
+                                        // 根据车辆预计行驶状态，控制车辆进行行驶 jxd
+                    switch (obsFlag) {
+                        case 0:
+                            break; //停车
+                        case 1:
+                            sx = sx + car.speed;
+                            if(former === undefined){//第一辆车，正常行驶
+                                obsFlag = 1;
+                            }
+                            else{
+                                if (car.x + 30 >= _self.obstructsInAllRoads[former][0]) {
+                                    obsFlag = 2;
+                                } else {
+                                    obsFlag = 1;
+                                }
+                            }
+                            break; //正常行驶
+                        case 2:
+                            if(former === undefined){
+                                    slowdown = 0;
+                            }
+                            else{
+                                if (car.x + 30 >= _self.obstructsInAllRoads[former][0]) {
+                                    slowdown = 0;
+                                }
+                            }
+                            if (slowdown <= 0) {
+                                if(former === undefined){
+                                    obsFlag = 3
+                                }
+                                else{
+                                    if (car.x + 30 >= _self.obstructsInAllRoads[former][0]) {
+                                        obsFlag = 2;
+                                    } else {
+                                        obsFlag = 1;
+                                    }
+                                }
+                            } else {
+                                car.type == 'NormalCar' ? (slowdown = slowdown - 0.04) : (slowdown = slowdown - 0.08);
+                                sx = sx + slowdown;
+                            }
+                            break; //减速,每次速度减0.1，速度为0时,状态改为停车
+                        case 3:
+                            car.type == 'NormalCar' ? (accelerate = accelerate + 0.04) : (accelerate = accelerate + 0.08);
+                            sx = sx + accelerate;
+                            if (accelerate >= car.speed) {
+                                if(former === undefined){
+                                    obsFlag = 1;
+                                }
+                                else{
+                                    if (car.x + 30 >= _self.obstructsInAllRoads[former][0]) {
+                                        obsFlag = 2;
+                                    } else {
+                                        obsFlag = 1;
+                                    }
+                                }
+                            } else {
+                                if(former === undefined){
+                                    obsFlag = 3;
+                                }
+                                else{
+                                    if (car.x + 30 <= _self.obstructsInAllRoads[former][0]) {
+                                        obsFlag = 2;
+                                    } else {
+                                        obsFlag = 3;
+                                    }
+                                }
+                            }
+                            break; //加速,速度到达2时，状态变为正常行驶
+                        default:
+                            break;
+                    }
                     normalCar.style.left = sx + "px";
                     normalCar.style.top = sy + "px";
-                    sx = sx + car.speed;
+                    car.x = sx;
+                    car.y = sy;
+                    _self.obstructsInAllRoads[car.pathIdx][0] = car.x;
+                    _self.obstructsInAllRoads[car.pathIdx][1] = car.y;
                 }
             }
         };
@@ -200,7 +618,7 @@ let Car = {
             let father = document.getElementsByClassName("MyCanvas")[0];
             let normalCar = document.createElement("img");
             // jxd
-            let flag = 1; //flag表示定时器下一次预计的车辆状态，0表示车辆停止，1表示车辆行驶，2表示减速停车，3表示起步加速
+            let sign = 1; //flag表示定时器下一次预计的车辆状态，0表示车辆停止，1表示车辆行驶，2表示减速停车，3表示起步加速
             let accelerate = 0; //加速速度
             let slowdown = 2; //减速速度
             let obsFlag = 1;
@@ -213,9 +631,11 @@ let Car = {
             normalCar.style.position = "absolute";
             normalCar.style.left = sx + "px";
             normalCar.style.top = sy + "px";
+            car.curPath = car.sourcePlace;
+            car.x = sx;
             car.y = sy;
-            car.pathIdx = _self.obstructsInAllRoads[car.sourcePlace+car.targetPlace].length;
-            _self.obstructsInAllRoads[car.sourcePlace+car.targetPlace].push(car.y);
+            car.pathIdx = _self.obstructsInAllRoads.length;
+            _self.obstructsInAllRoads.push([car.x,car.y,car.curPath]);
             try {
                 father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
             } catch (err) {
@@ -229,107 +649,145 @@ let Car = {
                     clearInterval(id);
                     carNumber();
                     father.removeChild(normalCar);
-                    delete _self.obstructsInAllRoads[car.sourcePlace+car.targetPlace][car.pathIdx];
+                    delete _self.obstructsInAllRoads[car.pathIdx];
                 } else {
-                    if(_self.obstructsInAllRoads[car.sourcePlace+car.targetPlace][car.pathIdx-1] !== undefined){
-                        if(car.y <= _self.obstructsInAllRoads[car.sourcePlace+car.targetPlace][car.pathIdx-1]+30){
-                            obsFlag = 2;
+                    let former = undefined;
+                    for(let i=0;i<car.pathIdx;i++){
+                        if(_self.obstructsInAllRoads[i] === undefined){
+                            ;//如果前面某辆车到达目的地，不再判断
                         }
-                        else{
-                            obsFlag = 1;
+                        else{//在路上的就判断是否和当前车在同一路段
+                            if(_self.obstructsInAllRoads[i][2] === car.curPath){
+                                former = i;
+                            }
                         }
                     }
-                    else{
+                    if (former !== undefined) {
+                        if (car.y <= _self.obstructsInAllRoads[former][1] + 30) {
+                            obsFlag = 2;
+                        } else {
+                            obsFlag = 1;
+                        }
+                    } else {
                         obsFlag = 1;
                     }
                     // jxd
-                    console.log(sy)
-                    if (sy === 360) {
-                        // 判断路口情况 jxd
-                        flag = intersectionDTOC(sy, lightlist1);
+                    if (car.type == 'NormalCar') {
+                        // 普通车
+                        if (sy === 360) {
+                            // 判断路口情况 jxd
+                            sign = intersectionDTOC(sy, lightlist1, car.type);
+                        }
+                        if (obsFlag === 2 || sign === 2) {
+                            obsFlag = 2;
+                        } else {
+                            obsFlag = 1;
+                        }
+                    } else {
+                        // 智能车
+                        if (sy === 334) {
+                            // 判断路口情况 jxd
+                            sign = intersectionDTOC(sy, lightlist1, car.type);
+                        }
+                        if (obsFlag === 2 || sign === 2) {
+                            obsFlag = 2;
+                        } else {
+                            obsFlag = 1;
+                        }
                     }
-                    if(obsFlag === 2 || flag === 2){
-                        obsFlag = 2;
-                    }
-                    else{
-                        obsFlag = 1;
-                    }
+
                     // 根据车辆预计行驶状态，控制车辆进行行驶 jxd
                     switch (obsFlag) {
                         case 0:
                             break; //停车
                         case 1:
                             sy = sy - car.speed;
-                            if(car.y <= _self.obstructsInAllRoads[car.sourcePlace+car.targetPlace][car.pathIdx-1]+30){
-                                obsFlag = 2;
-                            }
-                            else{
+                            if(former === undefined){//第一辆车，正常行驶
                                 obsFlag = 1;
                             }
-                            if(sx==310)
-                            {
-                                var nowLight1;    // 获取红绿灯
-                                for(let i=0;i<3;i++)
-                                {
-                                    if(lightlist[i].style.opacity==1)
-                                    {
-                                        nowLight1=lightlist[i].className; //获取红绿灯
+                            else{
+                                if (car.y <= _self.obstructsInAllRoads[former][1] + 30) {
+                                    obsFlag = 2;
+                                } else {
+                                    obsFlag = 1;
+                                }
+                            }
+                            if (sy == 310) {
+                                var nowLight1; // 获取红绿灯
+                                for (let i = 0; i < 3; i++) {
+                                    if (lightlist[i].style.opacity == 1) {
+                                        nowLight1 = lightlist[i].className; //获取红绿灯
                                     }
                                 }
-                                if(nowLight1=="green")
-                                {
-                                    flag=1;
-                                }else{
-                                    flag=2;
+                                if (nowLight1 == "green") {
+                                    sign = 1;
+                                } else {
+                                    sign = 2;
                                 }
                             }
-                            if(obsFlag === 2 || flag === 2){
+                            if (obsFlag === 2 || sign === 2) {
                                 obsFlag = 2;
-                            }
-                            else{
+                            } else {
                                 obsFlag = 1;
                             }
                             break; //正常行驶
                         case 2:
-                            if (car.y <= _self.obstructsInAllRoads[car.sourcePlace+car.targetPlace][car.pathIdx-1]+30 || sx == 310) {
-                                slowdown = 0;
+                            if(former === undefined){
+                                if (sy === 310) {
+                                    slowdown = 0;
+                                }
+                            }
+                            else{
+                                if (car.y <= _self.obstructsInAllRoads[former][1] + 30 || sy == 310) {
+                                    slowdown = 0;
+                                }
                             }
                             if (slowdown <= 0) {
-                                if(car.y <= _self.obstructsInAllRoads[car.sourcePlace+car.targetPlace][car.pathIdx-1]+30){
-                                    obsFlag = 2;
-                                }
-                                else{
+                                if(former === undefined){
                                     obsFlag = 3
                                 }
-                                flag = intersectionDTOC(sy, lightlist1);
-                                if(obsFlag === 2 || flag === 2){
-                                    obsFlag = 2;
-                                }
                                 else{
+                                    if (car.y <= _self.obstructsInAllRoads[former][1] + 30) {
+                                        obsFlag = 2;
+                                    } else {
+                                        obsFlag = 3
+                                    }
+                                }
+                                sign = intersectionDTOC(sy, lightlist1, car.type);
+                                if (obsFlag === 2 || sign === 2) {
+                                    obsFlag = 2;
+                                } else {
                                     obsFlag = 3;
                                 }
                             } else {
-                                slowdown = slowdown - 0.04;
+                                car.type == 'NormalCar' ? (slowdown = slowdown - 0.04) : (slowdown = slowdown - 0.08);
                                 sy = sy - slowdown;
                             }
                             break; //减速,每次速度减0.1，速度为0时,状态改为停车
                         case 3:
-                            accelerate = accelerate + 0.04;
+                            car.type == 'NormalCar' ? (accelerate = accelerate + 0.04) : (accelerate = accelerate + 0.08);
                             sy = sy - accelerate;
                             if (accelerate >= car.speed) {
-                                if(car.y <= _self.obstructsInAllRoads[car.sourcePlace+car.targetPlace][car.pathIdx-1]+30){
-                                    obsFlag = 2;
-                                }
-                                else{
+                                if(former === undefined){
                                     obsFlag = 1;
                                 }
-                            }
-                            else{
-                                if(car.y <= _self.obstructsInAllRoads[car.sourcePlace+car.targetPlace][car.pathIdx-1]+30){
-                                    obsFlag = 2;
+                                else{
+                                    if (car.y <= _self.obstructsInAllRoads[former][1] + 30) {
+                                        obsFlag = 2;
+                                    } else {
+                                        obsFlag = 1;
+                                    }
+                                }
+                            } else {
+                                if(former === undefined){
+                                    obsFlag = 3;
                                 }
                                 else{
-                                    obsFlag = 3;
+                                    if (car.y <= _self.obstructsInAllRoads[former][1] + 30) {
+                                        obsFlag = 2;
+                                    } else {
+                                        obsFlag = 3;
+                                    }
                                 }
                             }
                             break; //加速,速度到达2时，状态变为正常行驶
@@ -338,14 +796,23 @@ let Car = {
                     }
                     normalCar.style.left = sx + "px";
                     normalCar.style.top = sy + "px";
+                    car.x = sx;
                     car.y = sy;
-                    _self.obstructsInAllRoads[car.sourcePlace+car.targetPlace][car.pathIdx] = car.y;
+                    if(car.x <= (_self.H / 2 + _self.RoadW) && car.curPath !== "-" + car.targetPlace){
+                        car.curPath = "-" + car.targetPlace
+                        _self.obstructsInAllRoads[car.pathIdx][2] = car.curPath;
+                    }
+                    _self.obstructsInAllRoads[car.pathIdx][0] = car.x;
+                    _self.obstructsInAllRoads[car.pathIdx][1] = car.y;
                 }
             }
         };
         car.drawAToD = function(_self, sx, sy) {
             let father = document.getElementsByClassName("MyCanvas")[0];
             let normalCar = document.createElement("img");
+            let accelerate = 0; //加速速度
+            let slowdown = 2; //减速速度
+            let obsFlag = 1;
             normalCar.setAttribute("src", require("../images/" + car.img + "90.png"));
             normalCar.setAttribute("width", "20");
             normalCar.setAttribute("height", "10");
@@ -353,6 +820,10 @@ let Car = {
             normalCar.style.position = "absolute";
             normalCar.style.left = sx + "px";
             normalCar.style.top = sy + "px";
+            car.x = sx;
+            car.y = sy;
+            car.pathIdx = _self.obstructsInAllRoads.length;
+            _self.obstructsInAllRoads.push([car.x,car.y,car.curPath]);
             try {
                 father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
             } catch (err) {
@@ -369,6 +840,10 @@ let Car = {
                     normalCar.classList.add("transToDown");
                     let flag = 0;
                     setTimeout(function() {
+                        car.curPath = "-" + car.targetPlace;
+                        _self.obstructsInAllRoads[car.pathIdx][2] = car.curPath;
+                    }, 1000);
+                    setTimeout(function() {
                         flag = 1;
                     }, 3500);
 
@@ -380,34 +855,234 @@ let Car = {
                     }
                     let checkIdx = setInterval(checkFlag, 80);
                 } else {
-                    sx = sx + car.speed;
+                    let former = undefined;
+                    for(let i=0;i<car.pathIdx;i++){
+                        if(_self.obstructsInAllRoads[i] === undefined){
+                            ;//如果前面某辆车到达目的地，不再判断
+                        }
+                        else{//在路上的就判断是否和当前车在同一路段
+                            if(_self.obstructsInAllRoads[i][2] === car.curPath){
+                                former = i;
+                            }
+                        }
+                    }
+                    if (former !== undefined) {
+                        if (car.x + 30 >= _self.obstructsInAllRoads[former][0]) {
+                            obsFlag = 2;
+                        } else {
+                            obsFlag = 1;
+                        }
+                    } else {
+                        obsFlag = 1;
+                    }
+                    switch (obsFlag) {
+                        case 0:
+                            break; //停车
+                        case 1:
+                            sx = sx + car.speed;
+                            if(former === undefined){//第一辆车，正常行驶
+                                obsFlag = 1;
+                            }
+                            else{
+                                if (car.x + 30 >= _self.obstructsInAllRoads[former][0]) {
+                                    obsFlag = 2;
+                                } else {
+                                    obsFlag = 1;
+                                }
+                            }
+                            break; //正常行驶
+                        case 2:
+                            if(former === undefined){
+                                    slowdown = 0;
+                            }
+                            else{
+                                if (car.x + 30 >= _self.obstructsInAllRoads[former][0] || sx == 420) {
+                                    slowdown = 0;
+                                }
+                            }
+                            if (slowdown <= 0) {
+                                if(former === undefined){
+                                    obsFlag = 3
+                                }
+                                else{
+                                    if (car.x + 30 >= _self.obstructsInAllRoads[former][0]) {
+                                        obsFlag = 2;
+                                    } else {
+                                        obsFlag = 1;
+                                    }
+                                }
+                            } else {
+                                car.type == 'NormalCar' ? (slowdown = slowdown - 0.04) : (slowdown = slowdown - 0.08);
+                                sx = sx + slowdown;
+                            }
+                            break; //减速,每次速度减0.1，速度为0时,状态改为停车
+                        case 3:
+                            car.type == 'NormalCar' ? (accelerate = accelerate + 0.04) : (accelerate = accelerate + 0.08);
+                            sx = sx + accelerate;
+                            if (accelerate >= car.speed) {
+                                if(former === undefined){
+                                    obsFlag = 1;
+                                }
+                                else{
+                                    if (car.x + 30 >= _self.obstructsInAllRoads[former][0]) {
+                                        obsFlag = 2;
+                                    } else {
+                                        obsFlag = 1;
+                                    }
+                                }
+                            } else {
+                                if(former === undefined){
+                                    obsFlag = 3;
+                                }
+                                else{
+                                    if (car.x + 30 <= _self.obstructsInAllRoads[former][0]) {
+                                        obsFlag = 2;
+                                    } else {
+                                        obsFlag = 3;
+                                    }
+                                }
+                            }
+                            break; //加速,速度到达2时，状态变为正常行驶
+                        default:
+                            break;
+                    }
                     normalCar.style.left = sx + "px";
                     normalCar.style.top = sy + "px";
+                    car.x = sx;
+                    car.y = sy;
+                    _self.obstructsInAllRoads[car.pathIdx][0] = car.x;
+                    _self.obstructsInAllRoads[car.pathIdx][1] = car.y;
                 }
             }
         };
         car.drawTopToDownLines = function(_self, sx, sy) {
             let father = document.getElementsByClassName("MyCanvas")[0];
             let normalCar = document.getElementsByClassName(car.type + car.index)[0];
+            let sign = 1; //flag表示定时器下一次预计的车辆状态，0表示车辆停止，1表示车辆行驶，2表示减速停车，3表示起步加速
+            let accelerate = 0; //加速速度
+            let slowdown = 2; //减速速度
+            let obsFlag = 1;
+            car.y = sy;
+            car.x = sx;
             let r2l = setInterval(frame, 30);
-
             function frame() {
                 if (sy >= _self.H - 100) {
                     clearInterval(r2l);
                     carNumber();
                     father.removeChild(normalCar);
+                    delete _self.obstructsInAllRoads[car.pathIdx];
                 } else {
-                    sy = sy + car.speed;
+                    let former = undefined;
+                    for(let i=0;i<car.pathIdx;i++){
+                        if(_self.obstructsInAllRoads[i] === undefined){
+                            ;//如果前面某辆车到达目的地，不再判断
+                        }
+                        else{//在路上的就判断是否和当前车在同一路段
+                            if(_self.obstructsInAllRoads[i][2] === car.curPath){
+                                former = i;
+                            }
+                        }
+                    }
+                    if (former !== undefined) {
+                        if (car.y + 30 >= _self.obstructsInAllRoads[former][1]) {
+                            obsFlag = 2;
+                        } else {
+                            obsFlag = 1;
+                        }
+                    } else {
+                        obsFlag = 1;
+                    }
+                    // 根据车辆预计行驶状态，控制车辆进行行驶 jxd
+                    switch (obsFlag) {
+                        case 0:
+                            break; //停车
+                        case 1:
+                            sy = sy + car.speed;
+                            if(former === undefined){//第一辆车，正常行驶
+                                obsFlag = 1;
+                            }
+                            else{
+                                if (car.y + 30 >= _self.obstructsInAllRoads[former][1]) {
+                                    obsFlag = 2;
+                                } else {
+                                    obsFlag = 1;
+                                }
+                            }
+                            break; //正常行驶
+                        case 2:
+                            if(former === undefined){
+                                slowdown = 0;
+                            }
+                            else{
+                                if (car.y + 30 >= _self.obstructsInAllRoads[former][1]) {
+                                    slowdown = 0;
+                                }
+                            }
+                            if (slowdown <= 0) {
+                                if(former === undefined){
+                                    obsFlag = 3
+                                }
+                                else{
+                                    if (car.y + 30 >= _self.obstructsInAllRoads[former][1]) {
+                                        obsFlag = 2;
+                                    } else {
+                                        obsFlag = 1;
+                                    }
+                                }
+                            } else {
+                                car.type == 'NormalCar' ? (slowdown = slowdown - 0.04) : (slowdown = slowdown - 0.08);
+                                sy = sy + slowdown;
+                            }
+                            break; //减速,每次速度减0.1，速度为0时,状态改为停车
+                        case 3:
+                            car.type == 'NormalCar' ? (accelerate = accelerate + 0.04) : (accelerate = accelerate + 0.08);
+                            sy = sy + accelerate;
+                            if (accelerate >= car.speed) {
+                                if(former === undefined){
+                                    obsFlag = 1;
+                                }
+                                else{
+                                    if (car.y + 30 >= _self.obstructsInAllRoads[former][1]) {
+                                        obsFlag = 2;
+                                    } else {
+                                        obsFlag = 1;
+                                    }
+                                }
+                            } else {
+                                if(former === undefined){
+                                    obsFlag = 3;
+                                }
+                                else{
+                                    if (car.y + 30 <= _self.obstructsInAllRoads[former][1]) {
+                                        obsFlag = 2;
+                                    } else {
+                                        obsFlag = 3;
+                                    }
+                                }
+                            }
+                            break; //加速,速度到达2时，状态变为正常行驶
+                        default:
+                            break;
+                    }
+
+                    // sy = sy + car.speed;
                     normalCar.style.left = sx + "px";
                     normalCar.style.top = sy + "px";
+                    car.x = sx;
+                    car.y = sy;
+                    _self.obstructsInAllRoads[car.pathIdx][0] = car.x;
+                    _self.obstructsInAllRoads[car.pathIdx][1] = car.y;   
                 }
             }
         };
         car.drawAToC = function(_self, sx, sy) {
             let father = document.getElementsByClassName("MyCanvas")[0];
             let normalCar = document.createElement("img");
-            let sign = 1;
+            let sign = 1; //flag表示定时器下一次预计的车辆状态，0表示车辆停止，1表示车辆行驶，2表示减速停车，3表示起步加速
+            let accelerate = 0; //加速速度
             let slowdown = 2; //减速速度
+
+            let obsFlag = 1;
             normalCar.setAttribute("src", require("../images/" + car.img + "90.png"));
             normalCar.setAttribute("width", "20");
             normalCar.setAttribute("height", "10");
@@ -415,6 +1090,10 @@ let Car = {
             normalCar.style.position = "absolute";
             normalCar.style.left = sx + "px";
             normalCar.style.top = sy + "px";
+            car.x = sx;
+            car.y = sy;
+            car.pathIdx = _self.obstructsInAllRoads.length;
+            _self.obstructsInAllRoads.push([car.x,car.y,car.curPath]);
             try {
                 father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
             } catch (err) {
@@ -424,68 +1103,175 @@ let Car = {
             let id = setInterval(frame, 30);
 
             function frame() {
-                {
-                    if (sx === 370) {
-                        // 判断路口情况 jxd
-                        sign = intersectionATOC(sx, lightlist);
+                if(sx >= _self.W / 2 - _self.RoadW - _self.carH){
+                    //加上旋转属性
+                    clearInterval(id);
+                    //加上旋转属性
+                    let normalCar = document.getElementsByClassName(car.type + car.index)[0];
+                    normalCar.classList.add("transToTop");
+                    let flag = 0;
+                    setTimeout(function() {
+                        car.curPath = "-" + car.targetPlace;
+                        _self.obstructsInAllRoads[car.pathIdx][2] = car.curPath;
+                    }, 500);
+                    setTimeout(function() {
+                        flag = 1;
+                    }, 3500);
+
+                    function checkFlag() {
+                        if (flag === 1) {
+                            clearInterval(checkIdx);
+                            car.drawDownToTopLines(_self, _self.W / 2 - _self.RoadW - _self.carH, _self.H / 2 + _self.carH, car.index);
+                        }
                     }
-                    // console.log(tx)
-                    switch (sign) {
+                    let checkIdx = setInterval(checkFlag, 80);
+                }
+                else{
+                    let former = undefined;
+                    for(let i=0;i<car.pathIdx;i++){
+                        if(_self.obstructsInAllRoads[i] === undefined){
+                            ;//如果前面某辆车到达目的地，不再判断
+                        }
+                        else{//在路上的就判断是否和当前车在同一路段
+                            if(_self.obstructsInAllRoads[i][2] === car.curPath){
+                                former = i;
+                            }
+                        }
+                    }
+                    if (former !== undefined) {
+                        if (car.x + 30 >= _self.obstructsInAllRoads[former][0]) {
+                            obsFlag = 2;
+                        } else {
+                            obsFlag = 1;
+                        }
+                    } else {
+                        obsFlag = 1;
+                    }
+                    if (car.type == 'NormalCar') {
+                        if (sx === 370) {
+                            // 判断路口情况 jxd
+                            sign = intersectionATOC(sx, lightlist, car.type);
+                        }
+                        if (obsFlag === 2 || sign === 2) {
+                            obsFlag = 2;
+                        } else {
+                            obsFlag = 1;
+                        }
+                    } else {
+                        if (sx === 394) {
+                            // 判断路口情况 jxd
+                            sign = intersectionATOC(sx, lightlist, car.type);
+                        }
+                        if (obsFlag === 2 || sign === 2) {
+                            obsFlag = 2;
+                        } else {
+                            obsFlag = 1;
+                        }
+                    }
+                    switch (obsFlag) {
                         case 0:
                             break; //停车
                         case 1:
                             sx = sx + car.speed;
+                            if(former === undefined){//第一辆车，正常行驶
+                                obsFlag = 1;
+                            }
+                            else{
+                                if (car.x + 30 >= _self.obstructsInAllRoads[former][0]) {
+                                    obsFlag = 2;
+                                } else {
+                                    obsFlag = 1;
+                                }
+                            }
                             if (sx >= 420) {
-                                sign = intersectionATOC(sx, lightlist1);
-                                console.log(sx, sign)
+                                sign = intersectionATOC(sx, lightlist1, car.type);
+                            }
+                            if (obsFlag === 2 || sign === 2) {
+                                obsFlag = 2;
+                            } else {
+                                obsFlag = 1;
                             }
                             break; //正常行驶
                         case 2:
-                            if (sx >= 420) {
-                                slowdown = 0;
+                            if(former === undefined){
+                                if (sx >= 420) {
+                                    slowdown = 0;
+                                }
+                            }
+                            else{
+                                if (car.x + 30 >= _self.obstructsInAllRoads[former][0] || sx == 420) {
+                                    slowdown = 0;
+                                }
                             }
                             if (slowdown <= 0) {
-                                sign = intersectionATOC(sx, lightlist);
+                                if(former === undefined){
+                                    obsFlag = 3
+                                }
+                                else{
+                                    if (car.x + 30 >= _self.obstructsInAllRoads[former][0]) {
+                                        obsFlag = 2;
+                                    } else {
+                                        obsFlag = 1;
+                                    }
+                                }
+                                sign = intersectionATOC(sx, lightlist, car.type);
+                                if (obsFlag === 2 || sign === 2) {
+                                    obsFlag = 2;
+                                } else {
+                                    obsFlag = 3;
+                                }
                             } else {
-                                slowdown = slowdown - 0.04;
+                                car.type == 'NormalCar' ? (slowdown = slowdown - 0.04) : (slowdown = slowdown - 0.08);
                                 sx = sx + slowdown;
-                                console.log(slowdown)
                             }
                             break; //减速,每次速度减0.1，速度为0时,状态改为停车
                         case 3:
-                            //加上旋转属性
-                            clearInterval(id);
-                            //加上旋转属性
-                            let normalCar = document.getElementsByClassName(car.type + car.index)[0];
-                            normalCar.classList.add("transToTop");
-                            let flag = 0;
-                            setTimeout(function() {
-                                flag = 1;
-                            }, 3500);
-
-                            function checkFlag() {
-                                if (flag === 1) {
-                                    clearInterval(checkIdx);
-                                    car.drawDownToTopLines(_self, _self.W / 2 - _self.RoadW - _self.carH, _self.H / 2 + _self.carH, car.index);
+                            car.type == 'NormalCar' ? (accelerate = accelerate + 0.04) : (accelerate = accelerate + 0.08);
+                            sx = sx + accelerate;
+                            if (accelerate >= car.speed) {
+                                if(former === undefined){
+                                    obsFlag = 1;
+                                }
+                                else{
+                                    if (car.x + 30 >= _self.obstructsInAllRoads[former][0]) {
+                                        obsFlag = 2;
+                                    } else {
+                                        obsFlag = 1;
+                                    }
+                                }
+                            } else {
+                                if(former === undefined){
+                                    obsFlag = 3;
+                                }
+                                else{
+                                    if (car.x + 30 <= _self.obstructsInAllRoads[former][0]) {
+                                        obsFlag = 2;
+                                    } else {
+                                        obsFlag = 3;
+                                    }
                                 }
                             }
-                            let checkIdx = setInterval(checkFlag, 80);
+                            break; //加速,速度到达2时，状态变为正常行驶
                         default:
                             break;
                     }
-                    // console.log(sign)
                     normalCar.style.left = sx + "px";
                     normalCar.style.top = sy + "px";
-
-
-
-
+                    car.x = sx;
+                    car.y = sy;
+                    _self.obstructsInAllRoads[car.pathIdx][0] = car.x;
+                    _self.obstructsInAllRoads[car.pathIdx][1] = car.y;
                 }
             }
         };
         car.drawDownToTopLines = function(_self, sx, sy) {
             let father = document.getElementsByClassName("MyCanvas")[0];
             let normalCar = document.getElementsByClassName(car.type + car.index)[0];
+            let accelerate = 0; //加速速度
+            let slowdown = 2; //减速速度
+            let obsFlag = 1;
+            car.y = sy;
+            car.x = sx;
             let r2l = setInterval(frame, 30);
 
             function frame() {
@@ -493,10 +1279,106 @@ let Car = {
                     clearInterval(r2l);
                     carNumber();
                     father.removeChild(normalCar);
+                    delete _self.obstructsInAllRoads[car.pathIdx];
                 } else {
-                    sy = sy - car.speed;
+                    let former = undefined;
+                    for(let i=0;i<car.pathIdx;i++){
+                        if(_self.obstructsInAllRoads[i] === undefined){
+                            ;//如果前面某辆车到达目的地，不再判断
+                        }
+                        else{//在路上的就判断是否和当前车在同一路段
+                            if(_self.obstructsInAllRoads[i][2] === car.curPath){
+                                former = i;
+                            }
+                        }
+                    }
+                    if (former !== undefined) {
+                        if (car.y <= _self.obstructsInAllRoads[former][1]+30) {
+                            obsFlag = 2;
+                        } else {
+                            obsFlag = 1;
+                        }
+                    } else {
+                        obsFlag = 1;
+                    }
+                    // 根据车辆预计行驶状态，控制车辆进行行驶 jxd
+                    switch (obsFlag) {
+                        case 0:
+                            break; //停车
+                        case 1:
+                            sy = sy - car.speed;
+                            if(former === undefined){//第一辆车，正常行驶
+                                obsFlag = 1;
+                            }
+                            else{
+                                if (car.y <= _self.obstructsInAllRoads[former][1]+30) {
+                                    obsFlag = 2;
+                                } else {
+                                    obsFlag = 1;
+                                }
+                            }
+                            break; //正常行驶
+                        case 2:
+                            if(former === undefined){
+                                slowdown = 0;
+                            }
+                            else{
+                                if (car.y <= _self.obstructsInAllRoads[former][1]+30) {
+                                    slowdown = 0;
+                                }
+                            }
+                            if (slowdown <= 0) {
+                                if(former === undefined){
+                                    obsFlag = 3
+                                }
+                                else{
+                                    if (car.y <= _self.obstructsInAllRoads[former][1]+30) {
+                                        obsFlag = 2;
+                                    } else {
+                                        obsFlag = 1;
+                                    }
+                                }
+                            } else {
+                                car.type == 'NormalCar' ? (slowdown = slowdown - 0.04) : (slowdown = slowdown - 0.08);
+                                sy = sy - slowdown;
+                            }
+                            break; //减速,每次速度减0.1，速度为0时,状态改为停车
+                        case 3:
+                            car.type == 'NormalCar' ? (accelerate = accelerate + 0.04) : (accelerate = accelerate + 0.08);
+                            sy = sy - accelerate;
+                            if (accelerate >= car.speed) {
+                                if(former === undefined){
+                                    obsFlag = 1;
+                                }
+                                else{
+                                    if (car.y <= _self.obstructsInAllRoads[former][1]+30) {
+                                        obsFlag = 2;
+                                    } else {
+                                        obsFlag = 1;
+                                    }
+                                }
+                            } else {
+                                if(former === undefined){
+                                    obsFlag = 3;
+                                }
+                                else{
+                                    if (car.y <= _self.obstructsInAllRoads[former][1] + 30) {
+                                        obsFlag = 2;
+                                    } else {
+                                        obsFlag = 3;
+                                    }
+                                }
+                            }
+                            break; //加速,速度到达2时，状态变为正常行驶
+                        default:
+                            break;
+                    }
                     normalCar.style.left = sx + "px";
                     normalCar.style.top = sy + "px";
+                    car.x = sx;
+                    car.y = sy;
+                    _self.obstructsInAllRoads[car.pathIdx][0] = car.x;
+                    _self.obstructsInAllRoads[car.pathIdx][1] = car.y;
                 }
             }
         };
@@ -520,9 +1402,9 @@ let Car = {
             normalCar.style.left = sx + "px";
             normalCar.style.top = sy + "px";
             car.x = sx;
-            car.pathIdx = _self.obstructsInAllRoads[car.sourcePlace+car.targetPlace].length;
-            _self.obstructsInAllRoads[car.sourcePlace+car.targetPlace].push(car.x);
-            console.log(_self.obstructsInAllRoads[car.sourcePlace+car.targetPlace]);
+            car.y = sy;
+            car.pathIdx = _self.obstructsInAllRoads.length;
+            _self.obstructsInAllRoads.push([car.x,car.y,car.curPath]);
             try {
                 father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
             } catch (err) {
@@ -536,41 +1418,67 @@ let Car = {
                     clearInterval(id);
                     carNumber();
                     father.removeChild(normalCar);
-                    delete _self.obstructsInAllRoads[car.sourcePlace+car.targetPlace][car.pathIdx];
+                    delete _self.obstructsInAllRoads[car.pathIdx];
                 } else {
-                    if(_self.obstructsInAllRoads[car.sourcePlace+car.targetPlace][car.pathIdx-1] !== undefined){
-                        if(car.x+30 >= _self.obstructsInAllRoads[car.sourcePlace+car.targetPlace][car.pathIdx-1]){
-                            obsFlag = 2;
+                    //找到当前车辆前方的与当前车处于同一路段且同方向的车辆的pathIdx
+                    let former = undefined;
+                    for(let i=0;i<car.pathIdx;i++){
+                        if(_self.obstructsInAllRoads[i] === undefined){
+                            ;//如果前面某辆车到达目的地，不再判断
                         }
-                        else{
-                            obsFlag = 1;
+                        else{//在路上的就判断是否和当前车在同一路段
+                            if(_self.obstructsInAllRoads[i][2] === car.curPath){
+                                former = i;
+                            }
                         }
                     }
-                    else{
+                    if (former !== undefined) {
+                        if (car.x + 30 >= _self.obstructsInAllRoads[former][0]) {
+                            obsFlag = 2;
+                        } else {
+                            obsFlag = 1;
+                        }
+                    } else {
                         obsFlag = 1;
                     }
                     // jxd
-                    if (sx === 370) {
-                        // 判断路口情况 jxd
-                        sign = intersectionATOB(sx, lightlist);
+                    if (car.type == 'NormalCar') {
+                        if (sx === 370) {
+                            // 判断路口情况 jxd
+                            sign = intersectionATOB(sx, lightlist, car.type);
+                        }
+                        if (obsFlag === 2 || sign === 2) {
+                            obsFlag = 2;
+                        } else {
+                            obsFlag = 1;
+                        }
+                    } else {
+                        if (sx === 394) {
+                            // 判断路口情况 jxd
+                            sign = intersectionATOB(sx, lightlist, car.type);
+                        }
+                        if (obsFlag === 2 || sign === 2) {
+                            obsFlag = 2;
+                        } else {
+                            obsFlag = 1;
+                        }
                     }
-                    if(obsFlag === 2 || sign === 2){
-                        obsFlag = 2;
-                    }
-                    else{
-                        obsFlag = 1;
-                    }
+
                     // 根据车辆预计行驶状态，控制车辆进行行驶 jxd
                     switch (obsFlag) {
                         case 0:
                             break; //停车
                         case 1:
                             sx = sx + car.speed;
-                            if(car.x+30 >= _self.obstructsInAllRoads[car.sourcePlace+car.targetPlace][car.pathIdx-1]){
-                                obsFlag = 2;
+                            if(former === undefined){//第一辆车，正常行驶
+                                obsFlag = 1;
                             }
                             else{
-                                obsFlag = 1;
+                                if (car.x + 30 >= _self.obstructsInAllRoads[former][0]) {
+                                    obsFlag = 2;
+                                } else {
+                                    obsFlag = 1;
+                                }
                             }
                             if (sx == 420) {
                                 var nowLight1; // 获取红绿灯
@@ -584,55 +1492,70 @@ let Car = {
                                 } else {
                                     sign = 2;
                                 }
-                                console.log(sign)
                             }
-                            if(obsFlag === 2 || sign === 2){
+                            if (obsFlag === 2 || sign === 2) {
                                 obsFlag = 2;
-                            }
-                            else{
+                            } else {
                                 obsFlag = 1;
                             }
                             break; //正常行驶
                         case 2:
-                            if(car.x+30 >= _self.obstructsInAllRoads[car.sourcePlace+car.targetPlace][car.pathIdx-1] || sx == 420){
-                                slowdown = 0;
+                            if(former === undefined){
+                                if (sx == 562) {
+                                    slowdown = 0;
+                                }
+                            }
+                            else{
+                                if (car.x + 30 >= _self.obstructsInAllRoads[former][0] || sx == 420) {
+                                    slowdown = 0;
+                                }
                             }
                             if (slowdown <= 0) {
-                                if(car.x+30 >= _self.obstructsInAllRoads[car.sourcePlace+car.targetPlace][car.pathIdx-1]){
-                                    obsFlag = 2;
+                                if(former === undefined){
+                                    obsFlag = 3
                                 }
                                 else{
-                                    obsFlag = 1;
+                                    if (car.x + 30 >= _self.obstructsInAllRoads[former][0]) {
+                                        obsFlag = 2;
+                                    } else {
+                                        obsFlag = 1;
+                                    }
                                 }
-                                sign = intersectionATOB(sx, lightlist);
-                                if(obsFlag === 2 || sign === 2){
+                                sign = intersectionATOB(sx, lightlist, car.type);
+                                if (obsFlag === 2 || sign === 2) {
                                     obsFlag = 2;
-                                }
-                                else{
+                                } else {
                                     obsFlag = 3;
                                 }
                             } else {
-                                slowdown = slowdown - 0.04;
+                                car.type == 'NormalCar' ? (slowdown = slowdown - 0.04) : (slowdown = slowdown - 0.08);
                                 sx = sx + slowdown;
                             }
                             break; //减速,每次速度减0.1，速度为0时,状态改为停车
                         case 3:
-                            accelerate = accelerate + 0.04;
+                            car.type == 'NormalCar' ? (accelerate = accelerate + 0.04) : (accelerate = accelerate + 0.08);
                             sx = sx + accelerate;
                             if (accelerate >= car.speed) {
-                                if(car.x+30 >= _self.obstructsInAllRoads[car.sourcePlace+car.targetPlace][car.pathIdx-1]){
-                                    obsFlag = 2;
-                                }
-                                else{
+                                if(former === undefined){
                                     obsFlag = 1;
                                 }
-                            }
-                            else{
-                                if(car.x+30 <= _self.obstructsInAllRoads[car.sourcePlace+car.targetPlace][car.pathIdx-1]){
-                                    obsFlag = 2;
+                                else{
+                                    if (car.x + 30 >= _self.obstructsInAllRoads[former][0]) {
+                                        obsFlag = 2;
+                                    } else {
+                                        obsFlag = 1;
+                                    }
+                                }
+                            } else {
+                                if(former === undefined){
+                                    obsFlag = 3;
                                 }
                                 else{
-                                    obsFlag = 3;
+                                    if (car.x + 30 <= _self.obstructsInAllRoads[former][0]) {
+                                        obsFlag = 2;
+                                    } else {
+                                        obsFlag = 3;
+                                    }
                                 }
                             }
                             break; //加速,速度到达2时，状态变为正常行驶
@@ -642,7 +1565,13 @@ let Car = {
                     normalCar.style.left = sx + "px";
                     normalCar.style.top = sy + "px";
                     car.x = sx;
-                    _self.obstructsInAllRoads[car.sourcePlace+car.targetPlace][car.pathIdx] = car.x;
+                    car.y = sy;
+                    if(car.x >= (_self.W / 2 - _self.RoadW) && car.curPath !== "-" + car.targetPlace){
+                        car.curPath = "-" + car.targetPlace
+                        _self.obstructsInAllRoads[car.pathIdx][2] = car.curPath;
+                    }
+                    _self.obstructsInAllRoads[car.pathIdx][0] = car.x;
+                    _self.obstructsInAllRoads[car.pathIdx][1] = car.y;
                 }
             }
         };
@@ -652,6 +1581,7 @@ let Car = {
             let sign = 1;
             let accelerate = 0; //加速速度
             let slowdown = 2; //减速速度
+            let obsFlag = 1;
             normalCar.setAttribute("src", require("../images/" + car.img + "-.png"));
             normalCar.setAttribute("width", "10");
             normalCar.setAttribute("height", "20");
@@ -659,6 +1589,11 @@ let Car = {
             normalCar.style.position = "absolute";
             normalCar.style.left = sx + "px";
             normalCar.style.top = sy + "px";
+            car.curPath = car.sourcePlace;
+            car.x = sx;
+            car.y = sy;
+            car.pathIdx = _self.obstructsInAllRoads.length;
+            _self.obstructsInAllRoads.push([car.x,car.y,car.curPath]);
             try {
                 father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
             } catch (err) {
@@ -668,67 +1603,174 @@ let Car = {
             let id = setInterval(frame, 30);
 
             function frame() {
-                {
-                    if (sy === 118) {
-                        // 判断路口情况 jxd
-                        sign = intersectionCTOB(sy, lightlist1);
+                if(sy >= _self.H / 2 - _self.RoadW){
+                    clearInterval(id);
+                    //加上旋转属性
+                    let normalCar = document.getElementsByClassName(car.type + car.index)[0];
+                    normalCar.classList.add("transTopToRight");
+                    let flag = 0;
+                    setTimeout(function() {
+                        car.curPath = "-" + car.targetPlace;
+                        _self.obstructsInAllRoads[car.pathIdx][2] = car.curPath;
+                    }, 500);
+                    setTimeout(function() {
+                        flag = 1;
+                    }, 3500);
+
+                    function checkFlag() {
+                        if (flag === 1) {
+                            clearInterval(checkIdx);
+                            car.drawLeftToRightLines(_self, _self.W / 2 - _self.RoadW + ((_self.RoadW - _self.carW) / 2), _self.H / 2 - _self.RoadW, car.index);
+                        }
                     }
+                    let checkIdx = setInterval(checkFlag, 80);
+                }
+                else{
+                    let former = undefined;
+                    for(let i=0;i<car.pathIdx;i++){
+                        if(_self.obstructsInAllRoads[i] === undefined){
+                            ;//如果前面某辆车到达目的地，不再判断
+                        }
+                        else{//在路上的就判断是否和当前车在同一路段
+                            if(_self.obstructsInAllRoads[i][2] === car.curPath){
+                                former = i;
+                            }
+                        }
+                    }
+                    if (former !== undefined) {//如果找到了，当前车不是所在路段的第一辆车，就可以根据前方是否有车判断是否要停车
+                        if (car.y + 30 >= _self.obstructsInAllRoads[former][1]) {
+                            obsFlag = 2;
+                        } else {
+                            obsFlag = 1;
+                        }
+                    } else {//如果是第一辆车，那么可以不需要判断，直接正常行驶
+                        obsFlag = 1;
+                    }
+                    if (car.type == 'NormalCar') {
+                        if (sy === 118) {
+                            // 判断路口情况 jxd
+                            sign = intersectionCTOB(sy, lightlist1, car.type);
+                        }
+                        if (obsFlag === 2 || sign === 2) {
+                            obsFlag = 2;
+                        } else {
+                            obsFlag = 1;
+                        }
+                    } else {
+                        if (sy === 142) {
+                            // 判断路口情况 jxd
+                            sign = intersectionCTOB(sy, lightlist1, car.type);
+                        }
+                        if (obsFlag === 2 || sign === 2) {
+                            obsFlag = 2;
+                        } else {
+                            obsFlag = 1;
+                        }
+                    }
+
                     // 根据车辆预计行驶状态，控制车辆进行行驶 jxd
-                    console.log(sy)
-                    switch (sign) {
+                    switch (obsFlag) {
                         case 0:
                             break; //停车
                         case 1:
                             sy = sy + car.speed;
-                            if (sy > 168) {
-                                console.log("进入状态判断", sy)
-                                sign = intersectionCTOB(sy, lightlist1);
+                            if(former === undefined){//第一辆车，正常行驶
+                                obsFlag = 1;
+                            }
+                            else{
+                                if (car.y + 30 >= _self.obstructsInAllRoads[former][1]) {
+                                    obsFlag = 2;
+                                } else {
+                                    obsFlag = 1;
+                                }
+                            }
+                            if (sy === 168) {
+                                sign = intersectionCTOB(sy, lightlist1, car.type);
+                            }
+                            if (obsFlag === 2 || sign === 2) {
+                                obsFlag = 2;
+                            } else {
+                                obsFlag = 1;
                             }
                             break; //正常行驶
                         case 2:
-                            if (sy > 168) {
-                                slowdown = 0;
-                            }
-                            if (slowdown <= 0) {
-                                sign = intersectionCTOB(sy, lightlist1);
-                            } else {
-                                slowdown = slowdown - 0.04;
-                                sy = sy + slowdown;
-                                console.log(slowdown)
-                            }
-
-                            break; //减速,每次速度减0.1，速度为0时,状态改为停车
-                        case 3:
-                            clearInterval(id);
-                            //加上旋转属性
-                            clearInterval(id);
-                            //加上旋转属性
-                            let normalCar = document.getElementsByClassName(car.type + car.index)[0];
-                            normalCar.classList.add("transTopToRight");
-                            let flag = 0;
-                            setTimeout(function() {
-                                flag = 1;
-                            }, 3500);
-
-                            function checkFlag() {
-                                if (flag === 1) {
-                                    clearInterval(checkIdx);
-                                    car.drawLeftToRightLines(_self, _self.W / 2 - _self.RoadW + ((_self.RoadW - _self.carW) / 2), _self.H / 2 - _self.carH - _self.RoadW, car.index);
+                            if(former === undefined){
+                                if (sy === 168) {
+                                    slowdown = 0;
                                 }
                             }
-                            let checkIdx = setInterval(checkFlag, 80);
+                            else{
+                                if (car.y + 30 >= _self.obstructsInAllRoads[former][1] || sy == 168) {
+                                    slowdown = 0;
+                                }
+                            }
+                            if (slowdown <= 0) {
+                                if(former === undefined){
+                                    obsFlag = 3
+                                }
+                                else{
+                                    if (car.y + 30 >= _self.obstructsInAllRoads[former][1]) {
+                                        obsFlag = 2;
+                                    } else {
+                                        obsFlag = 1;
+                                    }
+                                }
+                                sign = intersectionCTOB(sy, lightlist1, car.type);
+                                if (obsFlag === 2 || sign === 2) {
+                                    obsFlag = 2;
+                                } else {
+                                    obsFlag = 3;
+                                }
+                            } else {
+                                car.type == 'NormalCar' ? (slowdown = slowdown - 0.04) : (slowdown = slowdown - 0.08);
+                                sy = sy + slowdown;
+                            }
+                            break; //减速,每次速度减0.1，速度为0时,状态改为停车
+                        case 3:
+                            car.type == 'NormalCar' ? (accelerate = accelerate + 0.04) : (accelerate = accelerate + 0.08);
+                            sy = sy + accelerate;
+                            if (accelerate >= car.speed) {
+                                if(former === undefined){
+                                    obsFlag = 1;
+                                }
+                                else{
+                                    if (car.y + 30 >= _self.obstructsInAllRoads[former][1]) {
+                                        obsFlag = 2;
+                                    } else {
+                                        obsFlag = 1;
+                                    }
+                                }
+                            } else {
+                                if(former === undefined){
+                                    obsFlag = 3;
+                                }
+                                else{
+                                    if (car.y + 30 <= _self.obstructsInAllRoads[former][1]) {
+                                        obsFlag = 2;
+                                    } else {
+                                        obsFlag = 3;
+                                    }
+                                }
+                            }
+                            break; //加速,速度到达2时，状态变为正常行驶
                         default:
                             break;
                     }
-                    console.log(sign)
                     normalCar.style.left = sx + "px";
                     normalCar.style.top = sy + "px";
+                    car.x = sx;
+                    car.y = sy;
+                    _self.obstructsInAllRoads[car.pathIdx][0] = car.x;
+                    _self.obstructsInAllRoads[car.pathIdx][1] = car.y;
                 }
             }
         };
         car.drawCToA = function(_self, sx, sy) {
             let father = document.getElementsByClassName("MyCanvas")[0];
             let normalCar = document.createElement("img");
+            let accelerate = 0; //加速速度
+            let slowdown = 2; //减速速度
+            let obsFlag = 1;
             normalCar.setAttribute("src", require("../images/" + car.img + "-.png"));
             normalCar.setAttribute("width", "10");
             normalCar.setAttribute("height", "20");
@@ -737,6 +1779,11 @@ let Car = {
             normalCar.style.position = "absolute";
             normalCar.style.left = sx + "px";
             normalCar.style.top = sy + "px";
+            car.curPath = car.sourcePlace;
+            car.x = sx;
+            car.y = sy;
+            car.pathIdx = _self.obstructsInAllRoads.length;
+            _self.obstructsInAllRoads.push([car.x,car.y,car.curPath]);
             try {
                 father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
             } catch (err) {
@@ -746,12 +1793,16 @@ let Car = {
             let id = setInterval(frame, 30);
 
             function frame() {
-                if (sy === _self.H / 2 - _self.RoadW - _self.carH) {
+                if (sy >= _self.H / 2 - _self.RoadW - _self.carH) {
                     clearInterval(id);
                     //加上旋转属性
                     let normalCar = document.getElementsByClassName(car.type + car.index)[0];
                     normalCar.classList.add("transToLeft");
                     let flag = 0;
+                    setTimeout(function() {
+                        car.curPath = "-" + car.targetPlace;
+                        _self.obstructsInAllRoads[car.pathIdx][2] = car.curPath;
+                    }, 1000);
                     setTimeout(function() {
                         flag = 1;
                     }, 3500);
@@ -765,9 +1816,104 @@ let Car = {
                     let checkIdx = setInterval(checkFlag, 80);
 
                 } else {
-                    sy = sy + car.speed;
+                    let former = undefined;
+                    for(let i=0;i<car.pathIdx;i++){
+                        if(_self.obstructsInAllRoads[i] === undefined){
+                            ;//如果前面某辆车到达目的地，不再判断
+                        }
+                        else{//在路上的就判断是否和当前车在同一路段
+                            if(_self.obstructsInAllRoads[i][2] === car.curPath){
+                                former = i;
+                            }
+                        }
+                    }
+                    if (former !== undefined) {//如果找到了，当前车不是所在路段的第一辆车，就可以根据前方是否有车判断是否要停车
+                        if (car.y + 30 >= _self.obstructsInAllRoads[former][1]) {
+                            obsFlag = 2;
+                        } else {
+                            obsFlag = 1;
+                        }
+                    } else {//如果是第一辆车，那么可以不需要判断，直接正常行驶
+                        obsFlag = 1;
+                    }
+                                        // 根据车辆预计行驶状态，控制车辆进行行驶 jxd
+                    switch (obsFlag) {
+                        case 0:
+                            break; //停车
+                        case 1:
+                            sy = sy + car.speed;
+                            if(former === undefined){//第一辆车，正常行驶
+                                obsFlag = 1;
+                            }
+                            else{
+                                if (car.y + 30 >= _self.obstructsInAllRoads[former][1]) {
+                                    obsFlag = 2;
+                                } else {
+                                    obsFlag = 1;
+                                }
+                            }
+                            break; //正常行驶
+                        case 2:
+                            if(former === undefined){
+                                    slowdown = 0;
+                            }
+                            else{
+                                if (car.y + 30 >= _self.obstructsInAllRoads[former][1]) {
+                                    slowdown = 0;
+                                }
+                            }
+                            if (slowdown <= 0) {
+                                if(former === undefined){
+                                    obsFlag = 3
+                                }
+                                else{
+                                    if (car.y + 30 >= _self.obstructsInAllRoads[former][1]) {
+                                        obsFlag = 2;
+                                    } else {
+                                        obsFlag = 1;
+                                    }
+                                }
+                            } else {
+                                car.type == 'NormalCar' ? (slowdown = slowdown - 0.04) : (slowdown = slowdown - 0.08);
+                                sy = sy + slowdown;
+                            }
+                            break; //减速,每次速度减0.1，速度为0时,状态改为停车
+                        case 3:
+                            car.type == 'NormalCar' ? (accelerate = accelerate + 0.04) : (accelerate = accelerate + 0.08);
+                            sy = sy + accelerate;
+                            if (accelerate >= car.speed) {
+                                if(former === undefined){
+                                    obsFlag = 1;
+                                }
+                                else{
+                                    if (car.y + 30 >= _self.obstructsInAllRoads[former][1]) {
+                                        obsFlag = 2;
+                                    } else {
+                                        obsFlag = 1;
+                                    }
+                                }
+                            } else {
+                                if(former === undefined){
+                                    obsFlag = 3;
+                                }
+                                else{
+                                    if (car.y + 30 <= _self.obstructsInAllRoads[former][1]) {
+                                        obsFlag = 2;
+                                    } else {
+                                        obsFlag = 3;
+                                    }
+                                }
+                            }
+                            break; //加速,速度到达2时，状态变为正常行驶
+                        default:
+                            break;
+                    }
                     normalCar.style.left = sx + "px";
                     normalCar.style.top = sy + "px";
+                    car.x = sx;
+                    car.y = sy;
+                    _self.obstructsInAllRoads[car.pathIdx][0] = car.x;
+                    _self.obstructsInAllRoads[car.pathIdx][1] = car.y;
                 }
             }
         };
@@ -775,7 +1921,7 @@ let Car = {
             let father = document.getElementsByClassName("MyCanvas")[0];
             let normalCar = document.createElement("img");
             // jxd
-            let flag = 1; //flag表示定时器下一次预计的车辆状态，0表示车辆停止，1表示车辆行驶，2表示减速停车，3表示起步加速
+            let sign = 1; //flag表示定时器下一次预计的车辆状态，0表示车辆停止，1表示车辆行驶，2表示减速停车，3表示起步加速
             let accelerate = 0; //加速速度
             let slowdown = 2; //减速速度
             let obsFlag = 1;
@@ -788,10 +1934,11 @@ let Car = {
             normalCar.style.padding = "3px 0px 3px 0px";
             normalCar.style.left = sx + "px";
             normalCar.style.top = sy + "px";
+            car.curPath = car.sourcePlace;
             car.y = sy;
-            car.pathIdx = _self.obstructsInAllRoads[car.sourcePlace+car.targetPlace].length;
-            _self.obstructsInAllRoads[car.sourcePlace+car.targetPlace].push(car.y);
-            console.log(_self.obstructsInAllRoads[car.sourcePlace+car.targetPlace]);
+            car.x = sx;
+            car.pathIdx = _self.obstructsInAllRoads.length;
+            _self.obstructsInAllRoads.push([car.x,car.y,car.curPath]);
             try {
                 father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
             } catch (err) {
@@ -805,30 +1952,50 @@ let Car = {
                     clearInterval(id);
                     carNumber();
                     father.removeChild(normalCar);
-                    delete _self.obstructsInAllRoads[car.sourcePlace+car.targetPlace][car.pathIdx];
+                    delete _self.obstructsInAllRoads[car.pathIdx];
                 } else {
-                    if(_self.obstructsInAllRoads[car.sourcePlace+car.targetPlace][car.pathIdx-1] !== undefined){
-                        if(car.y+30 >= _self.obstructsInAllRoads[car.sourcePlace+car.targetPlace][car.pathIdx-1]){
-                            obsFlag = 2;
+                    //找到当前车辆前方的与当前车处于同一路段且同方向的车辆的pathIdx
+                    let former = undefined;
+                    for(let i=0;i<car.pathIdx;i++){
+                        if(_self.obstructsInAllRoads[i] === undefined){
+                            ;//如果前面某辆车到达目的地，不再判断
                         }
-                        else{
-                            obsFlag = 1;
+                        else{//在路上的就判断是否和当前车在同一路段
+                            if(_self.obstructsInAllRoads[i][2] === car.curPath){
+                                former = i;
+                            }
                         }
                     }
-                    else{
+                    if (former !== undefined) {
+                        if (car.y + 30 >= _self.obstructsInAllRoads[former][1]) {
+                            obsFlag = 2;
+                        } else {
+                            obsFlag = 1;
+                        }
+                    } else {
                         obsFlag = 1;
                     }
                     // jxd
-                    console.log(sy)
-                    if (sy === 118) {
-                        // 判断路口情况 jxd
-                        flag = intersectionCTOD(sy, lightlist1);
-                    }
-                    if(obsFlag === 2 || flag === 2){
-                        obsFlag = 2;
-                    }
-                    else{
-                        obsFlag = 1;
+                    if (car.type == 'NormalCar') {
+                        if (sy === 118) {
+                            // 判断路口情况 jxd
+                            sign = intersectionCTOD(sy, lightlist1, car.type);
+                        }
+                        if (obsFlag === 2 || sign === 2) {
+                            obsFlag = 2;
+                        } else {
+                            obsFlag = 1;
+                        }
+                    } else {
+                        if (sy === 142) {
+                            // 判断路口情况 jxd
+                            sign = intersectionCTOD(sy, lightlist1, car.type);
+                        }
+                        if (obsFlag === 2 || sign === 2) {
+                            obsFlag = 2;
+                        } else {
+                            obsFlag = 1;
+                        }
                     }
                     // 根据车辆预计行驶状态，控制车辆进行行驶 jxd
                     switch (obsFlag) {
@@ -836,11 +2003,15 @@ let Car = {
                             break; //停车
                         case 1:
                             sy = sy + car.speed;
-                            if(car.y+30 >= _self.obstructsInAllRoads[car.sourcePlace+car.targetPlace][car.pathIdx-1]){
-                                obsFlag = 2;
+                            if(former === undefined){//第一辆车，正常行驶
+                                obsFlag = 1;
                             }
                             else{
-                                obsFlag = 1;
+                                if (car.y + 30 >= _self.obstructsInAllRoads[former][1]) {
+                                    obsFlag = 2;
+                                } else {
+                                    obsFlag = 1;
+                                }
                             }
                             if (sy == 168) {
                                 var nowLight1; // 获取红绿灯
@@ -850,59 +2021,74 @@ let Car = {
                                     }
                                 }
                                 if (nowLight1 == "green") {
-                                    flag = 1;
+                                    sign = 1;
                                 } else {
-                                    flag = 2;
+                                    sign = 2;
                                 }
-                                console.log(flag)
                             }
-                            if(obsFlag === 2 || flag === 2){
+                            if (obsFlag === 2 || sign === 2) {
                                 obsFlag = 2;
-                            }
-                            else{
+                            } else {
                                 obsFlag = 1;
                             }
                             break; //正常行驶
                         case 2:
-                            if(car.y+30 >= _self.obstructsInAllRoads[car.sourcePlace+car.targetPlace][car.pathIdx-1] || sy == 168){
-                                slowdown = 0;
+                            if(former === undefined){
+                                if (sy === 168) {
+                                    slowdown = 0;
+                                }
+                            }
+                            else{
+                                if (car.y + 30 >= _self.obstructsInAllRoads[former][1] || sy == 168) {
+                                    slowdown = 0;
+                                }
                             }
                             if (slowdown <= 0) {
-                                if(car.y+30 >= _self.obstructsInAllRoads[car.sourcePlace+car.targetPlace][car.pathIdx-1]){
-                                    obsFlag = 2;
+                                if(former === undefined){
+                                    obsFlag = 3
                                 }
                                 else{
-                                    obsFlag = 1;
+                                    if (car.y + 30 >= _self.obstructsInAllRoads[former][1]) {
+                                        obsFlag = 2;
+                                    } else {
+                                        obsFlag = 1;
+                                    }
                                 }
-                                flag = intersectionCTOD(sy, lightlist1);
-                                if(obsFlag === 2 || flag === 2){
+                                sign = intersectionCTOD(sy, lightlist1, car.type);
+                                if (obsFlag === 2 || sign === 2) {
                                     obsFlag = 2;
-                                }
-                                else{
+                                } else {
                                     obsFlag = 3;
                                 }
                             } else {
-                                slowdown = slowdown - 0.04;
+                                car.type == 'NormalCar' ? (slowdown = slowdown - 0.04) : (slowdown = slowdown - 0.08);
                                 sy = sy + slowdown;
                             }
                             break; //减速,每次速度减0.1，速度为0时,状态改为停车
                         case 3:
-                            accelerate = accelerate + 0.04;
+                            car.type == 'NormalCar' ? (accelerate = accelerate + 0.04) : (accelerate = accelerate + 0.08);
                             sy = sy + accelerate;
                             if (accelerate >= car.speed) {
-                                if(car.y+30 >= _self.obstructsInAllRoads[car.sourcePlace+car.targetPlace][car.pathIdx-1]){
-                                    obsFlag = 2;
-                                }
-                                else{
+                                if(former === undefined){
                                     obsFlag = 1;
                                 }
-                            }
-                            else{
-                                if(car.y+30 <= _self.obstructsInAllRoads[car.sourcePlace+car.targetPlace][car.pathIdx-1]){
-                                    obsFlag = 2;
+                                else{
+                                    if (car.y + 30 >= _self.obstructsInAllRoads[former][1]) {
+                                        obsFlag = 2;
+                                    } else {
+                                        obsFlag = 1;
+                                    }
+                                }
+                            } else {
+                                if(former === undefined){
+                                    obsFlag = 3;
                                 }
                                 else{
-                                    obsFlag = 3;
+                                    if (car.y + 30 <= _self.obstructsInAllRoads[former][1]) {
+                                        obsFlag = 2;
+                                    } else {
+                                        obsFlag = 3;
+                                    }
                                 }
                             }
                             break; //加速,速度到达2时，状态变为正常行驶
@@ -911,14 +2097,24 @@ let Car = {
                     }
                     normalCar.style.left = sx + "px";
                     normalCar.style.top = sy + "px";
+                    car.x = sx;
                     car.y = sy;
-                    _self.obstructsInAllRoads[car.sourcePlace+car.targetPlace][car.pathIdx] = car.y;
+                    if(car.y >= (_self.H / 2 - _self.RoadW) && car.curPath !== "-" + car.targetPlace){
+                        car.curPath = "-" + car.targetPlace
+                        _self.obstructsInAllRoads[car.pathIdx][2] = car.curPath;
+                    }
+                    _self.obstructsInAllRoads[car.pathIdx][0] = car.x;
+                    _self.obstructsInAllRoads[car.pathIdx][1] = car.y;
                 }
             }
         };
         car.drawBToC = function(_self, sx, sy) {
             let father = document.getElementsByClassName("MyCanvas")[0];
             let normalCar = document.createElement("img");
+            let accelerate = 0; //加速速度
+            let slowdown = 2; //减速速度
+
+            let obsFlag = 1;
             normalCar.setAttribute("src", require("../images/" + car.img + "-90.png"));
             normalCar.setAttribute("width", "20");
             normalCar.setAttribute("height", "10");
@@ -927,6 +2123,11 @@ let Car = {
             normalCar.style.position = "absolute";
             normalCar.style.left = sx + "px";
             normalCar.style.top = sy + "px";
+            car.curPath = car.sourcePlace;
+            car.x = sx;
+            car.y = sy;
+            car.pathIdx = _self.obstructsInAllRoads.length;
+            _self.obstructsInAllRoads.push([car.x,car.y,car.curPath]);
             try {
                 father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
             } catch (err) {
@@ -943,6 +2144,10 @@ let Car = {
                     normalCar.classList.add("transRightToTop");
                     let flag = 0;
                     setTimeout(function() {
+                        car.curPath = "-" + car.targetPlace;
+                        _self.obstructsInAllRoads[car.pathIdx][2] = car.curPath;
+                    }, 1000);
+                    setTimeout(function() {
                         flag = 1;
                     }, 3500);
 
@@ -955,9 +2160,103 @@ let Car = {
                     let checkIdx = setInterval(checkFlag, 80);
 
                 } else {
-                    sx = sx - car.speed;
+                    let former = undefined;
+                    for(let i=0;i<car.pathIdx;i++){
+                        if(_self.obstructsInAllRoads[i] === undefined){
+                            ;//如果前面某辆车到达目的地，不再判断
+                        }
+                        else{//在路上的就判断是否和当前车在同一路段
+                            if(_self.obstructsInAllRoads[i][2] === car.curPath){
+                                former = i;
+                            }
+                        }
+                    }
+                    if (former !== undefined) {//如果找到了，当前车不是所在路段的第一辆车，就可以根据前方是否有车判断是否要停车
+                        if (car.x <= _self.obstructsInAllRoads[former][0] + 30) {
+                            obsFlag = 2;
+                        } else {
+                            obsFlag = 1;
+                        }
+                    } else {//如果是第一辆车，那么可以不需要判断，直接正常行驶
+                        obsFlag = 1;
+                    }
+                    switch (obsFlag) {
+                        case 0:
+                            break; //停车
+                        case 1:
+                            sx = sx - car.speed;
+                            if(former === undefined){//第一辆车，正常行驶
+                                obsFlag = 1;
+                            }
+                            else{
+                                if (car.x <= _self.obstructsInAllRoads[former][0] + 30) {
+                                    obsFlag = 2;
+                                } else {
+                                    obsFlag = 1;
+                                }
+                            }
+                            break; //正常行驶
+                        case 2:
+                            if(former === undefined){
+                                    slowdown = 0;
+                            }
+                            else{
+                                if (car.x <= _self.obstructsInAllRoads[former][0] + 30) {
+                                    slowdown = 0;
+                                }
+                            }
+                            if (slowdown <= 0) {
+                                if(former === undefined){
+                                    obsFlag = 3
+                                }
+                                else{
+                                    if (car.x <= _self.obstructsInAllRoads[former][0] + 30) {
+                                        obsFlag = 2;
+                                    } else {
+                                        obsFlag = 3;
+                                    }
+                                }
+                            } else {
+                                car.type == 'NormalCar' ? (slowdown = slowdown - 0.04) : (slowdown = slowdown - 0.08);
+                                sx = sx - slowdown;
+                            }
+                            break; //减速,每次速度减0.1，速度为0时,状态改为停车
+                        case 3:
+                            car.type == 'NormalCar' ? (accelerate = accelerate + 0.04) : (accelerate = accelerate + 0.08);
+                            sx = sx - accelerate;
+                            if (accelerate >= car.speed) {
+                                if(former === undefined){
+                                    obsFlag = 1;
+                                }
+                                else{
+                                    if (car.x <= _self.obstructsInAllRoads[former][0] + 30) {
+                                        obsFlag = 2;
+                                    } else {
+                                        obsFlag = 1;
+                                    }
+                                }
+                            } else {
+                                if(former === undefined){
+                                    obsFlag = 3;
+                                }
+                                else{
+                                    if (car.x <= _self.obstructsInAllRoads[former][0] + 30) {
+                                        obsFlag = 2;
+                                    } else {
+                                        obsFlag = 3;
+                                    }
+                                }
+                            }
+                            break;
+                        default:
+                            break;
+                    }
                     normalCar.style.left = sx + "px";
                     normalCar.style.top = sy + "px";
+                    car.x = sx;
+                    car.y = sy;
+                    _self.obstructsInAllRoads[car.pathIdx][0] = car.x;
+                    _self.obstructsInAllRoads[car.pathIdx][1] = car.y;
                 }
             }
         };
@@ -968,6 +2267,7 @@ let Car = {
             let accelerate = 0; //加速速度
             let slowdown = 2; //减速速度
 
+            let obsFlag = 1;
             normalCar.setAttribute("src", require("../images/" + car.img + "-90.png"));
             normalCar.setAttribute("width", "20");
             normalCar.setAttribute("height", "10");
@@ -976,6 +2276,11 @@ let Car = {
             normalCar.style.position = "absolute";
             normalCar.style.left = sx + "px";
             normalCar.style.top = sy + "px";
+            car.curPath = car.sourcePlace;
+            car.x = sx;
+            car.y = sy;
+            car.pathIdx = _self.obstructsInAllRoads.length;
+            _self.obstructsInAllRoads.push([car.x,car.y,car.curPath]);
             try {
                 father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
             } catch (err) {
@@ -985,60 +2290,164 @@ let Car = {
             let id = setInterval(frame, 30);
 
             function frame() {
-                {
-                    if (sx === 610) {
-                        // 判断路口情况 jxd
-                        sign = intersectionBTOD(sx, lightlist);
+                if(sx <= _self.W / 2 + _self.RoadW){
+                    clearInterval(id);
+                    //加上旋转属性
+                    let normalCar = document.getElementsByClassName(car.type + car.index)[0];
+                    normalCar.classList.add("transRightToDown");
+                    let flag = 0;
+                    setTimeout(function() {
+                        car.curPath = "-" + car.targetPlace;
+                        _self.obstructsInAllRoads[car.pathIdx][2] = car.curPath;
+                    }, 500);
+                    setTimeout(function() {
+                        flag = 1;
+                    }, 3500);
 
+                    function checkFlag() {
+                        if (flag === 1) {
+                            clearInterval(checkIdx);
+                            car.drawTopToDownLines(_self, _self.W / 2 + _self.RoadW, _self.H / 2 - _self.RoadW + ((_self.RoadW - _self.carW) / 2));
+                        }
+                    }
+                    let checkIdx = setInterval(checkFlag, 80);
+                }
+                else{
+                    let former = undefined;
+                    for(let i=0;i<car.pathIdx;i++){
+                        if(_self.obstructsInAllRoads[i] === undefined){
+                            ;//如果前面某辆车到达目的地，不再判断
+                        }
+                        else{//在路上的就判断是否和当前车在同一路段
+                            if(_self.obstructsInAllRoads[i][2] === car.curPath){
+                                former = i;
+                            }
+                        }
+                    }
+                    if (former !== undefined) {//如果找到了，当前车不是所在路段的第一辆车，就可以根据前方是否有车判断是否要停车
+                        if (car.x <= _self.obstructsInAllRoads[former][0] + 30) {
+                            obsFlag = 2;
+                        } else {
+                            obsFlag = 1;
+                        }
+                    } else {//如果是第一辆车，那么可以不需要判断，直接正常行驶
+                        obsFlag = 1;
+                    }
+                    if (car.type == 'NormalCar') {
+                        if (sx === 610) {
+                            // 判断路口情况 jxd
+                            sign = intersectionBTOD(sx, lightlist, car.type);
+                        }
+                        if (obsFlag === 2 || sign === 2) {
+                            obsFlag = 2;
+                        } else {
+                            obsFlag = 1;
+                        }
+                    } else {
+                        if (sx === 586) {
+                            // 判断路口情况 jxd
+                            sign = intersectionBTOD(sx, lightlist, car.type);
+                        }
+                        if (obsFlag === 2 || sign === 2) {
+                            obsFlag = 2;
+                        } else {
+                            obsFlag = 1;
+                        }
                     }
                     // 根据车辆预计行驶状态，控制车辆进行行驶 jxd
-                    // console.log(ty)
-                    switch (sign) {
+                    switch (obsFlag) {
                         case 0:
                             break; //停车
                         case 1:
                             sx = sx - car.speed;
+                            if(former === undefined){//第一辆车，正常行驶
+                                obsFlag = 1;
+                            }
+                            else{
+                                if (car.x <= _self.obstructsInAllRoads[former][0] + 30) {
+                                    obsFlag = 2;
+                                } else {
+                                    obsFlag = 1;
+                                }
+                            }
                             if (sx < 560) {
-                                //    console.log("进入状态判断",tx)
-                                sign = intersectionBTOD(sx, lightlist);
+                                sign = intersectionBTOD(sx, lightlist, car.type);
+                            }
+                            if (obsFlag === 2 || sign === 2) {
+                                obsFlag = 2;
+                            } else {
+                                obsFlag = 1;
                             }
                             break; //正常行驶
                         case 2:
-                            if (sx < 560) {
-                                slowdown = 0;
-                            }
-                            if (slowdown <= 0) {
-                                sign = intersectionBTOD(sx, lightlist);
-                            } else {
-                                slowdown = slowdown - 0.04;
-                                sx = sx - slowdown;
-                                console.log(slowdown)
-                            }
-                            console.log(slowdown, sx)
-                            break; //减速,每次速度减0.1，速度为0时,状态改为停车
-                        case 3:
-                            clearInterval(id);
-                            //加上旋转属性
-                            let normalCar = document.getElementsByClassName(car.type + car.index)[0];
-                            normalCar.classList.add("transRightToDown");
-                            let flag = 0;
-                            setTimeout(function() {
-                                flag = 1;
-                            }, 3500);
-
-                            function checkFlag() {
-                                if (flag === 1) {
-                                    clearInterval(checkIdx);
-                                    car.drawTopToDownLines(_self, _self.W / 2 + _self.RoadW, _self.H / 2 - _self.RoadW + ((_self.RoadW - _self.carW) / 2));
+                            if(former === undefined){
+                                if (sx === 562) {
+                                    slowdown = 0;
                                 }
                             }
-                            let checkIdx = setInterval(checkFlag, 80);
+                            else{
+                                if (car.x <= _self.obstructsInAllRoads[former][0] + 30 || sx == 562) {
+                                    slowdown = 0;
+                                }
+                            }
+                            if (slowdown <= 0) {
+                                if(former === undefined){
+                                    obsFlag = 3
+                                }
+                                else{
+                                    if (car.x <= _self.obstructsInAllRoads[former][0] + 30) {
+                                        obsFlag = 2;
+                                    } else {
+                                        obsFlag = 3;
+                                    }
+                                }
+                                sign = intersectionBTOD(sx, lightlist, car.type);
+                                if (obsFlag === 2 || sign === 2) {
+                                    obsFlag = 2;
+                                } else {
+                                    obsFlag = 3;
+                                }
+                            } else {
+                                car.type == 'NormalCar' ? (slowdown = slowdown - 0.04) : (slowdown = slowdown - 0.08);
+                                sx = sx - slowdown;
+                            }
+                            break; //减速,每次速度减0.1，速度为0时,状态改为停车
+                        case 3:
+                            car.type == 'NormalCar' ? (accelerate = accelerate + 0.04) : (accelerate = accelerate + 0.08);
+                            sx = sx - accelerate;
+                            if (accelerate >= car.speed) {
+                                if(former === undefined){
+                                    obsFlag = 1;
+                                }
+                                else{
+                                    if (car.x <= _self.obstructsInAllRoads[former][0] + 30) {
+                                        obsFlag = 2;
+                                    } else {
+                                        obsFlag = 1;
+                                    }
+                                }
+                            } else {
+                                if(former === undefined){
+                                    obsFlag = 3;
+                                }
+                                else{
+                                    if (car.x <= _self.obstructsInAllRoads[former][0] + 30) {
+                                        obsFlag = 2;
+                                    } else {
+                                        obsFlag = 3;
+                                    }
+                                }
+                            }
+                            break;
                         default:
                             break;
                     }
-                    //    console.log(sign)
                     normalCar.style.left = sx + "px";
                     normalCar.style.top = sy + "px";
+                    car.x = sx;
+                    car.y = sy;
+                    _self.obstructsInAllRoads[car.pathIdx][0] = car.x;
+                    _self.obstructsInAllRoads[car.pathIdx][1] = car.y;
                 }
             }
         };
@@ -1061,9 +2470,11 @@ let Car = {
             normalCar.style.position = "absolute";
             normalCar.style.left = sx + "px";
             normalCar.style.top = sy + "px";
+            car.curPath = car.sourcePlace;
             car.x = sx;
-            car.pathIdx = _self.obstructsInAllRoads[car.sourcePlace+car.targetPlace].length;
-            _self.obstructsInAllRoads[car.sourcePlace+car.targetPlace].push(car.x);
+            car.y = sy;
+            car.pathIdx = _self.obstructsInAllRoads.length;
+            _self.obstructsInAllRoads.push([car.x,car.y,car.curPath]);
             try {
                 father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
             } catch (err) {
@@ -1077,105 +2488,144 @@ let Car = {
                     carNumber();
                     clearInterval(id);
                     father.removeChild(normalCar);
-                    delete _self.obstructsInAllRoads[car.sourcePlace+car.targetPlace][car.pathIdx];
+                    delete _self.obstructsInAllRoads[car.pathIdx];
                 } else {
-                    if(_self.obstructsInAllRoads[car.sourcePlace+car.targetPlace][car.pathIdx-1] !== undefined){
-                        if(car.x <= _self.obstructsInAllRoads[car.sourcePlace+car.targetPlace][car.pathIdx-1]+30){
-                            obsFlag = 2;
+                    //找到当前车辆前方的与当前车处于同一路段且同方向的车辆的pathIdx
+                    let former = undefined;
+                    for(let i=0;i<car.pathIdx;i++){
+                        if(_self.obstructsInAllRoads[i] === undefined){
+                            ;//如果前面某辆车到达目的地，不再判断
                         }
-                        else{
+                        else{//在路上的就判断是否和当前车在同一路段
+                            if(_self.obstructsInAllRoads[i][2] === car.curPath){
+                                former = i;
+                            }
+                        }
+                    }
+                    if (former !== undefined) {//如果找到了，当前车不是所在路段的第一辆车，就可以根据前方是否有车判断是否要停车
+                        if (car.x <= _self.obstructsInAllRoads[former][0] + 30) {
+                            obsFlag = 2;
+                        } else {
+                            obsFlag = 1;
+                        }
+                    } else {//如果是第一辆车，那么可以不需要判断，直接正常行驶
+                        obsFlag = 1;
+                    }
+                    // jxd
+                    if (car.type == 'NormalCar') {
+                        if (sx === 610) {
+                            // 判断路口情况 jxd
+                            sign = intersectionBTOA(sx, lightlist, car.type);
+                        }
+                        if (obsFlag === 2 || sign === 2) {
+                            obsFlag = 2;
+                        } else {
+                            obsFlag = 1;
+                        }
+                    } else {
+                        if (sx === 586) {
+                            // 判断路口情况 jxd
+                            sign = intersectionBTOA(sx, lightlist, car.type);
+                        }
+                        if (obsFlag === 2 || sign === 2) {
+                            obsFlag = 2;
+                        } else {
                             obsFlag = 1;
                         }
                     }
-                    else{
-                        obsFlag = 1;
-                    }
-                    if (sx === 610) {
-                        // 判断路口情况 jxd
-                        sign = intersectionBTOA(sx, lightlist);
-                    }
-                    if(obsFlag === 2 || sign === 2){
-                        obsFlag = 2;
-                    }
-                    else{
-                        obsFlag = 1;
-                    }
+
                     // 根据车辆预计行驶状态，控制车辆进行行驶 jxd
                     switch (obsFlag) {
                         case 0:
                             break; //停车
                         case 1:
                             sx = sx - car.speed;
-                            if(car.x <= _self.obstructsInAllRoads[car.sourcePlace+car.targetPlace][car.pathIdx-1]+30){
-                                obsFlag = 2;
-                            }
-                            else{
+                            if(former === undefined){//第一辆车，正常行驶
                                 obsFlag = 1;
                             }
-                            if(sx==562)
-                            {
-                                var nowLight1;    // 获取红绿灯
-                                for(let i=0;i<3;i++)
-                                {
-                                    if(lightlist[i].style.opacity==1)
-                                    {
-                                        nowLight1=lightlist[i].className; //获取红绿灯
+                            else{//不是第一辆车就判断距离
+                                if (car.x <= _self.obstructsInAllRoads[former][0] + 30) {
+                                    obsFlag = 2;
+                                } else {
+                                    obsFlag = 1;
+                                }
+                            }
+                            if (sx == 562) {
+                                var nowLight1; // 获取红绿灯
+                                for (let i = 0; i < 3; i++) {
+                                    if (lightlist[i].style.opacity == 1) {
+                                        nowLight1 = lightlist[i].className; //获取红绿灯
                                     }
                                 }
-                                if(nowLight1=="green")
-                                {
-                                    sign=1;
-                                }else{
-                                    sign=2;
+                                if (nowLight1 == "green") {
+                                    sign = 1;
+                                } else {
+                                    sign = 2;
                                 }
                             }
-                            if(obsFlag === 2 || sign === 2){
+                            if (obsFlag === 2 || sign === 2) {
                                 obsFlag = 2;
-                            }
-                            else{
+                            } else {
                                 obsFlag = 1;
                             }
                             break; //正常行驶
                         case 2:
-                            if (car.x <= _self.obstructsInAllRoads[car.sourcePlace+car.targetPlace][car.pathIdx-1]+30 || sx == 562) {
-                                slowdown = 0;
+                            if(former === undefined){
+                                if (sx === 562) {
+                                    slowdown = 0;
+                                }
+                            }
+                            else{
+                                if (car.x <= _self.obstructsInAllRoads[former][0] + 30 || sx == 562) {
+                                    slowdown = 0;
+                                }
                             }
                             if (slowdown <= 0) {
-                                if(car.x <= _self.obstructsInAllRoads[car.sourcePlace+car.targetPlace][car.pathIdx-1]+30){
-                                    obsFlag = 2;
-                                }
-                                else{
+                                if(former === undefined){
                                     obsFlag = 3
                                 }
-                                sign = intersectionBTOA(sx, lightlist);
-                                if(obsFlag === 2 || sign === 2){
-                                    obsFlag = 2;
-                                }
                                 else{
+                                    if (car.x <= _self.obstructsInAllRoads[former][0] + 30) {
+                                        obsFlag = 2;
+                                    } else {
+                                        obsFlag = 3;
+                                    }
+                                }
+                                sign = intersectionBTOA(sx, lightlist, car.type);
+                                if (obsFlag === 2 || sign === 2) {
+                                    obsFlag = 2;
+                                } else {
                                     obsFlag = 3;
                                 }
                             } else {
-                                slowdown = slowdown - 0.04;
+                                car.type == 'NormalCar' ? (slowdown = slowdown - 0.04) : (slowdown = slowdown - 0.08);
                                 sx = sx - slowdown;
                             }
                             break; //减速,每次速度减0.1，速度为0时,状态改为停车
                         case 3:
-                            accelerate = accelerate + 0.04;
+                            car.type == 'NormalCar' ? (accelerate = accelerate + 0.04) : (accelerate = accelerate + 0.08);
                             sx = sx - accelerate;
                             if (accelerate >= car.speed) {
-                                if(car.x <= _self.obstructsInAllRoads[car.sourcePlace+car.targetPlace][car.pathIdx-1]+30){
-                                    obsFlag = 2;
-                                }
-                                else{
+                                if(former === undefined){
                                     obsFlag = 1;
                                 }
-                            }
-                            else{
-                                if(car.x <= _self.obstructsInAllRoads[car.sourcePlace+car.targetPlace][car.pathIdx-1]+30){
-                                    obsFlag = 2;
+                                else{
+                                    if (car.x <= _self.obstructsInAllRoads[former][0] + 30) {
+                                        obsFlag = 2;
+                                    } else {
+                                        obsFlag = 1;
+                                    }
+                                }
+                            } else {
+                                if(former === undefined){
+                                    obsFlag = 3;
                                 }
                                 else{
-                                    obsFlag = 3;
+                                    if (car.x <= _self.obstructsInAllRoads[former][0] + 30) {
+                                        obsFlag = 2;
+                                    } else {
+                                        obsFlag = 3;
+                                    }
                                 }
                             }
                             break; //加速,速度到达2时，状态变为正常行驶
@@ -1186,7 +2636,13 @@ let Car = {
                     normalCar.style.left = sx + "px";
                     normalCar.style.top = sy + "px";
                     car.x = sx;
-                    _self.obstructsInAllRoads[car.sourcePlace+car.targetPlace][car.pathIdx] = car.x;
+                    car.y = sy;
+                    if(car.x <= (_self.W / 2 - _self.RoadW) && car.curPath !== "-" + car.targetPlace){
+                        car.curPath = "-" + car.targetPlace
+                        _self.obstructsInAllRoads[car.pathIdx][2] = car.curPath;
+                    }
+                    _self.obstructsInAllRoads[car.pathIdx][0] = car.x;
+                    _self.obstructsInAllRoads[car.pathIdx][1] = car.y;
                 }
 
             }

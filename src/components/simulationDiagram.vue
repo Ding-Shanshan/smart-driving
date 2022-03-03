@@ -15,7 +15,7 @@
       <div class="Light">
         <trafficLight  class="trafficLight" id="trafficL0"></trafficLight>
         <!-- 左右向红绿灯 -->
-        <trafficLight2  class="trafficLight" id="trafficL1" ></trafficLight2>
+        <!-- <trafficLight2  class="trafficLight" id="trafficL1" ></trafficLight2> -->
         <!-- 上下向红绿灯 -->
       </div>
       <!-- <div class="trafficLight">
@@ -54,9 +54,10 @@ export default {
       car1Y:490,
       AllCar : [],
       carIdx : 0,
-      obstructsInAllRoads : {
+      // obstructsInAllRoads : {
 
-      }
+      // },
+      obstructsInAllRoads : []
       }
   },
   methods: {
@@ -68,14 +69,18 @@ export default {
     setTrafficLXAndY(){
       // 上下方向红绿灯
       let trafficL = document.getElementsByClassName("trafficLight")[1];
-      trafficL.style.top = (this.H/2-this.RoadW-32) + "px";
-      trafficL.style.left = (this.W/2+this.RoadW - 4) + "px"; 
+      // trafficL.style.top = (this.H/2-this.RoadW-32) + "px";
+      // trafficL.style.left = (this.W/2+this.RoadW - 4) + "px"; 
+      trafficL.style.top = 180 + "px"
+      trafficL.style.left = 465 + "px"
       // 左右方向红绿灯
       let trafficL2 = document.getElementsByClassName("trafficLight")[0];
-      trafficL2.style.top = (this.H/2 + this.RoadW + 16) + "px";
-      trafficL2.style.left = (this.W/2 - this.RoadW -50) + "px";
+      // trafficL2.style.top = (this.H/2 + this.RoadW + 16) + "px";
+      // trafficL2.style.left = (this.W/2 - this.RoadW -50) + "px";
+      trafficL2.style.top = 210 + "px"
+      trafficL2.style.left = 430 + "px"
     },
-    //绘制路面
+    //绘制道路边缘线
     drawLine(x,y,x1,y1){
         this.context.moveTo(x, y);
         this.context.lineTo(x1, y1);
@@ -100,7 +105,15 @@ export default {
 
       }
     },
-
+     // 绘制路面
+    drawRoad(){
+      this.context.beginPath();
+      this.context.fillStyle = '#1851B1';//#3F6FBB
+      this.context.fillRect(100, this.H/2-this.RoadW, this.W-200, this.RoadW*2);
+      // this.context.fillStyle = '#3F6FBB';
+      this.context.fillRect(this.W/2-this.RoadW, 100, this.RoadW*2, this.H-200);
+      // this.context.rect(positions[idx].x, positions[idx].y, positions[idx].width, positions[idx].height);
+    },
     textConnection(data) {
       //获取兄弟组件中传过来的参数，通过总数和百分比计算出普通车和智能车的数量
       let smartCarTargetNum = parseInt(data.totalNum) * parseFloat(data.proportion)
@@ -123,26 +136,15 @@ export default {
         else{
         let Places = ["A","B","C","D"];
           // 测试注释
-        let sourceIdx = Math.floor(Math.random()*4);
-        let targetIdx = Math.floor(Math.random()*4);
-        // 避免起点终点重叠
-        if(targetIdx===sourceIdx){
-          targetIdx=(targetIdx+1)%4;
-        }
-        let targetPlace = Places[targetIdx];
-        let sourcePlace = Places[sourceIdx];
-        // let sourcePlace = Places[0];
-        //  let targetPlace = Places[1];
-        // let carIdx = document.getElementsByTagName("img").length-2;
-        // let car = Car.createNewCar("Normal","A",targetPlace,carIdx);
+         let sourceIdx = Math.floor(Math.random()*4);
+         let targetIdx = Math.floor(Math.random()*4);
+         // 避免起点终点重叠
+         if(targetIdx===sourceIdx){
+           targetIdx=(targetIdx+1)%4;
+         }
+         let targetPlace = Places[targetIdx];
+         let sourcePlace = Places[sourceIdx];
         let car = undefined
-        if((sourcePlace+targetPlace) in rootSelf.obstructsInAllRoads){
-          ;
-        }
-        else{
-          rootSelf.obstructsInAllRoads[sourcePlace+targetPlace] = [];
-        }
-        console.log(rootSelf.obstructsInAllRoads[sourcePlace+targetPlace]);
         //两者都少于预期生成的数量时，随机生成
         if( normalCarCurNum < normalCarTargetNum && smartCarCurNum < smartCarTargetNum){
           let carTypeIdx = Math.floor(Math.random() * Types.length);
@@ -154,43 +156,36 @@ export default {
           }
           car = Car.createNewCar(rootSelf,Types[carTypeIdx],sourcePlace,targetPlace,rootSelf.carIdx);
           rootSelf.AllCar[rootSelf.carIdx] = car; 
-          console.log(normalCarTargetNum,smartCarTargetNum,normalCarCurNum,smartCarCurNum)
         }//一旦有一个生成数量够了，就只生成另一种
         else if(normalCarCurNum < normalCarTargetNum){
           car = Car.createNewCar(rootSelf, "NormalCar",sourcePlace,targetPlace,rootSelf.carIdx); 
           normalCarCurNum++;
           rootSelf.AllCar[rootSelf.carIdx] = car; 
-          console.log(normalCarTargetNum,smartCarTargetNum,normalCarCurNum,smartCarCurNum)
         }
         else if(smartCarCurNum < smartCarTargetNum){
           car = Car.createNewCar(rootSelf, "SmartCar",sourcePlace,targetPlace,rootSelf.carIdx); 
           smartCarCurNum++;
           rootSelf.AllCar[rootSelf.carIdx] = car; 
-          console.log(normalCarTargetNum,smartCarTargetNum,normalCarCurNum,smartCarCurNum)
         }
-        // let car = Car.createNewCar("Normal",sourcePlace,targetPlace,carIdx);  
 
-        // rootSelf.AllCar[carIdx] = car;
-        
-        // car.showInfo();
         if(rootSelf.AllCar[rootSelf.carIdx].sourcePlace === "D" && rootSelf.AllCar[rootSelf.carIdx].targetPlace ==="A"){
-          // rootSelf.AllCar[rootSelf.carIdx].drawDToA(rootSelf,rootSelf.W / 2 + (rootSelf.RoadW-rootSelf.carW)/2 ,rootSelf.H - 100);
+          rootSelf.AllCar[rootSelf.carIdx].drawDToA(rootSelf,rootSelf.W / 2 + (rootSelf.RoadW-rootSelf.carW)/2 ,rootSelf.H - 100);
         }
         if(rootSelf.AllCar[rootSelf.carIdx].sourcePlace === "D" && rootSelf.AllCar[rootSelf.carIdx].targetPlace==="C") {
           rootSelf.AllCar[rootSelf.carIdx].drawDToC(rootSelf,rootSelf.W / 2 + (rootSelf.RoadW-rootSelf.carW)/2 ,rootSelf.H - 100);
         }
         if(rootSelf.AllCar[rootSelf.carIdx].sourcePlace === "D" && rootSelf.AllCar[rootSelf.carIdx].targetPlace==="B") {
-          // rootSelf.AllCar[rootSelf.carIdx].drawDToB(rootSelf,rootSelf.W / 2 + (rootSelf.RoadW-rootSelf.carW)/2 ,rootSelf.H - 100);
+          rootSelf.AllCar[rootSelf.carIdx].drawDToB(rootSelf,rootSelf.W / 2 + (rootSelf.RoadW-rootSelf.carW)/2 ,rootSelf.H - 100);
         } 
         if(rootSelf.AllCar[rootSelf.carIdx].sourcePlace === "D" && rootSelf.AllCar[rootSelf.carIdx].targetPlace==="D") {
           ;
         }
 
         if(rootSelf.AllCar[rootSelf.carIdx].sourcePlace === "A" && rootSelf.AllCar[rootSelf.carIdx].targetPlace==="D") {
-          // rootSelf.AllCar[rootSelf.carIdx].drawAToD(rootSelf, 100, rootSelf.H / 2 + 20);
+          rootSelf.AllCar[rootSelf.carIdx].drawAToD(rootSelf, 100, rootSelf.H / 2 + 20);
         }
         if(rootSelf.AllCar[rootSelf.carIdx].sourcePlace === "A" && rootSelf.AllCar[rootSelf.carIdx].targetPlace==="C") {
-          // rootSelf.AllCar[rootSelf.carIdx].drawAToC(rootSelf, 100, rootSelf.H / 2 + 20);
+          rootSelf.AllCar[rootSelf.carIdx].drawAToC(rootSelf, 100, rootSelf.H / 2 + 20);
         }
         if(rootSelf.AllCar[rootSelf.carIdx].sourcePlace === "A" && rootSelf.AllCar[rootSelf.carIdx].targetPlace==="B") {
           rootSelf.AllCar[rootSelf.carIdx].drawAToB(rootSelf, 100, rootSelf.H / 2 + 20);
@@ -203,17 +198,17 @@ export default {
           rootSelf.AllCar[rootSelf.carIdx].drawCToD(rootSelf, rootSelf.W / 2 -rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2), 100);
         }
         if(rootSelf.AllCar[rootSelf.carIdx].sourcePlace === "C" && rootSelf.AllCar[rootSelf.carIdx].targetPlace==="A") {
-          // rootSelf.AllCar[rootSelf.carIdx].drawCToA(rootSelf, rootSelf.W / 2 -rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2), 100);
+          rootSelf.AllCar[rootSelf.carIdx].drawCToA(rootSelf, rootSelf.W / 2 -rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2), 100);
         }
         if(rootSelf.AllCar[rootSelf.carIdx].sourcePlace === "C" && rootSelf.AllCar[rootSelf.carIdx].targetPlace==="B") {
-          // rootSelf.AllCar[rootSelf.carIdx].drawCToB(rootSelf, rootSelf.W / 2 -rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2), 100);
+          rootSelf.AllCar[rootSelf.carIdx].drawCToB(rootSelf, rootSelf.W / 2 -rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2), 100);
         }
         if(rootSelf.AllCar[rootSelf.carIdx].sourcePlace === "C" && rootSelf.AllCar[rootSelf.carIdx].targetPlace==="C") {
           ;
         }
 
         if(rootSelf.AllCar[rootSelf.carIdx].sourcePlace === "B" && rootSelf.AllCar[rootSelf.carIdx].targetPlace==="D") {
-          // rootSelf.AllCar[rootSelf.carIdx].drawBToD(rootSelf, rootSelf.W - 100, rootSelf.H / 2 - rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2));
+          rootSelf.AllCar[rootSelf.carIdx].drawBToD(rootSelf, rootSelf.W - 100, rootSelf.H / 2 - rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2));
         }
         if(rootSelf.AllCar[rootSelf.carIdx].sourcePlace === "B" && rootSelf.AllCar[rootSelf.carIdx].targetPlace==="A") {
           rootSelf.AllCar[rootSelf.carIdx].drawBToA(rootSelf, rootSelf.W - 100, rootSelf.H / 2 - rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2));
@@ -222,7 +217,7 @@ export default {
           ;
         }
         if(rootSelf.AllCar[rootSelf.carIdx].sourcePlace === "B" && rootSelf.AllCar[rootSelf.carIdx].targetPlace==="C") {
-          // rootSelf.AllCar[rootSelf.carIdx].drawBToC(rootSelf, rootSelf.W - 100, rootSelf.H / 2 - rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2));
+          rootSelf.AllCar[rootSelf.carIdx].drawBToC(rootSelf, rootSelf.W - 100, rootSelf.H / 2 - rootSelf.RoadW + ((rootSelf.RoadW-rootSelf.carW)/2));
         }
         }
         rootSelf.carIdx++;
@@ -234,6 +229,7 @@ export default {
     const canvas = document.querySelector('canvas');
     this.context = canvas.getContext('2d');
     this.context.beginPath();
+    this.drawRoad();
     this.context.strokeStyle = 'White'; // 线条颜色
     this.context.lineWidth = 1.0;
     // 画实线
