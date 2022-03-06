@@ -1,12 +1,7 @@
 import { createStructuralDirectiveTransform } from "@vue/compiler-core";
 import { del } from "vue-demi";
 import { intersectionBTOA, intersectionATOB, intersectionCTOD, intersectionDTOC, intersectionDTOA, intersectionATOC, intersectionCTOB, intersectionBTOD } from "./intersection.js"
-window.number = 0;
 
-function carNumber() {
-    window.number = window.number + 1;
-    console.log(window.number);
-}
 // 路口直行车组
 let downToUpCars = new Array(); // 路口中从下到上的车
 let upToDownCars = new Array(); // 路口中从上到下的车
@@ -22,6 +17,12 @@ let downToLeftCars = new Array(); // 路口中从下到左的车
 let upToRightCars = new Array();
 let rightToDownCars = new Array();
 let leftToUpCars = new Array();
+
+// 挂载统计车辆数量函数，用于判断开始结束条件
+window.number = 0;
+function carNumber() {
+    window.number = window.number + 1;
+}
 
 let Car = {
     createNewCar: function(rootSelf, type, sourcePlace, targetPlace, index) {
