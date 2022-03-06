@@ -119,6 +119,8 @@ export default {
       let normalCarTargetNum = parseInt(data.totalNum) - smartCarTargetNum
       // 车辆行驶方式（直线/直线+转弯）
       let drivingRoute=data.drivingRoute;
+      // 生成车辆的时间间隔
+      let trafficFlow = parseInt(data.trafficFlow);
       // let normalCarTargetNum = 2;
       // let smartCarTargetNum = 0;
       //已经生成的两类车的数量
@@ -127,7 +129,7 @@ export default {
       //车的类别
       let Types = ["NormalCar","SmartCar"];
       let rootSelf = this;
-      let globalid = setInterval(createIdxAndobjs,2100);
+      let globalid = setInterval(createIdxAndobjs,trafficFlow);
       function createIdxAndobjs(){
         // 测试
         

@@ -30,6 +30,14 @@
                     <el-option label="直线+转弯" value="1"></el-option>
                 </el-select>
             </el-form-item>
+            <!-- 车流量 -->
+            <el-form-item label="车流量：">
+                <el-select v-model="parameters.trafficFlow" placeholder="the flow of vehicles">
+                    <el-option label="大" value="500"></el-option>
+                    <el-option label="中" value="1200"></el-option>
+                    <el-option label="小" value="2000"></el-option>
+                </el-select>
+            </el-form-item>
             <!-- 运行 -->
             <el-form-item class="run">
                 <el-button type="primary" @click="run">运行</el-button>
@@ -73,6 +81,7 @@ export default {
                 totalNum: '30',
                 proportion:'0.5',
                 drivingRoute:'0',
+                trafficFlow:'1200'
             },
             light:'默认',
             light2:'默认',
