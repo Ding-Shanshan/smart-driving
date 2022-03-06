@@ -3,8 +3,8 @@
     <el-collapse>
       <el-collapse-item title="运行结果" name="1">
         <el-table :data="tableData" style="width: 100%" max-height="250">
-          <el-table-column prop="total" label="总数" width="60" />
-          <el-table-column prop="proportion" label="比例" width="60" />
+          <el-table-column prop="total" label="总数" width="55" />
+          <el-table-column prop="proportion" label="比例" width="55" />
           <el-table-column prop="runtime" label="总耗时" width="140" />
         </el-table>
       </el-collapse-item>
@@ -18,6 +18,7 @@
 <script>
 import * as echarts from "echarts";
 import { ref, watch, onMounted } from "vue";
+import { ElMessage } from 'element-plus';
 export default {
   // 读取父组件中的传递参数和运行判断
   props: ["isRun", "paramters"],
@@ -34,6 +35,13 @@ export default {
         total: props.paramters.totalNum,
         proportion: props.paramters.proportion,
         runtime: runtimeTable[index],
+      });
+    };
+    const success = () => {
+        ElMessage({
+        showClose: true,
+        message: '本次模拟完成',
+        type: 'success',
       });
     };
 
@@ -188,6 +196,7 @@ export default {
             //运行停止，清除计时器
           } else if (oldValue === true && newValue === false) {
             window.clearInterval(window.int);
+            success()
             index++;
           }
         }
@@ -197,6 +206,7 @@ export default {
       runtimeShow,
       tableData,
       onAddItem,
+      success,
     };
   },
 };
