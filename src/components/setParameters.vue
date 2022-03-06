@@ -77,7 +77,7 @@ export default {
         return {
             // 参数对象
             parameters: {
-                totalNum: '100',
+                totalNum: '50',
                 proportion:'0.5',
                 drivingRoute:'0',
                 trafficFlow:'2.0'

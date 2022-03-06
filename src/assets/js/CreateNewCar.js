@@ -74,6 +74,7 @@ let Car = {
             let accelerate = 0; //加速速度
             let slowdown = 2; //减速速度
             let obsFlag = 1;
+            let normalCar = document.createElement("img");
             normalCar.setAttribute("src", require("../images/" + car.img + ".png"));
             normalCar.setAttribute("width", "10");
             normalCar.setAttribute("height", "20");
@@ -1242,8 +1243,6 @@ let Car = {
         // 左到上左转
         car.drawAToC = function(_self, sx, sy) {
             // let father = document.getElementsByClassName("MyCanvas")[0];
-            car.sign = 1;
-            car.slowdown = 2; //减速速度
             car.y = sy;car.x=sx
             // let normalCar=carInit(father,car,"../images/" + car.img + "90.png")
             let normalCar = document.createElement("img");
@@ -1325,7 +1324,8 @@ let Car = {
                 else{
                     let former = undefined;
                     for(let i=0;i<car.curRoadIdx;i++){
-                        if(_self.obstructsInEachRoad[car.curPath][i] !== undefined)
+                        if(_self.obstructsInEachRoad[car.curPath][i] == undefined){}
+                        else{
                         //在路上的就判断是否和当前车在同一路段
                             if(_self.obstructsInEachRoad[car.curPath][i][2] === car.curPath){
                                 former = i;
@@ -3066,6 +3066,7 @@ let Car = {
         };
         return car;
     }
+}
 }
 
 export {
