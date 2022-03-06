@@ -54,9 +54,13 @@ export default {
       car1Y:490,
       AllCar : [],
       carIdx : 0,
-      obstructsInAllRoads : {
+      // obstructsInAllRoads : {
 
-      }
+      // },
+      obstructsInAllRoads : [],
+      obstructsInEachRoad : {
+
+      },
       }
   },
   methods: {
@@ -199,11 +203,7 @@ export default {
           rootSelf.AllCar[rootSelf.carIdx] = car; 
           // console.log(normalCarTargetNum,smartCarTargetNum,normalCarCurNum,smartCarCurNum)
         }
-        // let car = Car.createNewCar("Normal",sourcePlace,targetPlace,carIdx);  
 
-        // rootSelf.AllCar[carIdx] = car;
-        
-        // car.showInfo();
         if(rootSelf.AllCar[rootSelf.carIdx].sourcePlace === "D" && rootSelf.AllCar[rootSelf.carIdx].targetPlace ==="A"){
           rootSelf.AllCar[rootSelf.carIdx].drawDToA(rootSelf,rootSelf.W / 2 + (rootSelf.RoadW-rootSelf.carW)/2 ,rootSelf.H - 100);
         }
@@ -224,7 +224,7 @@ export default {
           rootSelf.AllCar[rootSelf.carIdx].drawAToC(rootSelf, 100, rootSelf.H / 2 + 20);
         }
         if(rootSelf.AllCar[rootSelf.carIdx].sourcePlace === "A" && rootSelf.AllCar[rootSelf.carIdx].targetPlace==="B") {
-          rootSelf.AllCar[rootSelf.carIdx].drawAToB(rootSelf, 100, rootSelf.H / 2 + 20);
+          rootSelf.AllCar[rootSelf.carIdx].drawAToB(rootSelf, 100, rootSelf.H / 2 + ((rootSelf.RoadW - rootSelf.carW)/2));
         }
         if(rootSelf.AllCar[rootSelf.carIdx].sourcePlace === "A" && rootSelf.AllCar[rootSelf.carIdx].targetPlace==="A") {
           ;
