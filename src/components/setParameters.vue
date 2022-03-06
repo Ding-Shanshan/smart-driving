@@ -63,7 +63,7 @@ export default {
         return {
             // 参数对象
             parameters: {
-                totalNum: '30',
+                totalNum: '100',
                 proportion:'0.5',
             },
             light:'默认',

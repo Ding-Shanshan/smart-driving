@@ -1,5 +1,3 @@
-import { createStructuralDirectiveTransform } from "@vue/compiler-core";
-import { del } from "vue-demi";
 import { intersectionBTOA, intersectionATOB, intersectionCTOD, intersectionDTOC, intersectionDTOA, intersectionATOC, intersectionCTOB, intersectionBTOD } from "./intersection.js"
 var number = 0;
 
@@ -49,6 +47,16 @@ let Car = {
             car.x = sx;
             car.y = sy;
             car.pathIdx = _self.obstructsInAllRoads.length;
+            //当前道路上的位置
+            if(car.curPath in _self.obstructsInEachRoad){
+                car.curRoadIdx = _self.obstructsInEachRoad[car.curPath].length;
+                _self.obstructsInEachRoad[car.curPath].push([car.x,car.y,car.curPath]);
+            }
+            else{
+                _self.obstructsInEachRoad[car.curPath] = [];
+                car.curRoadIdx = 0;
+                _self.obstructsInEachRoad[car.curPath].push([car.x,car.y,car.curPath]);
+            }
             _self.obstructsInAllRoads.push([car.x,car.y,car.curPath]);
             try {
                 father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
@@ -63,38 +71,48 @@ let Car = {
                     clearInterval(id);
                     //加上旋转属性
                     let normalCar = document.getElementsByClassName(car.type + car.index)[0];
-                    normalCar.classList.add("trans");
+                    normalCar.classList.add("DToA");
                     let flag = 0;
                     setTimeout(function() {
+                        delete _self.obstructsInEachRoad[car.curPath][car.curRoadIdx]
                         car.curPath = "-" + car.targetPlace;
                         _self.obstructsInAllRoads[car.pathIdx][2] = car.curPath;
+                        if(car.curPath in _self.obstructsInEachRoad){
+                            car.curRoadIdx = _self.obstructsInEachRoad[car.curPath].length;
+                            _self.obstructsInEachRoad[car.curPath].push([car.x,car.y,car.curPath]);
+                        }
+                        else{
+                            _self.obstructsInEachRoad[car.curPath] = [];
+                            car.curRoadIdx = 0;
+                            _self.obstructsInEachRoad[car.curPath].push([car.x,car.y,car.curPath]);
+                        }
                     }, 500);
                     setTimeout(function() {
                         flag = 1;
-                    }, 3500);
+                    }, 3000);
 
                     function checkFlag() {
                         if (flag === 1) {
                             clearInterval(checkIdx);
-                            car.drawRightToLeftLines(_self, _self.W / 2 + (_self.RoadW - _self.carW) / 2, _self.H / 2 + _self.RoadW, car.index);
+                            car.drawRightToLeftLines(_self, _self.W / 2 + (_self.RoadW - _self.carW) / 2, _self.H / 2 + _self.RoadW, ((_self.RoadW - _self.carW) / 2) + _self.RoadW);
                         }
                     }
                     let checkIdx = setInterval(checkFlag, 80);
                 }
                 else{
                     let former = undefined;
-                    for(let i=0;i<car.pathIdx;i++){
-                        if(_self.obstructsInAllRoads[i] === undefined){
+                    for(let i=0;i<car.curRoadIdx;i++){
+                        if(_self.obstructsInEachRoad[car.curPath][i] === undefined){
                             ;//如果前面某辆车到达目的地，不再判断
                         }
                         else{//在路上的就判断是否和当前车在同一路段
-                            if(_self.obstructsInAllRoads[i][2] === car.curPath){
+                            if(_self.obstructsInEachRoad[car.curPath][i][2] === car.curPath){
                                 former = i;
                             }
                         }
                     }
                     if (former !== undefined) {//如果找到了，当前车不是所在路段的第一辆车，就可以根据前方是否有车判断是否要停车
-                        if (car.y <= _self.obstructsInAllRoads[former][1] + 30) {
+                        if (car.y <= _self.obstructsInEachRoad[car.curPath][former][1] + 30) {
                             obsFlag = 2;
                         } else {
                             obsFlag = 1;
@@ -136,7 +154,7 @@ let Car = {
                                 obsFlag = 1;
                             }
                             else{
-                                if (car.y <= _self.obstructsInAllRoads[former][1] + 30) {
+                                if (car.y <= _self.obstructsInEachRoad[car.curPath][former][1] + 30) {
                                     obsFlag = 2;
                                 } else {
                                     obsFlag = 1;
@@ -158,7 +176,7 @@ let Car = {
                                 }
                             }
                             else{
-                                if (car.y <= _self.obstructsInAllRoads[former][1] + 30 || sy == 310) {
+                                if (car.y <= _self.obstructsInEachRoad[car.curPath][former][1] + 30 || sy == 310) {
                                     slowdown = 0;
                                 }
                             }
@@ -167,7 +185,7 @@ let Car = {
                                     obsFlag = 3
                                 }
                                 else{
-                                    if (car.y <= _self.obstructsInAllRoads[former][1] + 30) {
+                                    if (car.y <= _self.obstructsInEachRoad[car.curPath][former][1] + 30) {
                                         obsFlag = 2;
                                     } else {
                                         obsFlag = 3;
@@ -192,7 +210,7 @@ let Car = {
                                     obsFlag = 1;
                                 }
                                 else{
-                                    if (car.y <= _self.obstructsInAllRoads[former][1] + 30) {
+                                    if (car.y <= _self.obstructsInEachRoad[car.curPath][former][1] + 30) {
                                         obsFlag = 2;
                                     } else {
                                         obsFlag = 1;
@@ -203,7 +221,7 @@ let Car = {
                                     obsFlag = 3;
                                 }
                                 else{
-                                    if (car.y <= _self.obstructsInAllRoads[former][1] + 30) {
+                                    if (car.y <= _self.obstructsInEachRoad[car.curPath][former][1] + 30) {
                                         obsFlag = 2;
                                     } else {
                                         obsFlag = 3;
@@ -220,11 +238,13 @@ let Car = {
                     car.y = sy;
                     _self.obstructsInAllRoads[car.pathIdx][0] = car.x;
                     _self.obstructsInAllRoads[car.pathIdx][1] = car.y;
+                    _self.obstructsInEachRoad[car.curPath][car.curRoadIdx][0] = car.x;
+                    _self.obstructsInEachRoad[car.curPath][car.curRoadIdx][1] = car.y;
                 }
             }
         };
         //绘制车辆从右向左移动
-        car.drawRightToLeftLines = function(_self, sx, sy) {
+        car.drawRightToLeftLines = function(_self, sx, sy, add) {
             let father = document.getElementsByClassName("MyCanvas")[0];
             let normalCar = document.getElementsByClassName(car.type + car.index)[0];
             let accelerate = 0; //加速速度
@@ -235,25 +255,26 @@ let Car = {
             let r2l = setInterval(frame, 30);
 
             function frame() {
-                if (sx <= 100) {
+                if (sx <= 100 + add) {
                     clearInterval(r2l);
                     carNumber();
                     father.removeChild(normalCar);
                     delete _self.obstructsInAllRoads[car.pathIdx];
+                    delete _self.obstructsInEachRoad[car.curPath][car.curRoadIdx];
                 } else {
                     let former = undefined;
-                    for(let i=0;i<car.pathIdx;i++){
-                        if(_self.obstructsInAllRoads[i] === undefined){
+                    for(let i=0;i<car.curRoadIdx;i++){
+                        if(_self.obstructsInEachRoad[car.curPath][i] === undefined){
                             ;//如果前面某辆车到达目的地，不再判断
                         }
                         else{//在路上的就判断是否和当前车在同一路段
-                            if(_self.obstructsInAllRoads[i][2] === car.curPath){
+                            if(_self.obstructsInEachRoad[car.curPath][i][2] === car.curPath){
                                 former = i;
                             }
                         }
                     }
                     if (former !== undefined) {
-                        if (car.x <= _self.obstructsInAllRoads[former][0]+30) {
+                        if (car.x - add <= _self.obstructsInEachRoad[car.curPath][former][0]+30) {
                             obsFlag = 2;
                         } else {
                             obsFlag = 1;
@@ -271,7 +292,7 @@ let Car = {
                                 obsFlag = 1;
                             }
                             else{
-                                if (car.x <= _self.obstructsInAllRoads[former][0] + 30) {
+                                if (car.x - add <= _self.obstructsInEachRoad[car.curPath][former][0] + 30) {
                                     obsFlag = 2;
                                 } else {
                                     obsFlag = 1;
@@ -283,7 +304,7 @@ let Car = {
                                 slowdown = 0;
                             }
                             else{
-                                if (car.x <= _self.obstructsInAllRoads[former][0] + 30) {
+                                if (car.x - add <= _self.obstructsInEachRoad[car.curPath][former][0] + 30) {
                                     slowdown = 0;
                                 }
                             }
@@ -292,7 +313,7 @@ let Car = {
                                     obsFlag = 3
                                 }
                                 else{
-                                    if (car.x <= _self.obstructsInAllRoads[former][0] + 30) {
+                                    if (car.x - add <= _self.obstructsInEachRoad[car.curPath][former][0] + 30) {
                                         obsFlag = 2;
                                     } else {
                                         obsFlag = 3;
@@ -311,7 +332,7 @@ let Car = {
                                     obsFlag = 1;
                                 }
                                 else{
-                                    if (car.x <= _self.obstructsInAllRoads[former][0] + 30) {
+                                    if (car.x - add <= _self.obstructsInEachRoad[car.curPath][former][0] + 30) {
                                         obsFlag = 2;
                                     } else {
                                         obsFlag = 1;
@@ -322,7 +343,7 @@ let Car = {
                                     obsFlag = 3;
                                 }
                                 else{
-                                    if (car.x <= _self.obstructsInAllRoads[former][0] + 30) {
+                                    if (car.x - add <= _self.obstructsInEachRoad[car.curPath][former][0] + 30) {
                                         obsFlag = 2;
                                     } else {
                                         obsFlag = 3;
@@ -338,8 +359,10 @@ let Car = {
                     normalCar.style.top = sy + "px";
                     car.x = sx;
                     car.y = sy;
-                    _self.obstructsInAllRoads[car.pathIdx][0] = car.x;
+                    _self.obstructsInAllRoads[car.pathIdx][0] = car.x - add;
                     _self.obstructsInAllRoads[car.pathIdx][1] = car.y;
+                    _self.obstructsInEachRoad[car.curPath][car.curRoadIdx][0] = car.x - add;
+                    _self.obstructsInEachRoad[car.curPath][car.curRoadIdx][1] = car.y;   
                 }
             }
         };
@@ -361,6 +384,16 @@ let Car = {
             car.x = sx;
             car.y = sy;
             car.pathIdx = _self.obstructsInAllRoads.length;
+            //当前道路上的位置
+            if(car.curPath in _self.obstructsInEachRoad){
+                car.curRoadIdx = _self.obstructsInEachRoad[car.curPath].length;
+                _self.obstructsInEachRoad[car.curPath].push([car.x,car.y,car.curPath]);
+            }
+            else{
+                _self.obstructsInEachRoad[car.curPath] = [];
+                car.curRoadIdx = 0;
+                _self.obstructsInEachRoad[car.curPath].push([car.x,car.y,car.curPath]);
+            }
             _self.obstructsInAllRoads.push([car.x,car.y,car.curPath]);
             try {
                 father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
@@ -375,38 +408,48 @@ let Car = {
                     clearInterval(id);
                     //加上旋转属性
                     let normalCar = document.getElementsByClassName(car.type + car.index)[0];
-                    normalCar.classList.add("transToRight");
+                    normalCar.classList.add("DToB");
                     let flag = 0;
                     setTimeout(function() {
+                        delete _self.obstructsInEachRoad[car.curPath][car.curRoadIdx];
                         car.curPath = "-" + car.targetPlace;
                         _self.obstructsInAllRoads[car.pathIdx][2] = car.curPath;
-                    }, 1000);
+                        if(car.curPath in _self.obstructsInEachRoad){
+                            car.curRoadIdx = _self.obstructsInEachRoad[car.curPath].length;
+                            _self.obstructsInEachRoad[car.curPath].push([car.x,car.y,car.curPath]);
+                        }
+                        else{
+                            _self.obstructsInEachRoad[car.curPath] = [];
+                            car.curRoadIdx = 0;
+                            _self.obstructsInEachRoad[car.curPath].push([car.x,car.y,car.curPath]);
+                        }
+                    }, 500);
                     setTimeout(function() {
                         flag = 1;
-                    }, 3500);
+                    }, 1500);
 
                     function checkFlag() {
                         if (flag === 1) {
                             clearInterval(checkIdx);
-                            car.drawLeftToRightLines(_self, _self.W / 2 + (_self.RoadW - _self.carW) / 2, _self.H / 2 + _self.RoadW);
+                            car.drawLeftToRightLines(_self, _self.W / 2 + (_self.RoadW - _self.carW) / 2, _self.H / 2 + _self.RoadW, _self.carW + ((_self.RoadW - _self.carW) / 2));
                         }
                     }
                     let checkIdx = setInterval(checkFlag, 80);
 
                 } else {
                     let former = undefined;
-                    for(let i=0;i<car.pathIdx;i++){
-                        if(_self.obstructsInAllRoads[i] === undefined){
+                    for(let i=0;i<car.curRoadIdx;i++){
+                        if(_self.obstructsInEachRoad[car.curPath][i] === undefined){
                             ;//如果前面某辆车到达目的地，不再判断
                         }
                         else{//在路上的就判断是否和当前车在同一路段
-                            if(_self.obstructsInAllRoads[i][2] === car.curPath){
+                            if(_self.obstructsInEachRoad[car.curPath][i][2] === car.curPath){
                                 former = i;
                             }
                         }
                     }
                     if (former !== undefined) {//如果找到了，当前车不是所在路段的第一辆车，就可以根据前方是否有车判断是否要停车
-                        if (car.y <= _self.obstructsInAllRoads[former][1] + 30) {
+                        if (car.y <= _self.obstructsInEachRoad[car.curPath][former][1] + 30) {
                             obsFlag = 2;
                         } else {
                             obsFlag = 1;
@@ -423,7 +466,7 @@ let Car = {
                                 obsFlag = 1;
                             }
                             else{
-                                if (car.y <= _self.obstructsInAllRoads[former][1] + 30) {
+                                if (car.y <= _self.obstructsInEachRoad[car.curPath][former][1] + 30) {
                                     obsFlag = 2;
                                 } else {
                                     obsFlag = 1;
@@ -435,7 +478,7 @@ let Car = {
                                     slowdown = 0;
                             }
                             else{
-                                if (car.y <= _self.obstructsInAllRoads[former][1] + 30) {
+                                if (car.y <= _self.obstructsInEachRoad[car.curPath][former][1] + 30) {
                                     slowdown = 0;
                                 }
                             }
@@ -444,7 +487,7 @@ let Car = {
                                     obsFlag = 3
                                 }
                                 else{
-                                    if (car.y <= _self.obstructsInAllRoads[former][1] + 30) {
+                                    if (car.y <= _self.obstructsInEachRoad[car.curPath][former][1] + 30) {
                                         obsFlag = 2;
                                     } else {
                                         obsFlag = 3;
@@ -463,7 +506,7 @@ let Car = {
                                     obsFlag = 1;
                                 }
                                 else{
-                                    if (car.y <= _self.obstructsInAllRoads[former][1] + 30) {
+                                    if (car.y <= _self.obstructsInEachRoad[car.curPath][former][1] + 30) {
                                         obsFlag = 2;
                                     } else {
                                         obsFlag = 1;
@@ -474,7 +517,7 @@ let Car = {
                                     obsFlag = 3;
                                 }
                                 else{
-                                    if (car.y <= _self.obstructsInAllRoads[former][1] + 30) {
+                                    if (car.y <= _self.obstructsInEachRoad[car.curPath][former][1] + 30) {
                                         obsFlag = 2;
                                     } else {
                                         obsFlag = 3;
@@ -491,11 +534,13 @@ let Car = {
                     car.y = sy;
                     _self.obstructsInAllRoads[car.pathIdx][0] = car.x;
                     _self.obstructsInAllRoads[car.pathIdx][1] = car.y;
+                    _self.obstructsInEachRoad[car.curPath][car.curRoadIdx][0] = car.x;
+                    _self.obstructsInEachRoad[car.curPath][car.curRoadIdx][1] = car.y;
                 }
             }
         };
         //绘制车辆从左向右移动
-        car.drawLeftToRightLines = function(_self, sx, sy) {
+        car.drawLeftToRightLines = function(_self, sx, sy, add) {
             let father = document.getElementsByClassName("MyCanvas")[0];
             let normalCar = document.getElementsByClassName(car.type + car.index)[0];
             let accelerate = 0; //加速速度
@@ -506,25 +551,26 @@ let Car = {
             let r2l = setInterval(frame, 30);
 
             function frame() {
-                if (sx >= _self.W - 100) {
+                if (sx >= _self.W - 100 - add) {
                     clearInterval(r2l);
                     carNumber();
                     father.removeChild(normalCar);
                     delete _self.obstructsInAllRoads[car.pathIdx];
+                    delete _self.obstructsInEachRoad[car.curPath][car.curRoadIdx];
                 } else {
                     let former = undefined;
-                    for(let i=0;i<car.pathIdx;i++){
-                        if(_self.obstructsInAllRoads[i] === undefined){
+                    for(let i=0;i<car.curRoadIdx;i++){
+                        if(_self.obstructsInEachRoad[car.curPath][i] === undefined){
                             ;//如果前面某辆车到达目的地，不再判断
                         }
                         else{//在路上的就判断是否和当前车在同一路段
-                            if(_self.obstructsInAllRoads[i][2] === car.curPath){
+                            if(_self.obstructsInEachRoad[car.curPath][i][2] === car.curPath){
                                 former = i;
                             }
                         }
                     }
                     if (former !== undefined) {
-                        if (car.x + 30 >= _self.obstructsInAllRoads[former][0]) {
+                        if (car.x + add + 30 >= _self.obstructsInEachRoad[car.curPath][former][0]) {
                             obsFlag = 2;
                         } else {
                             obsFlag = 1;
@@ -542,7 +588,7 @@ let Car = {
                                 obsFlag = 1;
                             }
                             else{
-                                if (car.x + 30 >= _self.obstructsInAllRoads[former][0]) {
+                                if (car.x + add + 30 >= _self.obstructsInEachRoad[car.curPath][former][0]) {
                                     obsFlag = 2;
                                 } else {
                                     obsFlag = 1;
@@ -554,7 +600,7 @@ let Car = {
                                     slowdown = 0;
                             }
                             else{
-                                if (car.x + 30 >= _self.obstructsInAllRoads[former][0]) {
+                                if (car.x + add + 30 >= _self.obstructsInEachRoad[car.curPath][former][0]) {
                                     slowdown = 0;
                                 }
                             }
@@ -563,7 +609,7 @@ let Car = {
                                     obsFlag = 3
                                 }
                                 else{
-                                    if (car.x + 30 >= _self.obstructsInAllRoads[former][0]) {
+                                    if (car.x + add + 30 >= _self.obstructsInEachRoad[car.curPath][former][0]) {
                                         obsFlag = 2;
                                     } else {
                                         obsFlag = 1;
@@ -582,7 +628,7 @@ let Car = {
                                     obsFlag = 1;
                                 }
                                 else{
-                                    if (car.x + 30 >= _self.obstructsInAllRoads[former][0]) {
+                                    if (car.x + add + 30 >= _self.obstructsInEachRoad[car.curPath][former][0]) {
                                         obsFlag = 2;
                                     } else {
                                         obsFlag = 1;
@@ -593,7 +639,7 @@ let Car = {
                                     obsFlag = 3;
                                 }
                                 else{
-                                    if (car.x + 30 <= _self.obstructsInAllRoads[former][0]) {
+                                    if (car.x + add + 30 <= _self.obstructsInEachRoad[car.curPath][former][0]) {
                                         obsFlag = 2;
                                     } else {
                                         obsFlag = 3;
@@ -608,8 +654,10 @@ let Car = {
                     normalCar.style.top = sy + "px";
                     car.x = sx;
                     car.y = sy;
-                    _self.obstructsInAllRoads[car.pathIdx][0] = car.x;
+                    _self.obstructsInAllRoads[car.pathIdx][0] = car.x + add;
                     _self.obstructsInAllRoads[car.pathIdx][1] = car.y;
+                    _self.obstructsInEachRoad[car.curPath][car.curRoadIdx][0] = car.x + add;
+                    _self.obstructsInEachRoad[car.curPath][car.curRoadIdx][1] = car.y;   
                 }
             }
         };
@@ -635,6 +683,16 @@ let Car = {
             car.x = sx;
             car.y = sy;
             car.pathIdx = _self.obstructsInAllRoads.length;
+            //当前道路上的位置
+            if(car.curPath in _self.obstructsInEachRoad){
+                car.curRoadIdx = _self.obstructsInEachRoad[car.curPath].length;
+                _self.obstructsInEachRoad[car.curPath].push([car.x,car.y,car.curPath]);
+            }
+            else{
+                _self.obstructsInEachRoad[car.curPath] = [];
+                car.curRoadIdx = 0;
+                _self.obstructsInEachRoad[car.curPath].push([car.x,car.y,car.curPath]);
+            }
             _self.obstructsInAllRoads.push([car.x,car.y,car.curPath]);
             try {
                 father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
@@ -650,20 +708,21 @@ let Car = {
                     carNumber();
                     father.removeChild(normalCar);
                     delete _self.obstructsInAllRoads[car.pathIdx];
+                    delete _self.obstructsInEachRoad[car.curPath][car.curRoadIdx];
                 } else {
                     let former = undefined;
-                    for(let i=0;i<car.pathIdx;i++){
-                        if(_self.obstructsInAllRoads[i] === undefined){
+                    for(let i=0;i<car.curRoadIdx;i++){
+                        if(_self.obstructsInEachRoad[car.curPath][i] === undefined){
                             ;//如果前面某辆车到达目的地，不再判断
                         }
                         else{//在路上的就判断是否和当前车在同一路段
-                            if(_self.obstructsInAllRoads[i][2] === car.curPath){
+                            if(_self.obstructsInEachRoad[car.curPath][i][2] === car.curPath){
                                 former = i;
                             }
                         }
                     }
                     if (former !== undefined) {
-                        if (car.y <= _self.obstructsInAllRoads[former][1] + 30) {
+                        if (car.y <= _self.obstructsInEachRoad[car.curPath][former][1] + 30) {
                             obsFlag = 2;
                         } else {
                             obsFlag = 1;
@@ -706,7 +765,7 @@ let Car = {
                                 obsFlag = 1;
                             }
                             else{
-                                if (car.y <= _self.obstructsInAllRoads[former][1] + 30) {
+                                if (car.y <= _self.obstructsInEachRoad[car.curPath][former][1] + 30) {
                                     obsFlag = 2;
                                 } else {
                                     obsFlag = 1;
@@ -738,7 +797,7 @@ let Car = {
                                 }
                             }
                             else{
-                                if (car.y <= _self.obstructsInAllRoads[former][1] + 30 || sy == 310) {
+                                if (car.y <= _self.obstructsInEachRoad[car.curPath][former][1] + 30 || sy == 310) {
                                     slowdown = 0;
                                 }
                             }
@@ -747,7 +806,7 @@ let Car = {
                                     obsFlag = 3
                                 }
                                 else{
-                                    if (car.y <= _self.obstructsInAllRoads[former][1] + 30) {
+                                    if (car.y <= _self.obstructsInEachRoad[car.curPath][former][1] + 30) {
                                         obsFlag = 2;
                                     } else {
                                         obsFlag = 3
@@ -772,7 +831,7 @@ let Car = {
                                     obsFlag = 1;
                                 }
                                 else{
-                                    if (car.y <= _self.obstructsInAllRoads[former][1] + 30) {
+                                    if (car.y <= _self.obstructsInEachRoad[car.curPath][former][1] + 30) {
                                         obsFlag = 2;
                                     } else {
                                         obsFlag = 1;
@@ -783,7 +842,7 @@ let Car = {
                                     obsFlag = 3;
                                 }
                                 else{
-                                    if (car.y <= _self.obstructsInAllRoads[former][1] + 30) {
+                                    if (car.y <= _self.obstructsInEachRoad[car.curPath][former][1] + 30) {
                                         obsFlag = 2;
                                     } else {
                                         obsFlag = 3;
@@ -799,11 +858,23 @@ let Car = {
                     car.x = sx;
                     car.y = sy;
                     if(car.x <= (_self.H / 2 + _self.RoadW) && car.curPath !== "-" + car.targetPlace){
-                        car.curPath = "-" + car.targetPlace
+                        delete _self.obstructsInEachRoad[car.curPath][car.curRoadIdx];
+                        car.curPath = "-" + car.targetPlace;
                         _self.obstructsInAllRoads[car.pathIdx][2] = car.curPath;
+                        if(car.curPath in _self.obstructsInEachRoad){
+                            car.curRoadIdx = _self.obstructsInEachRoad[car.curPath].length;
+                            _self.obstructsInEachRoad[car.curPath].push([car.x,car.y,car.curPath]);
+                        }
+                        else{
+                            _self.obstructsInEachRoad[car.curPath] = [];
+                            car.curRoadIdx = 0;
+                            _self.obstructsInEachRoad[car.curPath].push([car.x,car.y,car.curPath]);
+                        }
                     }
                     _self.obstructsInAllRoads[car.pathIdx][0] = car.x;
                     _self.obstructsInAllRoads[car.pathIdx][1] = car.y;
+                    _self.obstructsInEachRoad[car.curPath][car.curRoadIdx][0] = car.x;
+                    _self.obstructsInEachRoad[car.curPath][car.curRoadIdx][1] = car.y;
                 }
             }
         };
@@ -823,6 +894,16 @@ let Car = {
             car.x = sx;
             car.y = sy;
             car.pathIdx = _self.obstructsInAllRoads.length;
+            //当前道路上的位置
+            if(car.curPath in _self.obstructsInEachRoad){
+                car.curRoadIdx = _self.obstructsInEachRoad[car.curPath].length;
+                _self.obstructsInEachRoad[car.curPath].push([car.x,car.y,car.curPath]);
+            }
+            else{
+                _self.obstructsInEachRoad[car.curPath] = [];
+                car.curRoadIdx = 0;
+                _self.obstructsInEachRoad[car.curPath].push([car.x,car.y,car.curPath]);
+            }
             _self.obstructsInAllRoads.push([car.x,car.y,car.curPath]);
             try {
                 father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
@@ -837,37 +918,47 @@ let Car = {
                     clearInterval(id);
                     //加上旋转属性
                     let normalCar = document.getElementsByClassName(car.type + car.index)[0];
-                    normalCar.classList.add("transToDown");
+                    normalCar.classList.add("AToD");
                     let flag = 0;
                     setTimeout(function() {
+                        delete _self.obstructsInEachRoad[car.curPath][car.curRoadIdx]
                         car.curPath = "-" + car.targetPlace;
                         _self.obstructsInAllRoads[car.pathIdx][2] = car.curPath;
-                    }, 1000);
+                        if(car.curPath in _self.obstructsInEachRoad){
+                            car.curRoadIdx = _self.obstructsInEachRoad[car.curPath].length;
+                            _self.obstructsInEachRoad[car.curPath].push([car.x,car.y,car.curPath]);
+                        }
+                        else{
+                            _self.obstructsInEachRoad[car.curPath] = [];
+                            car.curRoadIdx = 0;
+                            _self.obstructsInEachRoad[car.curPath].push([car.x,car.y,car.curPath]);
+                        }
+                    }, 500);
                     setTimeout(function() {
                         flag = 1;
-                    }, 3500);
+                    }, 1500);
 
                     function checkFlag() {
                         if (flag === 1) {
                             clearInterval(checkIdx);
-                            car.drawTopToDownLines(_self, _self.W / 2 - _self.RoadW - _self.carH, _self.H / 2 + _self.carH, car.index);
+                            car.drawTopToDownLines(_self, _self.W / 2 - _self.RoadW - _self.carH, _self.H / 2 + (_self.RoadW - _self.carW)/2, _self.carH + ((_self.RoadW - _self.carW) / 2) + _self.carW);
                         }
                     }
                     let checkIdx = setInterval(checkFlag, 80);
                 } else {
                     let former = undefined;
-                    for(let i=0;i<car.pathIdx;i++){
-                        if(_self.obstructsInAllRoads[i] === undefined){
+                    for(let i=0;i<car.curRoadIdx;i++){
+                        if(_self.obstructsInEachRoad[car.curPath][i] === undefined){
                             ;//如果前面某辆车到达目的地，不再判断
                         }
                         else{//在路上的就判断是否和当前车在同一路段
-                            if(_self.obstructsInAllRoads[i][2] === car.curPath){
+                            if(_self.obstructsInEachRoad[car.curPath][i][2] === car.curPath){
                                 former = i;
                             }
                         }
                     }
                     if (former !== undefined) {
-                        if (car.x + 30 >= _self.obstructsInAllRoads[former][0]) {
+                        if (car.x + 30 >= _self.obstructsInEachRoad[car.curPath][former][0]) {
                             obsFlag = 2;
                         } else {
                             obsFlag = 1;
@@ -884,7 +975,7 @@ let Car = {
                                 obsFlag = 1;
                             }
                             else{
-                                if (car.x + 30 >= _self.obstructsInAllRoads[former][0]) {
+                                if (car.x + 30 >= _self.obstructsInEachRoad[car.curPath][former][0]) {
                                     obsFlag = 2;
                                 } else {
                                     obsFlag = 1;
@@ -896,7 +987,7 @@ let Car = {
                                     slowdown = 0;
                             }
                             else{
-                                if (car.x + 30 >= _self.obstructsInAllRoads[former][0] || sx == 420) {
+                                if (car.x + 30 >= _self.obstructsInEachRoad[car.curPath][former][0] || sx == 420) {
                                     slowdown = 0;
                                 }
                             }
@@ -905,7 +996,7 @@ let Car = {
                                     obsFlag = 3
                                 }
                                 else{
-                                    if (car.x + 30 >= _self.obstructsInAllRoads[former][0]) {
+                                    if (car.x + 30 >= _self.obstructsInEachRoad[car.curPath][former][0]) {
                                         obsFlag = 2;
                                     } else {
                                         obsFlag = 1;
@@ -924,7 +1015,7 @@ let Car = {
                                     obsFlag = 1;
                                 }
                                 else{
-                                    if (car.x + 30 >= _self.obstructsInAllRoads[former][0]) {
+                                    if (car.x + 30 >= _self.obstructsInEachRoad[car.curPath][former][0]) {
                                         obsFlag = 2;
                                     } else {
                                         obsFlag = 1;
@@ -935,7 +1026,7 @@ let Car = {
                                     obsFlag = 3;
                                 }
                                 else{
-                                    if (car.x + 30 <= _self.obstructsInAllRoads[former][0]) {
+                                    if (car.x + 30 <= _self.obstructsInEachRoad[car.curPath][former][0]) {
                                         obsFlag = 2;
                                     } else {
                                         obsFlag = 3;
@@ -952,10 +1043,12 @@ let Car = {
                     car.y = sy;
                     _self.obstructsInAllRoads[car.pathIdx][0] = car.x;
                     _self.obstructsInAllRoads[car.pathIdx][1] = car.y;
+                    _self.obstructsInEachRoad[car.curPath][car.curRoadIdx][0] = car.x;
+                    _self.obstructsInEachRoad[car.curPath][car.curRoadIdx][1] = car.y;
                 }
             }
         };
-        car.drawTopToDownLines = function(_self, sx, sy) {
+        car.drawTopToDownLines = function(_self, sx, sy, add) {
             let father = document.getElementsByClassName("MyCanvas")[0];
             let normalCar = document.getElementsByClassName(car.type + car.index)[0];
             let sign = 1; //flag表示定时器下一次预计的车辆状态，0表示车辆停止，1表示车辆行驶，2表示减速停车，3表示起步加速
@@ -966,25 +1059,26 @@ let Car = {
             car.x = sx;
             let r2l = setInterval(frame, 30);
             function frame() {
-                if (sy >= _self.H - 100) {
+                if (sy >= _self.H - 100 - add) {
                     clearInterval(r2l);
                     carNumber();
                     father.removeChild(normalCar);
                     delete _self.obstructsInAllRoads[car.pathIdx];
+                    delete _self.obstructsInEachRoad[car.curPath][car.curRoadIdx];
                 } else {
                     let former = undefined;
-                    for(let i=0;i<car.pathIdx;i++){
-                        if(_self.obstructsInAllRoads[i] === undefined){
+                    for(let i=0;i<car.curRoadIdx;i++){
+                        if(_self.obstructsInEachRoad[car.curPath][i] === undefined){
                             ;//如果前面某辆车到达目的地，不再判断
                         }
                         else{//在路上的就判断是否和当前车在同一路段
-                            if(_self.obstructsInAllRoads[i][2] === car.curPath){
+                            if(_self.obstructsInEachRoad[car.curPath][i][2] === car.curPath){
                                 former = i;
                             }
                         }
                     }
                     if (former !== undefined) {
-                        if (car.y + 30 >= _self.obstructsInAllRoads[former][1]) {
+                        if (car.y + add + 30 >= _self.obstructsInEachRoad[car.curPath][former][1]) {
                             obsFlag = 2;
                         } else {
                             obsFlag = 1;
@@ -1002,7 +1096,7 @@ let Car = {
                                 obsFlag = 1;
                             }
                             else{
-                                if (car.y + 30 >= _self.obstructsInAllRoads[former][1]) {
+                                if (car.y + add + 30 >= _self.obstructsInEachRoad[car.curPath][former][1]) {
                                     obsFlag = 2;
                                 } else {
                                     obsFlag = 1;
@@ -1014,7 +1108,7 @@ let Car = {
                                 slowdown = 0;
                             }
                             else{
-                                if (car.y + 30 >= _self.obstructsInAllRoads[former][1]) {
+                                if (car.y + add + 30 >= _self.obstructsInEachRoad[car.curPath][former][1]) {
                                     slowdown = 0;
                                 }
                             }
@@ -1023,7 +1117,7 @@ let Car = {
                                     obsFlag = 3
                                 }
                                 else{
-                                    if (car.y + 30 >= _self.obstructsInAllRoads[former][1]) {
+                                    if (car.y + add + 30 >= _self.obstructsInEachRoad[car.curPath][former][1]) {
                                         obsFlag = 2;
                                     } else {
                                         obsFlag = 1;
@@ -1042,7 +1136,7 @@ let Car = {
                                     obsFlag = 1;
                                 }
                                 else{
-                                    if (car.y + 30 >= _self.obstructsInAllRoads[former][1]) {
+                                    if (car.y + add + 30 >= _self.obstructsInEachRoad[car.curPath][former][1]) {
                                         obsFlag = 2;
                                     } else {
                                         obsFlag = 1;
@@ -1053,7 +1147,7 @@ let Car = {
                                     obsFlag = 3;
                                 }
                                 else{
-                                    if (car.y + 30 <= _self.obstructsInAllRoads[former][1]) {
+                                    if (car.y + add + 30 <= _self.obstructsInEachRoad[car.curPath][former][1]) {
                                         obsFlag = 2;
                                     } else {
                                         obsFlag = 3;
@@ -1071,7 +1165,9 @@ let Car = {
                     car.x = sx;
                     car.y = sy;
                     _self.obstructsInAllRoads[car.pathIdx][0] = car.x;
-                    _self.obstructsInAllRoads[car.pathIdx][1] = car.y;   
+                    _self.obstructsInAllRoads[car.pathIdx][1] = car.y + add;
+                    _self.obstructsInEachRoad[car.curPath][car.curRoadIdx][0] = car.x;
+                    _self.obstructsInEachRoad[car.curPath][car.curRoadIdx][1] = car.y + add;   
                 }
             }
         };
@@ -1093,6 +1189,16 @@ let Car = {
             car.x = sx;
             car.y = sy;
             car.pathIdx = _self.obstructsInAllRoads.length;
+            //当前道路上的位置
+            if(car.curPath in _self.obstructsInEachRoad){
+                car.curRoadIdx = _self.obstructsInEachRoad[car.curPath].length;
+                _self.obstructsInEachRoad[car.curPath].push([car.x,car.y,car.curPath]);
+            }
+            else{
+                _self.obstructsInEachRoad[car.curPath] = [];
+                car.curRoadIdx = 0;
+                _self.obstructsInEachRoad[car.curPath].push([car.x,car.y,car.curPath]);
+            }
             _self.obstructsInAllRoads.push([car.x,car.y,car.curPath]);
             try {
                 father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
@@ -1108,38 +1214,48 @@ let Car = {
                     clearInterval(id);
                     //加上旋转属性
                     let normalCar = document.getElementsByClassName(car.type + car.index)[0];
-                    normalCar.classList.add("transToTop");
+                    normalCar.classList.add("AToC");
                     let flag = 0;
                     setTimeout(function() {
+                        delete _self.obstructsInEachRoad[car.curPath][car.curRoadIdx]
                         car.curPath = "-" + car.targetPlace;
                         _self.obstructsInAllRoads[car.pathIdx][2] = car.curPath;
+                        if(car.curPath in _self.obstructsInEachRoad){
+                            car.curRoadIdx = _self.obstructsInEachRoad[car.curPath].length;
+                            _self.obstructsInEachRoad[car.curPath].push([car.x,car.y,car.curPath]);
+                        }
+                        else{
+                            _self.obstructsInEachRoad[car.curPath] = [];
+                            car.curRoadIdx = 0;
+                            _self.obstructsInEachRoad[car.curPath].push([car.x,car.y,car.curPath]);
+                        }
                     }, 500);
                     setTimeout(function() {
                         flag = 1;
-                    }, 3500);
+                    }, 3000);
 
                     function checkFlag() {
                         if (flag === 1) {
                             clearInterval(checkIdx);
-                            car.drawDownToTopLines(_self, _self.W / 2 - _self.RoadW - _self.carH, _self.H / 2 + _self.carH, car.index);
+                            car.drawDownToTopLines(_self, _self.W / 2 - _self.RoadW - _self.carH, _self.H / 2 + (_self.RoadW - _self.carW)/2, _self.RoadW + ((_self.RoadW - _self.carW) / 2) + _self.carH);
                         }
                     }
                     let checkIdx = setInterval(checkFlag, 80);
                 }
                 else{
                     let former = undefined;
-                    for(let i=0;i<car.pathIdx;i++){
-                        if(_self.obstructsInAllRoads[i] === undefined){
+                    for(let i=0;i<car.curRoadIdx;i++){
+                        if(_self.obstructsInEachRoad[car.curPath][i] === undefined){
                             ;//如果前面某辆车到达目的地，不再判断
                         }
                         else{//在路上的就判断是否和当前车在同一路段
-                            if(_self.obstructsInAllRoads[i][2] === car.curPath){
+                            if(_self.obstructsInEachRoad[car.curPath][i][2] === car.curPath){
                                 former = i;
                             }
                         }
                     }
                     if (former !== undefined) {
-                        if (car.x + 30 >= _self.obstructsInAllRoads[former][0]) {
+                        if (car.x + 30 >= _self.obstructsInEachRoad[car.curPath][former][0]) {
                             obsFlag = 2;
                         } else {
                             obsFlag = 1;
@@ -1177,7 +1293,7 @@ let Car = {
                                 obsFlag = 1;
                             }
                             else{
-                                if (car.x + 30 >= _self.obstructsInAllRoads[former][0]) {
+                                if (car.x + 30 >= _self.obstructsInEachRoad[car.curPath][former][0]) {
                                     obsFlag = 2;
                                 } else {
                                     obsFlag = 1;
@@ -1199,7 +1315,7 @@ let Car = {
                                 }
                             }
                             else{
-                                if (car.x + 30 >= _self.obstructsInAllRoads[former][0] || sx == 420) {
+                                if (car.x + 30 >= _self.obstructsInEachRoad[car.curPath][former][0] || sx == 420) {
                                     slowdown = 0;
                                 }
                             }
@@ -1208,7 +1324,7 @@ let Car = {
                                     obsFlag = 3
                                 }
                                 else{
-                                    if (car.x + 30 >= _self.obstructsInAllRoads[former][0]) {
+                                    if (car.x + 30 >= _self.obstructsInEachRoad[car.curPath][former][0]) {
                                         obsFlag = 2;
                                     } else {
                                         obsFlag = 1;
@@ -1233,7 +1349,7 @@ let Car = {
                                     obsFlag = 1;
                                 }
                                 else{
-                                    if (car.x + 30 >= _self.obstructsInAllRoads[former][0]) {
+                                    if (car.x + 30 >= _self.obstructsInEachRoad[car.curPath][former][0]) {
                                         obsFlag = 2;
                                     } else {
                                         obsFlag = 1;
@@ -1244,7 +1360,7 @@ let Car = {
                                     obsFlag = 3;
                                 }
                                 else{
-                                    if (car.x + 30 <= _self.obstructsInAllRoads[former][0]) {
+                                    if (car.x + 30 <= _self.obstructsInEachRoad[car.curPath][former][0]) {
                                         obsFlag = 2;
                                     } else {
                                         obsFlag = 3;
@@ -1261,10 +1377,12 @@ let Car = {
                     car.y = sy;
                     _self.obstructsInAllRoads[car.pathIdx][0] = car.x;
                     _self.obstructsInAllRoads[car.pathIdx][1] = car.y;
+                    _self.obstructsInEachRoad[car.curPath][car.curRoadIdx][0] = car.x;
+                    _self.obstructsInEachRoad[car.curPath][car.curRoadIdx][1] = car.y;
                 }
             }
         };
-        car.drawDownToTopLines = function(_self, sx, sy) {
+        car.drawDownToTopLines = function(_self, sx, sy, add) {
             let father = document.getElementsByClassName("MyCanvas")[0];
             let normalCar = document.getElementsByClassName(car.type + car.index)[0];
             let accelerate = 0; //加速速度
@@ -1275,25 +1393,26 @@ let Car = {
             let r2l = setInterval(frame, 30);
 
             function frame() {
-                if (sy <= 100) {
+                if (sy <= 100 + add) {
                     clearInterval(r2l);
                     carNumber();
                     father.removeChild(normalCar);
                     delete _self.obstructsInAllRoads[car.pathIdx];
+                    delete _self.obstructsInEachRoad[car.curPath][car.curRoadIdx];
                 } else {
                     let former = undefined;
-                    for(let i=0;i<car.pathIdx;i++){
-                        if(_self.obstructsInAllRoads[i] === undefined){
+                    for(let i=0;i<car.curRoadIdx;i++){
+                        if(_self.obstructsInEachRoad[car.curPath][i] === undefined){
                             ;//如果前面某辆车到达目的地，不再判断
                         }
                         else{//在路上的就判断是否和当前车在同一路段
-                            if(_self.obstructsInAllRoads[i][2] === car.curPath){
+                            if(_self.obstructsInEachRoad[car.curPath][i][2] === car.curPath){
                                 former = i;
                             }
                         }
                     }
                     if (former !== undefined) {
-                        if (car.y <= _self.obstructsInAllRoads[former][1]+30) {
+                        if (car.y - add <= _self.obstructsInEachRoad[car.curPath][former][1]+30) {
                             obsFlag = 2;
                         } else {
                             obsFlag = 1;
@@ -1311,7 +1430,7 @@ let Car = {
                                 obsFlag = 1;
                             }
                             else{
-                                if (car.y <= _self.obstructsInAllRoads[former][1]+30) {
+                                if (car.y - add <= _self.obstructsInEachRoad[car.curPath][former][1]+30) {
                                     obsFlag = 2;
                                 } else {
                                     obsFlag = 1;
@@ -1323,7 +1442,7 @@ let Car = {
                                 slowdown = 0;
                             }
                             else{
-                                if (car.y <= _self.obstructsInAllRoads[former][1]+30) {
+                                if (car.y - add <= _self.obstructsInEachRoad[car.curPath][former][1]+30) {
                                     slowdown = 0;
                                 }
                             }
@@ -1332,7 +1451,7 @@ let Car = {
                                     obsFlag = 3
                                 }
                                 else{
-                                    if (car.y <= _self.obstructsInAllRoads[former][1]+30) {
+                                    if (car.y - add <= _self.obstructsInEachRoad[car.curPath][former][1]+30) {
                                         obsFlag = 2;
                                     } else {
                                         obsFlag = 1;
@@ -1351,7 +1470,7 @@ let Car = {
                                     obsFlag = 1;
                                 }
                                 else{
-                                    if (car.y <= _self.obstructsInAllRoads[former][1]+30) {
+                                    if (car.y - add <= _self.obstructsInEachRoad[car.curPath][former][1]+30) {
                                         obsFlag = 2;
                                     } else {
                                         obsFlag = 1;
@@ -1362,7 +1481,7 @@ let Car = {
                                     obsFlag = 3;
                                 }
                                 else{
-                                    if (car.y <= _self.obstructsInAllRoads[former][1] + 30) {
+                                    if (car.y - add <= _self.obstructsInEachRoad[car.curPath][former][1] + 30) {
                                         obsFlag = 2;
                                     } else {
                                         obsFlag = 3;
@@ -1378,7 +1497,9 @@ let Car = {
                     car.x = sx;
                     car.y = sy;
                     _self.obstructsInAllRoads[car.pathIdx][0] = car.x;
-                    _self.obstructsInAllRoads[car.pathIdx][1] = car.y;
+                    _self.obstructsInAllRoads[car.pathIdx][1] = car.y - add;
+                    _self.obstructsInEachRoad[car.curPath][car.curRoadIdx][0] = car.x;
+                    _self.obstructsInEachRoad[car.curPath][car.curRoadIdx][1] = car.y - add;   
                 }
             }
         };
@@ -1404,6 +1525,16 @@ let Car = {
             car.x = sx;
             car.y = sy;
             car.pathIdx = _self.obstructsInAllRoads.length;
+            //当前道路上的位置
+            if(car.curPath in _self.obstructsInEachRoad){
+                car.curRoadIdx = _self.obstructsInEachRoad[car.curPath].length;
+                _self.obstructsInEachRoad[car.curPath].push([car.x,car.y,car.curPath]);
+            }
+            else{
+                _self.obstructsInEachRoad[car.curPath] = [];
+                car.curRoadIdx = 0;
+                _self.obstructsInEachRoad[car.curPath].push([car.x,car.y,car.curPath]);
+            }
             _self.obstructsInAllRoads.push([car.x,car.y,car.curPath]);
             try {
                 father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
@@ -1419,21 +1550,22 @@ let Car = {
                     carNumber();
                     father.removeChild(normalCar);
                     delete _self.obstructsInAllRoads[car.pathIdx];
+                    delete _self.obstructsInEachRoad[car.curPath][car.curRoadIdx];
                 } else {
                     //找到当前车辆前方的与当前车处于同一路段且同方向的车辆的pathIdx
                     let former = undefined;
-                    for(let i=0;i<car.pathIdx;i++){
-                        if(_self.obstructsInAllRoads[i] === undefined){
+                    for(let i=0;i<car.curRoadIdx;i++){
+                        if(_self.obstructsInEachRoad[car.curPath][i] === undefined){
                             ;//如果前面某辆车到达目的地，不再判断
                         }
                         else{//在路上的就判断是否和当前车在同一路段
-                            if(_self.obstructsInAllRoads[i][2] === car.curPath){
+                            if(_self.obstructsInEachRoad[car.curPath][i][2] === car.curPath){
                                 former = i;
                             }
                         }
                     }
                     if (former !== undefined) {
-                        if (car.x + 30 >= _self.obstructsInAllRoads[former][0]) {
+                        if (car.x + 30 >= _self.obstructsInEachRoad[car.curPath][former][0]) {
                             obsFlag = 2;
                         } else {
                             obsFlag = 1;
@@ -1474,7 +1606,7 @@ let Car = {
                                 obsFlag = 1;
                             }
                             else{
-                                if (car.x + 30 >= _self.obstructsInAllRoads[former][0]) {
+                                if (car.x + 30 >= _self.obstructsInEachRoad[car.curPath][former][0]) {
                                     obsFlag = 2;
                                 } else {
                                     obsFlag = 1;
@@ -1506,7 +1638,7 @@ let Car = {
                                 }
                             }
                             else{
-                                if (car.x + 30 >= _self.obstructsInAllRoads[former][0] || sx == 420) {
+                                if (car.x + 30 >= _self.obstructsInEachRoad[car.curPath][former][0] || sx == 420) {
                                     slowdown = 0;
                                 }
                             }
@@ -1515,7 +1647,7 @@ let Car = {
                                     obsFlag = 3
                                 }
                                 else{
-                                    if (car.x + 30 >= _self.obstructsInAllRoads[former][0]) {
+                                    if (car.x + 30 >= _self.obstructsInEachRoad[car.curPath][former][0]) {
                                         obsFlag = 2;
                                     } else {
                                         obsFlag = 1;
@@ -1540,7 +1672,7 @@ let Car = {
                                     obsFlag = 1;
                                 }
                                 else{
-                                    if (car.x + 30 >= _self.obstructsInAllRoads[former][0]) {
+                                    if (car.x + 30 >= _self.obstructsInEachRoad[car.curPath][former][0]) {
                                         obsFlag = 2;
                                     } else {
                                         obsFlag = 1;
@@ -1551,7 +1683,7 @@ let Car = {
                                     obsFlag = 3;
                                 }
                                 else{
-                                    if (car.x + 30 <= _self.obstructsInAllRoads[former][0]) {
+                                    if (car.x + 30 <= _self.obstructsInEachRoad[car.curPath][former][0]) {
                                         obsFlag = 2;
                                     } else {
                                         obsFlag = 3;
@@ -1567,11 +1699,23 @@ let Car = {
                     car.x = sx;
                     car.y = sy;
                     if(car.x >= (_self.W / 2 - _self.RoadW) && car.curPath !== "-" + car.targetPlace){
-                        car.curPath = "-" + car.targetPlace
+                        delete _self.obstructsInEachRoad[car.curPath][car.curRoadIdx];
+                        car.curPath = "-" + car.targetPlace;
                         _self.obstructsInAllRoads[car.pathIdx][2] = car.curPath;
+                        if(car.curPath in _self.obstructsInEachRoad){
+                            car.curRoadIdx = _self.obstructsInEachRoad[car.curPath].length;
+                            _self.obstructsInEachRoad[car.curPath].push([car.x,car.y,car.curPath]);
+                        }
+                        else{
+                            _self.obstructsInEachRoad[car.curPath] = [];
+                            car.curRoadIdx = 0;
+                            _self.obstructsInEachRoad[car.curPath].push([car.x,car.y,car.curPath]);
+                        }
                     }
                     _self.obstructsInAllRoads[car.pathIdx][0] = car.x;
                     _self.obstructsInAllRoads[car.pathIdx][1] = car.y;
+                    _self.obstructsInEachRoad[car.curPath][car.curRoadIdx][0] = car.x;
+                    _self.obstructsInEachRoad[car.curPath][car.curRoadIdx][1] = car.y;
                 }
             }
         };
@@ -1593,6 +1737,16 @@ let Car = {
             car.x = sx;
             car.y = sy;
             car.pathIdx = _self.obstructsInAllRoads.length;
+            //当前道路上的位置
+            if(car.curPath in _self.obstructsInEachRoad){
+                car.curRoadIdx = _self.obstructsInEachRoad[car.curPath].length;
+                _self.obstructsInEachRoad[car.curPath].push([car.x,car.y,car.curPath]);
+            }
+            else{
+                _self.obstructsInEachRoad[car.curPath] = [];
+                car.curRoadIdx = 0;
+                _self.obstructsInEachRoad[car.curPath].push([car.x,car.y,car.curPath]);
+            }
             _self.obstructsInAllRoads.push([car.x,car.y,car.curPath]);
             try {
                 father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
@@ -1603,42 +1757,52 @@ let Car = {
             let id = setInterval(frame, 30);
 
             function frame() {
-                if(sy >= _self.H / 2 - _self.RoadW){
+                if(sy == _self.H / 2 - _self.RoadW - _self.carH){
                     clearInterval(id);
                     //加上旋转属性
                     let normalCar = document.getElementsByClassName(car.type + car.index)[0];
-                    normalCar.classList.add("transTopToRight");
+                    normalCar.classList.add("CToB");
                     let flag = 0;
                     setTimeout(function() {
+                        delete _self.obstructsInEachRoad[car.curPath][car.curRoadIdx]
                         car.curPath = "-" + car.targetPlace;
                         _self.obstructsInAllRoads[car.pathIdx][2] = car.curPath;
+                        if(car.curPath in _self.obstructsInEachRoad){
+                            car.curRoadIdx = _self.obstructsInEachRoad[car.curPath].length;
+                            _self.obstructsInEachRoad[car.curPath].push([car.x,car.y,car.curPath]);
+                        }
+                        else{
+                            _self.obstructsInEachRoad[car.curPath] = [];
+                            car.curRoadIdx = 0;
+                            _self.obstructsInEachRoad[car.curPath].push([car.x,car.y,car.curPath]);
+                        }
                     }, 500);
                     setTimeout(function() {
                         flag = 1;
-                    }, 3500);
+                    }, 3000);
 
                     function checkFlag() {
                         if (flag === 1) {
                             clearInterval(checkIdx);
-                            car.drawLeftToRightLines(_self, _self.W / 2 - _self.RoadW + ((_self.RoadW - _self.carW) / 2), _self.H / 2 - _self.RoadW, car.index);
+                            car.drawLeftToRightLines(_self, _self.W / 2 - _self.RoadW + ((_self.RoadW - _self.carW) / 2), _self.H / 2 - _self.RoadW - _self.carH, _self.carH + _self.RoadW + ((_self.RoadW - _self.carW) / 2) + _self.carW);
                         }
                     }
                     let checkIdx = setInterval(checkFlag, 80);
                 }
                 else{
                     let former = undefined;
-                    for(let i=0;i<car.pathIdx;i++){
-                        if(_self.obstructsInAllRoads[i] === undefined){
+                    for(let i=0;i<car.curRoadIdx;i++){
+                        if(_self.obstructsInEachRoad[car.curPath][i] === undefined){
                             ;//如果前面某辆车到达目的地，不再判断
                         }
                         else{//在路上的就判断是否和当前车在同一路段
-                            if(_self.obstructsInAllRoads[i][2] === car.curPath){
+                            if(_self.obstructsInEachRoad[car.curPath][i][2] === car.curPath){
                                 former = i;
                             }
                         }
                     }
                     if (former !== undefined) {//如果找到了，当前车不是所在路段的第一辆车，就可以根据前方是否有车判断是否要停车
-                        if (car.y + 30 >= _self.obstructsInAllRoads[former][1]) {
+                        if (car.y + 30 >= _self.obstructsInEachRoad[car.curPath][former][1]) {
                             obsFlag = 2;
                         } else {
                             obsFlag = 1;
@@ -1678,7 +1842,7 @@ let Car = {
                                 obsFlag = 1;
                             }
                             else{
-                                if (car.y + 30 >= _self.obstructsInAllRoads[former][1]) {
+                                if (car.y + 30 >= _self.obstructsInEachRoad[car.curPath][former][1]) {
                                     obsFlag = 2;
                                 } else {
                                     obsFlag = 1;
@@ -1700,7 +1864,7 @@ let Car = {
                                 }
                             }
                             else{
-                                if (car.y + 30 >= _self.obstructsInAllRoads[former][1] || sy == 168) {
+                                if (car.y + 30 >= _self.obstructsInEachRoad[car.curPath][former][1] || sy == 168) {
                                     slowdown = 0;
                                 }
                             }
@@ -1709,7 +1873,7 @@ let Car = {
                                     obsFlag = 3
                                 }
                                 else{
-                                    if (car.y + 30 >= _self.obstructsInAllRoads[former][1]) {
+                                    if (car.y + 30 >= _self.obstructsInEachRoad[car.curPath][former][1]) {
                                         obsFlag = 2;
                                     } else {
                                         obsFlag = 1;
@@ -1734,7 +1898,7 @@ let Car = {
                                     obsFlag = 1;
                                 }
                                 else{
-                                    if (car.y + 30 >= _self.obstructsInAllRoads[former][1]) {
+                                    if (car.y + 30 >= _self.obstructsInEachRoad[car.curPath][former][1]) {
                                         obsFlag = 2;
                                     } else {
                                         obsFlag = 1;
@@ -1745,7 +1909,7 @@ let Car = {
                                     obsFlag = 3;
                                 }
                                 else{
-                                    if (car.y + 30 <= _self.obstructsInAllRoads[former][1]) {
+                                    if (car.y + 30 <= _self.obstructsInEachRoad[car.curPath][former][1]) {
                                         obsFlag = 2;
                                     } else {
                                         obsFlag = 3;
@@ -1762,6 +1926,8 @@ let Car = {
                     car.y = sy;
                     _self.obstructsInAllRoads[car.pathIdx][0] = car.x;
                     _self.obstructsInAllRoads[car.pathIdx][1] = car.y;
+                    _self.obstructsInEachRoad[car.curPath][car.curRoadIdx][0] = car.x;
+                    _self.obstructsInEachRoad[car.curPath][car.curRoadIdx][1] = car.y;
                 }
             }
         };
@@ -1783,6 +1949,16 @@ let Car = {
             car.x = sx;
             car.y = sy;
             car.pathIdx = _self.obstructsInAllRoads.length;
+            //当前道路上的位置
+            if(car.curPath in _self.obstructsInEachRoad){
+                car.curRoadIdx = _self.obstructsInEachRoad[car.curPath].length;
+                _self.obstructsInEachRoad[car.curPath].push([car.x,car.y,car.curPath]);
+            }
+            else{
+                _self.obstructsInEachRoad[car.curPath] = [];
+                car.curRoadIdx = 0;
+                _self.obstructsInEachRoad[car.curPath].push([car.x,car.y,car.curPath]);
+            }
             _self.obstructsInAllRoads.push([car.x,car.y,car.curPath]);
             try {
                 father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
@@ -1797,38 +1973,48 @@ let Car = {
                     clearInterval(id);
                     //加上旋转属性
                     let normalCar = document.getElementsByClassName(car.type + car.index)[0];
-                    normalCar.classList.add("transToLeft");
+                    normalCar.classList.add("CToA");
                     let flag = 0;
                     setTimeout(function() {
+                        delete _self.obstructsInEachRoad[car.curPath][car.curRoadIdx]
                         car.curPath = "-" + car.targetPlace;
                         _self.obstructsInAllRoads[car.pathIdx][2] = car.curPath;
-                    }, 1000);
+                        if(car.curPath in _self.obstructsInEachRoad){
+                            car.curRoadIdx = _self.obstructsInEachRoad[car.curPath].length;
+                            _self.obstructsInEachRoad[car.curPath].push([car.x,car.y,car.curPath]);
+                        }
+                        else{
+                            _self.obstructsInEachRoad[car.curPath] = [];
+                            car.curRoadIdx = 0;
+                            _self.obstructsInEachRoad[car.curPath].push([car.x,car.y,car.curPath]);
+                        }
+                    }, 500);
                     setTimeout(function() {
                         flag = 1;
-                    }, 3500);
+                    }, 1500);
 
                     function checkFlag() {
                         if (flag === 1) {
                             clearInterval(checkIdx);
-                            car.drawRightToLeftLines(_self, _self.W / 2 - _self.RoadW + ((_self.RoadW - _self.carW) / 2), self.H / 2 - _self.RoadW);
+                            car.drawRightToLeftLines(_self, _self.W / 2 - _self.RoadW + ((_self.RoadW - _self.carW) / 2), self.H / 2 - _self.RoadW - _self.carH, ((_self.RoadW - _self.carW) / 2) + _self.carH);
                         }
                     }
                     let checkIdx = setInterval(checkFlag, 80);
 
                 } else {
                     let former = undefined;
-                    for(let i=0;i<car.pathIdx;i++){
-                        if(_self.obstructsInAllRoads[i] === undefined){
+                    for(let i=0;i<car.curRoadIdx;i++){
+                        if(_self.obstructsInEachRoad[car.curPath][i] === undefined){
                             ;//如果前面某辆车到达目的地，不再判断
                         }
                         else{//在路上的就判断是否和当前车在同一路段
-                            if(_self.obstructsInAllRoads[i][2] === car.curPath){
+                            if(_self.obstructsInEachRoad[car.curPath][i][2] === car.curPath){
                                 former = i;
                             }
                         }
                     }
                     if (former !== undefined) {//如果找到了，当前车不是所在路段的第一辆车，就可以根据前方是否有车判断是否要停车
-                        if (car.y + 30 >= _self.obstructsInAllRoads[former][1]) {
+                        if (car.y + 30 >= _self.obstructsInEachRoad[car.curPath][former][1]) {
                             obsFlag = 2;
                         } else {
                             obsFlag = 1;
@@ -1846,7 +2032,7 @@ let Car = {
                                 obsFlag = 1;
                             }
                             else{
-                                if (car.y + 30 >= _self.obstructsInAllRoads[former][1]) {
+                                if (car.y + 30 >= _self.obstructsInEachRoad[car.curPath][former][1]) {
                                     obsFlag = 2;
                                 } else {
                                     obsFlag = 1;
@@ -1858,7 +2044,7 @@ let Car = {
                                     slowdown = 0;
                             }
                             else{
-                                if (car.y + 30 >= _self.obstructsInAllRoads[former][1]) {
+                                if (car.y + 30 >= _self.obstructsInEachRoad[car.curPath][former][1]) {
                                     slowdown = 0;
                                 }
                             }
@@ -1867,7 +2053,7 @@ let Car = {
                                     obsFlag = 3
                                 }
                                 else{
-                                    if (car.y + 30 >= _self.obstructsInAllRoads[former][1]) {
+                                    if (car.y + 30 >= _self.obstructsInEachRoad[car.curPath][former][1]) {
                                         obsFlag = 2;
                                     } else {
                                         obsFlag = 1;
@@ -1886,7 +2072,7 @@ let Car = {
                                     obsFlag = 1;
                                 }
                                 else{
-                                    if (car.y + 30 >= _self.obstructsInAllRoads[former][1]) {
+                                    if (car.y + 30 >= _self.obstructsInEachRoad[car.curPath][former][1]) {
                                         obsFlag = 2;
                                     } else {
                                         obsFlag = 1;
@@ -1897,7 +2083,7 @@ let Car = {
                                     obsFlag = 3;
                                 }
                                 else{
-                                    if (car.y + 30 <= _self.obstructsInAllRoads[former][1]) {
+                                    if (car.y + 30 <= _self.obstructsInEachRoad[car.curPath][former][1]) {
                                         obsFlag = 2;
                                     } else {
                                         obsFlag = 3;
@@ -1914,6 +2100,8 @@ let Car = {
                     car.y = sy;
                     _self.obstructsInAllRoads[car.pathIdx][0] = car.x;
                     _self.obstructsInAllRoads[car.pathIdx][1] = car.y;
+                    _self.obstructsInEachRoad[car.curPath][car.curRoadIdx][0] = car.x;
+                    _self.obstructsInEachRoad[car.curPath][car.curRoadIdx][1] = car.y;
                 }
             }
         };
@@ -1938,6 +2126,16 @@ let Car = {
             car.y = sy;
             car.x = sx;
             car.pathIdx = _self.obstructsInAllRoads.length;
+            //当前道路上的位置
+            if(car.curPath in _self.obstructsInEachRoad){
+                car.curRoadIdx = _self.obstructsInEachRoad[car.curPath].length;
+                _self.obstructsInEachRoad[car.curPath].push([car.x,car.y,car.curPath]);
+            }
+            else{
+                _self.obstructsInEachRoad[car.curPath] = [];
+                car.curRoadIdx = 0;
+                _self.obstructsInEachRoad[car.curPath].push([car.x,car.y,car.curPath]);
+            }
             _self.obstructsInAllRoads.push([car.x,car.y,car.curPath]);
             try {
                 father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
@@ -1953,21 +2151,22 @@ let Car = {
                     carNumber();
                     father.removeChild(normalCar);
                     delete _self.obstructsInAllRoads[car.pathIdx];
+                    delete _self.obstructsInEachRoad[car.curPath][car.curRoadIdx];
                 } else {
                     //找到当前车辆前方的与当前车处于同一路段且同方向的车辆的pathIdx
                     let former = undefined;
-                    for(let i=0;i<car.pathIdx;i++){
-                        if(_self.obstructsInAllRoads[i] === undefined){
+                    for(let i=0;i<car.curRoadIdx;i++){
+                        if(_self.obstructsInEachRoad[car.curPath][i] === undefined){
                             ;//如果前面某辆车到达目的地，不再判断
                         }
                         else{//在路上的就判断是否和当前车在同一路段
-                            if(_self.obstructsInAllRoads[i][2] === car.curPath){
+                            if(_self.obstructsInEachRoad[car.curPath][i][2] === car.curPath){
                                 former = i;
                             }
                         }
                     }
                     if (former !== undefined) {
-                        if (car.y + 30 >= _self.obstructsInAllRoads[former][1]) {
+                        if (car.y + 30 >= _self.obstructsInEachRoad[car.curPath][former][1]) {
                             obsFlag = 2;
                         } else {
                             obsFlag = 1;
@@ -2007,7 +2206,7 @@ let Car = {
                                 obsFlag = 1;
                             }
                             else{
-                                if (car.y + 30 >= _self.obstructsInAllRoads[former][1]) {
+                                if (car.y + 30 >= _self.obstructsInEachRoad[car.curPath][former][1]) {
                                     obsFlag = 2;
                                 } else {
                                     obsFlag = 1;
@@ -2039,7 +2238,7 @@ let Car = {
                                 }
                             }
                             else{
-                                if (car.y + 30 >= _self.obstructsInAllRoads[former][1] || sy == 168) {
+                                if (car.y + 30 >= _self.obstructsInEachRoad[car.curPath][former][1] || sy == 168) {
                                     slowdown = 0;
                                 }
                             }
@@ -2048,7 +2247,7 @@ let Car = {
                                     obsFlag = 3
                                 }
                                 else{
-                                    if (car.y + 30 >= _self.obstructsInAllRoads[former][1]) {
+                                    if (car.y + 30 >= _self.obstructsInEachRoad[car.curPath][former][1]) {
                                         obsFlag = 2;
                                     } else {
                                         obsFlag = 1;
@@ -2073,7 +2272,7 @@ let Car = {
                                     obsFlag = 1;
                                 }
                                 else{
-                                    if (car.y + 30 >= _self.obstructsInAllRoads[former][1]) {
+                                    if (car.y + 30 >= _self.obstructsInEachRoad[car.curPath][former][1]) {
                                         obsFlag = 2;
                                     } else {
                                         obsFlag = 1;
@@ -2084,7 +2283,7 @@ let Car = {
                                     obsFlag = 3;
                                 }
                                 else{
-                                    if (car.y + 30 <= _self.obstructsInAllRoads[former][1]) {
+                                    if (car.y + 30 <= _self.obstructsInEachRoad[car.curPath][former][1]) {
                                         obsFlag = 2;
                                     } else {
                                         obsFlag = 3;
@@ -2100,11 +2299,23 @@ let Car = {
                     car.x = sx;
                     car.y = sy;
                     if(car.y >= (_self.H / 2 - _self.RoadW) && car.curPath !== "-" + car.targetPlace){
-                        car.curPath = "-" + car.targetPlace
+                        delete _self.obstructsInEachRoad[car.curPath][car.curRoadIdx];
+                        car.curPath = "-" + car.targetPlace;
                         _self.obstructsInAllRoads[car.pathIdx][2] = car.curPath;
+                        if(car.curPath in _self.obstructsInEachRoad){
+                            car.curRoadIdx = _self.obstructsInEachRoad[car.curPath].length;
+                            _self.obstructsInEachRoad[car.curPath].push([car.x,car.y,car.curPath]);
+                        }
+                        else{
+                            _self.obstructsInEachRoad[car.curPath] = [];
+                            car.curRoadIdx = 0;
+                            _self.obstructsInEachRoad[car.curPath].push([car.x,car.y,car.curPath]);
+                        }
                     }
                     _self.obstructsInAllRoads[car.pathIdx][0] = car.x;
                     _self.obstructsInAllRoads[car.pathIdx][1] = car.y;
+                    _self.obstructsInEachRoad[car.curPath][car.curRoadIdx][0] = car.x;
+                    _self.obstructsInEachRoad[car.curPath][car.curRoadIdx][1] = car.y;
                 }
             }
         };
@@ -2127,6 +2338,16 @@ let Car = {
             car.x = sx;
             car.y = sy;
             car.pathIdx = _self.obstructsInAllRoads.length;
+            //当前道路上的位置
+            if(car.curPath in _self.obstructsInEachRoad){
+                car.curRoadIdx = _self.obstructsInEachRoad[car.curPath].length;
+                _self.obstructsInEachRoad[car.curPath].push([car.x,car.y,car.curPath]);
+            }
+            else{
+                _self.obstructsInEachRoad[car.curPath] = [];
+                car.curRoadIdx = 0;
+                _self.obstructsInEachRoad[car.curPath].push([car.x,car.y,car.curPath]);
+            }
             _self.obstructsInAllRoads.push([car.x,car.y,car.curPath]);
             try {
                 father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
@@ -2141,38 +2362,48 @@ let Car = {
                     clearInterval(id);
                     //加上旋转属性
                     let normalCar = document.getElementsByClassName(car.type + car.index)[0];
-                    normalCar.classList.add("transRightToTop");
+                    normalCar.classList.add("BToC");
                     let flag = 0;
                     setTimeout(function() {
+                        delete _self.obstructsInEachRoad[car.curPath][car.curRoadIdx]
                         car.curPath = "-" + car.targetPlace;
                         _self.obstructsInAllRoads[car.pathIdx][2] = car.curPath;
-                    }, 1000);
+                        if(car.curPath in _self.obstructsInEachRoad){
+                            car.curRoadIdx = _self.obstructsInEachRoad[car.curPath].length;
+                            _self.obstructsInEachRoad[car.curPath].push([car.x,car.y,car.curPath]);
+                        }
+                        else{
+                            _self.obstructsInEachRoad[car.curPath] = [];
+                            car.curRoadIdx = 0;
+                            _self.obstructsInEachRoad[car.curPath].push([car.x,car.y,car.curPath]);
+                        }
+                    }, 500);
                     setTimeout(function() {
                         flag = 1;
-                    }, 3500);
+                    }, 1500);
 
                     function checkFlag() {
                         if (flag === 1) {
                             clearInterval(checkIdx);
-                            car.drawDownToTopLines(_self, _self.W / 2 + _self.RoadW, _self.H / 2 - _self.RoadW + ((_self.RoadW - _self.carW) / 2));
+                            car.drawDownToTopLines(_self, _self.W / 2 + _self.RoadW, _self.H / 2 - _self.RoadW + ((_self.RoadW - _self.carW) / 2), (_self.RoadW - _self.carW) / 2);
                         }
                     }
                     let checkIdx = setInterval(checkFlag, 80);
 
                 } else {
                     let former = undefined;
-                    for(let i=0;i<car.pathIdx;i++){
-                        if(_self.obstructsInAllRoads[i] === undefined){
+                    for(let i=0;i<car.curRoadIdx;i++){
+                        if(_self.obstructsInEachRoad[car.curPath][i] === undefined){
                             ;//如果前面某辆车到达目的地，不再判断
                         }
                         else{//在路上的就判断是否和当前车在同一路段
-                            if(_self.obstructsInAllRoads[i][2] === car.curPath){
+                            if(_self.obstructsInEachRoad[car.curPath][i][2] === car.curPath){
                                 former = i;
                             }
                         }
                     }
                     if (former !== undefined) {//如果找到了，当前车不是所在路段的第一辆车，就可以根据前方是否有车判断是否要停车
-                        if (car.x <= _self.obstructsInAllRoads[former][0] + 30) {
+                        if (car.x <= _self.obstructsInEachRoad[car.curPath][former][0] + 30) {
                             obsFlag = 2;
                         } else {
                             obsFlag = 1;
@@ -2189,7 +2420,7 @@ let Car = {
                                 obsFlag = 1;
                             }
                             else{
-                                if (car.x <= _self.obstructsInAllRoads[former][0] + 30) {
+                                if (car.x <= _self.obstructsInEachRoad[car.curPath][former][0] + 30) {
                                     obsFlag = 2;
                                 } else {
                                     obsFlag = 1;
@@ -2201,7 +2432,7 @@ let Car = {
                                     slowdown = 0;
                             }
                             else{
-                                if (car.x <= _self.obstructsInAllRoads[former][0] + 30) {
+                                if (car.x <= _self.obstructsInEachRoad[car.curPath][former][0] + 30) {
                                     slowdown = 0;
                                 }
                             }
@@ -2210,7 +2441,7 @@ let Car = {
                                     obsFlag = 3
                                 }
                                 else{
-                                    if (car.x <= _self.obstructsInAllRoads[former][0] + 30) {
+                                    if (car.x <= _self.obstructsInEachRoad[car.curPath][former][0] + 30) {
                                         obsFlag = 2;
                                     } else {
                                         obsFlag = 3;
@@ -2229,7 +2460,7 @@ let Car = {
                                     obsFlag = 1;
                                 }
                                 else{
-                                    if (car.x <= _self.obstructsInAllRoads[former][0] + 30) {
+                                    if (car.x <= _self.obstructsInEachRoad[car.curPath][former][0] + 30) {
                                         obsFlag = 2;
                                     } else {
                                         obsFlag = 1;
@@ -2240,7 +2471,7 @@ let Car = {
                                     obsFlag = 3;
                                 }
                                 else{
-                                    if (car.x <= _self.obstructsInAllRoads[former][0] + 30) {
+                                    if (car.x <= _self.obstructsInEachRoad[car.curPath][former][0] + 30) {
                                         obsFlag = 2;
                                     } else {
                                         obsFlag = 3;
@@ -2257,6 +2488,8 @@ let Car = {
                     car.y = sy;
                     _self.obstructsInAllRoads[car.pathIdx][0] = car.x;
                     _self.obstructsInAllRoads[car.pathIdx][1] = car.y;
+                    _self.obstructsInEachRoad[car.curPath][car.curRoadIdx][0] = car.x;
+                    _self.obstructsInEachRoad[car.curPath][car.curRoadIdx][1] = car.y;
                 }
             }
         };
@@ -2280,6 +2513,16 @@ let Car = {
             car.x = sx;
             car.y = sy;
             car.pathIdx = _self.obstructsInAllRoads.length;
+            //当前道路上的位置
+            if(car.curPath in _self.obstructsInEachRoad){
+                car.curRoadIdx = _self.obstructsInEachRoad[car.curPath].length;
+                _self.obstructsInEachRoad[car.curPath].push([car.x,car.y,car.curPath]);
+            }
+            else{
+                _self.obstructsInEachRoad[car.curPath] = [];
+                car.curRoadIdx = 0;
+                _self.obstructsInEachRoad[car.curPath].push([car.x,car.y,car.curPath]);
+            }
             _self.obstructsInAllRoads.push([car.x,car.y,car.curPath]);
             try {
                 father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
@@ -2294,38 +2537,48 @@ let Car = {
                     clearInterval(id);
                     //加上旋转属性
                     let normalCar = document.getElementsByClassName(car.type + car.index)[0];
-                    normalCar.classList.add("transRightToDown");
+                    normalCar.classList.add("BToD");
                     let flag = 0;
                     setTimeout(function() {
+                        delete _self.obstructsInEachRoad[car.curPath][car.curRoadIdx]
                         car.curPath = "-" + car.targetPlace;
                         _self.obstructsInAllRoads[car.pathIdx][2] = car.curPath;
+                        if(car.curPath in _self.obstructsInEachRoad){
+                            car.curRoadIdx = _self.obstructsInEachRoad[car.curPath].length;
+                            _self.obstructsInEachRoad[car.curPath].push([car.x,car.y,car.curPath]);
+                        }
+                        else{
+                            _self.obstructsInEachRoad[car.curPath] = [];
+                            car.curRoadIdx = 0;
+                            _self.obstructsInEachRoad[car.curPath].push([car.x,car.y,car.curPath]);
+                        }
                     }, 500);
                     setTimeout(function() {
                         flag = 1;
-                    }, 3500);
+                    }, 3000);
 
                     function checkFlag() {
                         if (flag === 1) {
                             clearInterval(checkIdx);
-                            car.drawTopToDownLines(_self, _self.W / 2 + _self.RoadW, _self.H / 2 - _self.RoadW + ((_self.RoadW - _self.carW) / 2));
+                            car.drawTopToDownLines(_self, _self.W / 2 + _self.RoadW, _self.H / 2 - _self.carW - ((_self.RoadW - _self.carW) / 2), _self.RoadW + _self.carW + ((_self.RoadW - _self.carW) / 2));
                         }
                     }
                     let checkIdx = setInterval(checkFlag, 80);
                 }
                 else{
                     let former = undefined;
-                    for(let i=0;i<car.pathIdx;i++){
-                        if(_self.obstructsInAllRoads[i] === undefined){
+                    for(let i=0;i<car.curRoadIdx;i++){
+                        if(_self.obstructsInEachRoad[car.curPath][i] === undefined){
                             ;//如果前面某辆车到达目的地，不再判断
                         }
                         else{//在路上的就判断是否和当前车在同一路段
-                            if(_self.obstructsInAllRoads[i][2] === car.curPath){
+                            if(_self.obstructsInEachRoad[car.curPath][i][2] === car.curPath){
                                 former = i;
                             }
                         }
                     }
                     if (former !== undefined) {//如果找到了，当前车不是所在路段的第一辆车，就可以根据前方是否有车判断是否要停车
-                        if (car.x <= _self.obstructsInAllRoads[former][0] + 30) {
+                        if (car.x <= _self.obstructsInEachRoad[car.curPath][former][0] + 30) {
                             obsFlag = 2;
                         } else {
                             obsFlag = 1;
@@ -2364,7 +2617,7 @@ let Car = {
                                 obsFlag = 1;
                             }
                             else{
-                                if (car.x <= _self.obstructsInAllRoads[former][0] + 30) {
+                                if (car.x <= _self.obstructsInEachRoad[car.curPath][former][0] + 30) {
                                     obsFlag = 2;
                                 } else {
                                     obsFlag = 1;
@@ -2386,7 +2639,7 @@ let Car = {
                                 }
                             }
                             else{
-                                if (car.x <= _self.obstructsInAllRoads[former][0] + 30 || sx == 562) {
+                                if (car.x <= _self.obstructsInEachRoad[car.curPath][former][0] + 30 || sx == 562) {
                                     slowdown = 0;
                                 }
                             }
@@ -2395,7 +2648,7 @@ let Car = {
                                     obsFlag = 3
                                 }
                                 else{
-                                    if (car.x <= _self.obstructsInAllRoads[former][0] + 30) {
+                                    if (car.x <= _self.obstructsInEachRoad[car.curPath][former][0] + 30) {
                                         obsFlag = 2;
                                     } else {
                                         obsFlag = 3;
@@ -2420,7 +2673,7 @@ let Car = {
                                     obsFlag = 1;
                                 }
                                 else{
-                                    if (car.x <= _self.obstructsInAllRoads[former][0] + 30) {
+                                    if (car.x <= _self.obstructsInEachRoad[car.curPath][former][0] + 30) {
                                         obsFlag = 2;
                                     } else {
                                         obsFlag = 1;
@@ -2431,7 +2684,7 @@ let Car = {
                                     obsFlag = 3;
                                 }
                                 else{
-                                    if (car.x <= _self.obstructsInAllRoads[former][0] + 30) {
+                                    if (car.x <= _self.obstructsInEachRoad[car.curPath][former][0] + 30) {
                                         obsFlag = 2;
                                     } else {
                                         obsFlag = 3;
@@ -2448,6 +2701,8 @@ let Car = {
                     car.y = sy;
                     _self.obstructsInAllRoads[car.pathIdx][0] = car.x;
                     _self.obstructsInAllRoads[car.pathIdx][1] = car.y;
+                    _self.obstructsInEachRoad[car.curPath][car.curRoadIdx][0] = car.x;
+                    _self.obstructsInEachRoad[car.curPath][car.curRoadIdx][1] = car.y;
                 }
             }
         };
@@ -2473,8 +2728,19 @@ let Car = {
             car.curPath = car.sourcePlace;
             car.x = sx;
             car.y = sy;
+            //确定全局位置
             car.pathIdx = _self.obstructsInAllRoads.length;
             _self.obstructsInAllRoads.push([car.x,car.y,car.curPath]);
+            //当前道路上的位置
+            if(car.curPath in _self.obstructsInEachRoad){
+                car.curRoadIdx = _self.obstructsInEachRoad[car.curPath].length;
+                _self.obstructsInEachRoad[car.curPath].push([car.x,car.y,car.curPath]);
+            }
+            else{
+                _self.obstructsInEachRoad[car.curPath] = [];
+                car.curRoadIdx = 0;
+                _self.obstructsInEachRoad[car.curPath].push([car.x,car.y,car.curPath]);
+            }
             try {
                 father.removeChild(document.getElementsByClassName(car.type + car.index)[0]);
             } catch (err) {
@@ -2489,21 +2755,22 @@ let Car = {
                     clearInterval(id);
                     father.removeChild(normalCar);
                     delete _self.obstructsInAllRoads[car.pathIdx];
+                    delete _self.obstructsInEachRoad[car.curPath][car.curRoadIdx];
                 } else {
                     //找到当前车辆前方的与当前车处于同一路段且同方向的车辆的pathIdx
                     let former = undefined;
-                    for(let i=0;i<car.pathIdx;i++){
-                        if(_self.obstructsInAllRoads[i] === undefined){
+                    for(let i=0;i<car.curRoadIdx;i++){
+                        if(_self.obstructsInEachRoad[car.curPath][i] === undefined){
                             ;//如果前面某辆车到达目的地，不再判断
                         }
                         else{//在路上的就判断是否和当前车在同一路段
-                            if(_self.obstructsInAllRoads[i][2] === car.curPath){
+                            if(_self.obstructsInEachRoad[car.curPath][i][2] === car.curPath){
                                 former = i;
                             }
                         }
                     }
                     if (former !== undefined) {//如果找到了，当前车不是所在路段的第一辆车，就可以根据前方是否有车判断是否要停车
-                        if (car.x <= _self.obstructsInAllRoads[former][0] + 30) {
+                        if (car.x <= _self.obstructsInEachRoad[car.curPath][former][0] + 30) {
                             obsFlag = 2;
                         } else {
                             obsFlag = 1;
@@ -2544,7 +2811,7 @@ let Car = {
                                 obsFlag = 1;
                             }
                             else{//不是第一辆车就判断距离
-                                if (car.x <= _self.obstructsInAllRoads[former][0] + 30) {
+                                if (car.x <= _self.obstructsInEachRoad[car.curPath][former][0] + 30) {
                                     obsFlag = 2;
                                 } else {
                                     obsFlag = 1;
@@ -2576,7 +2843,7 @@ let Car = {
                                 }
                             }
                             else{
-                                if (car.x <= _self.obstructsInAllRoads[former][0] + 30 || sx == 562) {
+                                if (car.x <= _self.obstructsInEachRoad[car.curPath][former][0] + 30 || sx == 562) {
                                     slowdown = 0;
                                 }
                             }
@@ -2585,7 +2852,7 @@ let Car = {
                                     obsFlag = 3
                                 }
                                 else{
-                                    if (car.x <= _self.obstructsInAllRoads[former][0] + 30) {
+                                    if (car.x <= _self.obstructsInEachRoad[car.curPath][former][0] + 30) {
                                         obsFlag = 2;
                                     } else {
                                         obsFlag = 3;
@@ -2610,7 +2877,7 @@ let Car = {
                                     obsFlag = 1;
                                 }
                                 else{
-                                    if (car.x <= _self.obstructsInAllRoads[former][0] + 30) {
+                                    if (car.x <= _self.obstructsInEachRoad[car.curPath][former][0] + 30) {
                                         obsFlag = 2;
                                     } else {
                                         obsFlag = 1;
@@ -2621,7 +2888,7 @@ let Car = {
                                     obsFlag = 3;
                                 }
                                 else{
-                                    if (car.x <= _self.obstructsInAllRoads[former][0] + 30) {
+                                    if (car.x <= _self.obstructsInEachRoad[car.curPath][former][0] + 30) {
                                         obsFlag = 2;
                                     } else {
                                         obsFlag = 3;
@@ -2638,11 +2905,23 @@ let Car = {
                     car.x = sx;
                     car.y = sy;
                     if(car.x <= (_self.W / 2 - _self.RoadW) && car.curPath !== "-" + car.targetPlace){
-                        car.curPath = "-" + car.targetPlace
+                        delete _self.obstructsInEachRoad[car.curPath][car.curRoadIdx];
+                        car.curPath = "-" + car.targetPlace;
                         _self.obstructsInAllRoads[car.pathIdx][2] = car.curPath;
+                        if(car.curPath in _self.obstructsInEachRoad){
+                            car.curRoadIdx = _self.obstructsInEachRoad[car.curPath].length;
+                            _self.obstructsInEachRoad[car.curPath].push([car.x,car.y,car.curPath]);
+                        }
+                        else{
+                            _self.obstructsInEachRoad[car.curPath] = [];
+                            car.curRoadIdx = 0;
+                            _self.obstructsInEachRoad[car.curPath].push([car.x,car.y,car.curPath]);
+                        }
                     }
                     _self.obstructsInAllRoads[car.pathIdx][0] = car.x;
                     _self.obstructsInAllRoads[car.pathIdx][1] = car.y;
+                    _self.obstructsInEachRoad[car.curPath][car.curRoadIdx][0] = car.x;
+                    _self.obstructsInEachRoad[car.curPath][car.curRoadIdx][1] = car.y;
                 }
 
             }
