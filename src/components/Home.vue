@@ -19,7 +19,7 @@
                 </div>
                 <!-- 运行结果面板 -->
                 <div class="printResult">
-                    <printResult :isRun="isrun"></printResult>
+                    <printResult :isRun="isrun" :paramters="parameters"></printResult>
                 </div>
             </el-aside>
         </el-container>
@@ -27,14 +27,17 @@
 </template>
 
 <script>
-import { number } from "../assets/js/CreateNewCar"
 import simulationDiagram from "@/components/simulationDiagram.vue"
 import setParameters from "@/components/setParameters.vue"
 import printResult from "@/components/printResult.vue"
 export default {
     data(){
         return{
-            isrun:false
+            isrun:false,
+            parameters: {
+                totalNum: '30',
+                proportion:'0.5',
+            },
         }
     },
     components:{
@@ -45,15 +48,17 @@ export default {
     methods : {
         createCar(data) {
             console.log(data);
+            this.cardata = data
             this.$refs.moving.textConnection(data);
         },
-        isRun(val) {
-            this.isrun = val[0]
-            var vm = this
+        isRun(val) {                        //获取是否运行，以及参数列表用于计时和表格生成
+            this.isrun = val[0];
+            this.parameters = val[1];
+            var vm = this;
             var int;
             int = setInterval(judgeIsRun,50);
             function judgeIsRun(){
-                if(window.number === val[1].totalNum*1){
+                if(window.number === val[1].totalNum*1){    //计时器停止条件为当到达终点的车数等于设定的总数
                     vm.isrun = false
                     window.number = 0
                 }
