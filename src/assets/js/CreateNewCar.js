@@ -58,14 +58,14 @@ let Car = {
                     if(car.type=='NormalCar')
                     {
                         // 普通车
-                        if (ty === 360) {
+                        if (ty === 440) {
                             // 判断路口情况 jxd
                             sign = intersectionDTOA(ty, lightlist1,car.type);
                             console.log(car.type)
                         }
                     }else{
                         // 智能车
-                        if (ty === 334) {
+                        if (ty === 414) {
                             // 判断路口情况 jxd
                             sign = intersectionDTOA(ty, lightlist1,car.type);
                             console.log(car.type)
@@ -81,12 +81,12 @@ let Car = {
                             ty = sy - 2;
                             sx = tx;
                             sy = ty;
-                            if (ty <= 310) {
+                            if (ty <= 390) {
                                 sign = intersectionDTOA(ty, lightlist1,car.type);
                             }
                             break; //正常行驶
                         case 2:
-                            if (ty <= 310) {
+                            if (ty <= 390) {
                                 slowdown = 0;
                             }
                             if (slowdown <= 0) {
@@ -256,14 +256,14 @@ let Car = {
                     if(car.type=='NormalCar')
                     {
                         // 普通车
-                        if (ty === 360) {
+                        if (ty === 440) {
                             // 判断路口情况 jxd
                             sign = intersectionDTOC(ty, lightlist1,car.type);
                             console.log(car.type)
                         }
                     }else{
                         // 智能车
-                        if (ty === 334) {
+                        if (ty === 414) {
                             // 判断路口情况 jxd
                             sign = intersectionDTOC(ty, lightlist1,car.type);
                             console.log(car.type)
@@ -278,8 +278,24 @@ let Car = {
                             ty = sy - 2;
                             sx = tx;
                             sy = ty;
+                            if (ty == 390) {
+                                var nowLight1; // 获取红绿灯
+                                for (let i = 0; i < 3; i++) {
+                                    if (lightlist1[i].style.opacity == 1) {
+                                        nowLight1 = lightlist[i].className; //获取红绿灯
+                                    }
+                                }
+                                if (nowLight1 == "green") {
+                                    sign = 1;
+                                } else {
+                                    sign = 2;
+                                }
+                            }
                             break; //正常行驶
                         case 2:
+                            if (ty == 390) {
+                                slowdown = 0;
+                            }
                             if (slowdown <= 0) {
                                 sign = intersectionDTOC(ty, lightlist1,car.type);
                             } else {
@@ -617,19 +633,20 @@ let Car = {
             function frame() {
                 {
                     if(car.type=='NormalCar'){
-                        if (ty === 118) {
+                        if (ty === 192) {
                             // 判断路口情况 jxd
                             sign = intersectionCTOB(ty, lightlist1,car.type);
                         }
                     }else{
-                        if (ty === 142) {
+                        if (ty === 216) {
                             // 判断路口情况 jxd
+                            console.log("路口",sign)
                             sign = intersectionCTOB(ty, lightlist1,car.type);
                         }
                     }
                    
                     // 根据车辆预计行驶状态，控制车辆进行行驶 jxd
-                    console.log(ty)
+                    // console.log(ty)
                     switch (sign) {
                         case 0:
                             break; //停车
@@ -637,13 +654,13 @@ let Car = {
                             ty = sy + 2;
                             sx = tx;
                             sy = ty;
-                            if (ty > 168) {
-                                console.log("进入状态判断", ty)
+                            if (ty > 242) {
+                                // console.log("进入状态判断", ty)
                                 sign = intersectionCTOB(ty, lightlist1,car.type);
                             }
                             break; //正常行驶
                         case 2:
-                            if (ty > 168) {
+                            if (ty > 242) {
                                 slowdown = 0;
                             }
                             if (slowdown <= 0) {
@@ -676,7 +693,7 @@ let Car = {
                         default:
                             break;
                     }
-                    console.log(sign)
+                    // console.log(sign)
                     normalCar.style.left = sx + "px";
                     normalCar.style.top = sy + "px";
                 }
@@ -764,12 +781,12 @@ let Car = {
                     // jxd
                     console.log(ty)
                     if(car.type=='NormalCar'){
-                        if (ty === 118) {
+                        if (ty === 192) {
                             // 判断路口情况 jxd
                             sign = intersectionCTOD(ty, lightlist1,car.type);
                         }
                     }else{
-                        if (ty === 142) {
+                        if (ty === 216) {
                             // 判断路口情况 jxd
                             sign = intersectionCTOD(ty, lightlist1,car.type);
                         }
@@ -782,8 +799,24 @@ let Car = {
                             ty = sy + 2;
                             sx = tx;
                             sy = ty;
+                            if (ty == 246) {
+                                var nowLight1; // 获取红绿灯
+                                for (let i = 0; i < 3; i++) {
+                                    if (lightlist1[i].style.opacity == 1) {
+                                        nowLight1 = lightlist[i].className; //获取红绿灯
+                                    }
+                                }
+                                if (nowLight1 == "green") {
+                                    sign = 1;
+                                } else {
+                                    sign = 2;
+                                }
+                            }
                             break; //正常行驶
                         case 2:
+                            if (ty == 246) {
+                                slowdown = 0;
+                            }
                             if (slowdown <= 0) {
                                 sign = intersectionCTOD(ty, lightlist1,car.type);
                             } else {

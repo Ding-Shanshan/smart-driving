@@ -45,7 +45,7 @@ export default {
     return {
       // H : Math.trunc((window.screen.availHeight - 200)/100)*100,
       // W : Math.trunc((window.screen.availWidth  - 300)/100)*100,
-      H:500,
+      H:652,
       W:1000,
       RoadW:60,
       carW:10,
