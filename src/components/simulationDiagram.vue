@@ -189,19 +189,16 @@ export default {
           }
           car = Car.createNewCar(rootSelf,Types[carTypeIdx],sourcePlace,targetPlace,rootSelf.carIdx);
           rootSelf.AllCar[rootSelf.carIdx] = car; 
-          // console.log(normalCarTargetNum,smartCarTargetNum,normalCarCurNum,smartCarCurNum)
         }//一旦有一个生成数量够了，就只生成另一种
         else if(normalCarCurNum < normalCarTargetNum){
           car = Car.createNewCar(rootSelf, "NormalCar",sourcePlace,targetPlace,rootSelf.carIdx); 
           normalCarCurNum++;
           rootSelf.AllCar[rootSelf.carIdx] = car; 
-          // console.log(normalCarTargetNum,smartCarTargetNum,normalCarCurNum,smartCarCurNum)
         }
         else if(smartCarCurNum < smartCarTargetNum){
           car = Car.createNewCar(rootSelf, "SmartCar",sourcePlace,targetPlace,rootSelf.carIdx); 
           smartCarCurNum++;
           rootSelf.AllCar[rootSelf.carIdx] = car; 
-          // console.log(normalCarTargetNum,smartCarTargetNum,normalCarCurNum,smartCarCurNum)
         }
 
         if(rootSelf.AllCar[rootSelf.carIdx].sourcePlace === "D" && rootSelf.AllCar[rootSelf.carIdx].targetPlace ==="A"){
@@ -218,10 +215,10 @@ export default {
         }
 
         if(rootSelf.AllCar[rootSelf.carIdx].sourcePlace === "A" && rootSelf.AllCar[rootSelf.carIdx].targetPlace==="D") {
-          rootSelf.AllCar[rootSelf.carIdx].drawAToD(rootSelf, 100, rootSelf.H / 2 + 20);
+          rootSelf.AllCar[rootSelf.carIdx].drawAToD(rootSelf, 100, rootSelf.H / 2 + ((rootSelf.RoadW - rootSelf.carW)/2));
         }
         if(rootSelf.AllCar[rootSelf.carIdx].sourcePlace === "A" && rootSelf.AllCar[rootSelf.carIdx].targetPlace==="C") {
-          rootSelf.AllCar[rootSelf.carIdx].drawAToC(rootSelf, 100, rootSelf.H / 2 + 20);
+          rootSelf.AllCar[rootSelf.carIdx].drawAToC(rootSelf, 100, rootSelf.H / 2 + ((rootSelf.RoadW - rootSelf.carW)/2));
         }
         if(rootSelf.AllCar[rootSelf.carIdx].sourcePlace === "A" && rootSelf.AllCar[rootSelf.carIdx].targetPlace==="B") {
           rootSelf.AllCar[rootSelf.carIdx].drawAToB(rootSelf, 100, rootSelf.H / 2 + ((rootSelf.RoadW - rootSelf.carW)/2));
