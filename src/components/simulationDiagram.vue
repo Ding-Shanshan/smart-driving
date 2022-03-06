@@ -45,7 +45,7 @@ export default {
     return {
       // H : Math.trunc((window.screen.availHeight - 200)/100)*100,
       // W : Math.trunc((window.screen.availWidth  - 300)/100)*100,
-      H:500,
+      H:652,
       W:1000,
       RoadW:60,
       carW:10,
@@ -70,13 +70,13 @@ export default {
       let trafficL = document.getElementsByClassName("trafficLight")[1];
       // trafficL.style.top = (this.H/2-this.RoadW-32) + "px";
       // trafficL.style.left = (this.W/2+this.RoadW - 4) + "px"; 
-      trafficL.style.top = 180 + "px"
+      trafficL.style.top = 260 + "px"
       trafficL.style.left = 465 + "px"
       // 左右方向红绿灯
       let trafficL2 = document.getElementsByClassName("trafficLight")[0];
       // trafficL2.style.top = (this.H/2 + this.RoadW + 16) + "px";
       // trafficL2.style.left = (this.W/2 - this.RoadW -50) + "px";
-      trafficL2.style.top = 210 + "px"
+      trafficL2.style.top = 286 + "px"
       trafficL2.style.left = 430 + "px"
     },
     //绘制道路边缘线
@@ -117,6 +117,10 @@ export default {
       //获取兄弟组件中传过来的参数，通过总数和百分比计算出普通车和智能车的数量
       let smartCarTargetNum = parseInt(data.totalNum) * parseFloat(data.proportion)
       let normalCarTargetNum = parseInt(data.totalNum) - smartCarTargetNum
+      // 车辆行驶方式（直线/直线+转弯）
+      let drivingRoute=data.drivingRoute;
+      // 生成车辆的时间间隔
+      let trafficFlow = parseInt(data.trafficFlow) * 1000;
       // let normalCarTargetNum = 2;
       // let smartCarTargetNum = 0;
       //已经生成的两类车的数量
@@ -125,7 +129,7 @@ export default {
       //车的类别
       let Types = ["NormalCar","SmartCar"];
       let rootSelf = this;
-      let globalid = setInterval(createIdxAndobjs,2100);
+      let globalid = setInterval(createIdxAndobjs,trafficFlow);
       function createIdxAndobjs(){
         // 测试
         
@@ -134,9 +138,24 @@ export default {
         }
         else{
         let Places = ["A","B","C","D"];
-          // 测试注释
-         let sourceIdx = Math.floor(Math.random()*4);
-         let targetIdx = Math.floor(Math.random()*4);
+        let sourceIdx;
+        let targetIdx;
+        // 行驶路线为直线+转弯
+        if(drivingRoute==1)
+        {
+           sourceIdx = Math.floor(Math.random()*4);
+           targetIdx = Math.floor(Math.random()*4);
+        }else{
+        // 行驶路线为直线
+          sourceIdx = Math.floor(Math.random()*4);
+          switch(sourceIdx){
+            case 0:targetIdx=1;break;
+            case 1:targetIdx=0;break;
+            case 2:targetIdx=3;break;
+            case 3:targetIdx=2;break;
+            default:break;
+          }
+        }
          // 避免起点终点重叠
          if(targetIdx===sourceIdx){
            targetIdx=(targetIdx+1)%4;

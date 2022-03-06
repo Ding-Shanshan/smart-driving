@@ -1,12 +1,14 @@
 import { createStructuralDirectiveTransform } from "@vue/compiler-core";
 import { del } from "vue-demi";
 import { intersectionBTOA, intersectionATOB, intersectionCTOD, intersectionDTOC, intersectionDTOA, intersectionATOC, intersectionCTOB, intersectionBTOD } from "./intersection.js"
-window.number = 0;
 
+<<<<<<< HEAD
 let slowdownSSC=0.15 // 智能车减速速度
 let slowdownSNC=0.1 // 普通车减速速度
 let safeDis=45
 
+=======
+>>>>>>> 5ca7e6a5237994363305485206f9672fb0b6fbf9
 // 路口直行车组
 let downToUpCars = new Array(); // 路口中从下到上的车
 let upToDownCars = new Array(); // 路口中从上到下的车
@@ -23,6 +25,7 @@ let upToRightCars = new Array();
 let rightToDownCars = new Array();
 let leftToUpCars = new Array();
 
+<<<<<<< HEAD
 function carNumber() {
     window.number = window.number + 1;
     // console.log(window.number);
@@ -48,6 +51,13 @@ function carInit(father,car){
 
 function turnLeft(car,obsDis,lookDis){
     
+=======
+// 挂载统计车辆数量函数，用于判断开始结束条件
+window.number = 0;
+
+function carNumber() {
+    window.number = window.number + 1;
+>>>>>>> 5ca7e6a5237994363305485206f9672fb0b6fbf9
 }
 
 let Car = {
@@ -96,11 +106,32 @@ let Car = {
                     enterFlag=car.y <= 310?true:false
                     if (car.type == 'NormalCar') {
                         // 普通车
+<<<<<<< HEAD
                         car.y === 360?lookFlag=true:lookFlag=false
                         // 判断路口情况 jxd
                     } else {
                         // 智能车
                         car.y === 334?lookFlag=true:lookFlag=false
+=======
+                        if (sy === 440) {
+                            // 判断路口情况 jxd
+                            if (ifCar) {
+                                sign = intersectionDTOA(sy, lightlist1, car.type);
+                            } else {
+                                sign = 2;
+                            }
+                        }
+                    } else {
+                        // 智能车
+                        if (sy === 414) {
+                            // 判断路口情况 jxd
+                            if (ifCar) {
+                                sign = intersectionDTOA(sy, lightlist1, car.type);
+                            } else {
+                                sign = 2;
+                            }
+                        }
+>>>>>>> 5ca7e6a5237994363305485206f9672fb0b6fbf9
                     }
 
                     if(lookFlag){
@@ -127,6 +158,7 @@ let Car = {
                         case 0:
                             break; //停车
                         case 1:
+<<<<<<< HEAD
                             car.y = car.y - car.speed;
                             car.slowdown = 2;
                             break; //正常行驶
@@ -134,6 +166,24 @@ let Car = {
                             if (car.slowdown > 0) {
                                 car.type === 'NormalCar' ? (car.slowdown=car.slowdown-slowdownSNC) : (car.slowdown =car.slowdown-slowdownSSC);
                                 car.y = car.y - car.slowdown;
+=======
+                            sy = sy - car.speed;
+                            if (sy <= 390) {
+                                sign = intersectionDTOA(sy, lightlist1, car.type);
+                            }
+                            break; //正常行驶
+                        case 2:
+                            if (sy <= 390) {
+                                slowdown = 0;
+                            }
+                            if (slowdown <= 0) {
+                                if (ifCar) {
+                                    sign = intersectionDTOA(sy, lightlist1, car.type);
+                                }
+                            } else {
+                                car.type == 'NormalCar' ? (slowdown = slowdown - 0.04) : (slowdown = slowdown - 0.08);
+                                sy = sy - slowdown;
+>>>>>>> 5ca7e6a5237994363305485206f9672fb0b6fbf9
                             }
                             break; //减速,每次速度减0.1，速度为0时,状态改为停车
                         case 3:
@@ -342,7 +392,7 @@ let Car = {
                     // jxd
                     if (car.type == 'NormalCar') {
                         // 普通车
-                        if (sy === 360) {
+                        if (sy === 440) {
                             // 判断路口情况 jxd
                             if (ifCar) {
                                 sign = intersectionDTOC(sy, lightlist1, car.type);
@@ -357,7 +407,7 @@ let Car = {
                         }
                     } else {
                         // 智能车
-                        if (sy === 334) {
+                        if (sy === 414) {
                             // 判断路口情况 jxd
                             if (ifCar) {
                                 sign = intersectionDTOC(sy, lightlist1, car.type);
@@ -388,7 +438,7 @@ let Car = {
                             } else {
                                 obsFlag = 1;
                             }
-                            if (sx == 310) {
+                            if (sx == 390) {
                                 var nowLight1; // 获取红绿灯
                                 for (let i = 0; i < 3; i++) {
                                     if (lightlist[i].style.opacity == 1) {
@@ -408,7 +458,7 @@ let Car = {
                             }
                             break; //正常行驶
                         case 2:
-                            if (car.y <= _self.obstructsInAllRoads[car.sourcePlace + car.targetPlace][car.pathIdx - 1] + 30 || sx == 310) {
+                            if (car.y <= _self.obstructsInAllRoads[car.sourcePlace + car.targetPlace][car.pathIdx - 1] + 30 || sy == 390) {
                                 slowdown = 0;
                             }
                             if (slowdown <= 0) {
@@ -857,12 +907,32 @@ let Car = {
                     let enterFlag=false // 进入路口
                     enterFlag=car.y >= 168?true:false
                     if (car.type == 'NormalCar') {
+<<<<<<< HEAD
                         // 普通车
                         car.y === 118?lookFlag=true:lookFlag=false
                         // 判断路口情况 jxd
                     } else {
                         // 智能车
                         car.y === 142?lookFlag=true:lookFlag=false
+=======
+                        if (sy === 192) {
+                            // 判断路口情况 jxd
+                            if (ifCar) {
+                                sign = intersectionCTOB(sy, lightlist1, car.type);
+                            } else {
+                                sign = 2;
+                            }
+                        }
+                    } else {
+                        if (sy === 216) {
+                            // 判断路口情况 jxd
+                            if (ifCar) {
+                                sign = intersectionCTOB(sy, lightlist1, car.type);
+                            } else {
+                                sign = 2;
+                            }
+                        }
+>>>>>>> 5ca7e6a5237994363305485206f9672fb0b6fbf9
                     }
 
                     if(lookFlag){
@@ -888,6 +958,7 @@ let Car = {
                         case 0:
                             break; //停车
                         case 1:
+<<<<<<< HEAD
                             car.y = car.y + car.speed;
                             car.slowdown = 2;
                             break; //正常行驶
@@ -895,6 +966,24 @@ let Car = {
                             if (car.slowdown > 0) {
                                 car.type == 'NormalCar' ? (car.slowdown -= slowdownSNC) : (car.slowdown -= slowdownSSC);
                                 car.y = car.y + car.slowdown;
+=======
+                            sy = sy + car.speed;
+                            if (sy > 242) {
+                                sign = intersectionCTOB(sy, lightlist1, car.type);
+                            }
+                            break; //正常行驶
+                        case 2:
+                            if (sy > 242) {
+                                slowdown = 0;
+                            }
+                            if (slowdown <= 0) {
+                                if (ifCar) {
+                                    sign = intersectionCTOB(sy, lightlist1, car.type);
+                                }
+                            } else {
+                                car.type == 'NormalCar' ? (slowdown = slowdown - 0.04) : (slowdown = slowdown - 0.08);
+                                sy = sy + slowdown;
+>>>>>>> 5ca7e6a5237994363305485206f9672fb0b6fbf9
                             }
 
                             break; //减速,每次速度减0.1，速度为0时,状态改为停车
@@ -1023,7 +1112,7 @@ let Car = {
                     }
                     // jxd
                     if (car.type == 'NormalCar') {
-                        if (sy === 118) {
+                        if (sy === 192) {
                             // 判断路口情况 jxd
                             if (ifCar) {
                                 sign = intersectionCTOD(sy, lightlist1, car.type);
@@ -1037,7 +1126,7 @@ let Car = {
                             obsFlag = 1;
                         }
                     } else {
-                        if (sy === 142) {
+                        if (sy === 216) {
                             // 判断路口情况 jxd
                             if (ifCar) {
                                 sign = intersectionCTOD(sy, lightlist1, car.type);
@@ -1067,7 +1156,7 @@ let Car = {
                             } else {
                                 obsFlag = 1;
                             }
-                            if (sy == 168) {
+                            if (sy == 246) {
                                 var nowLight1; // 获取红绿灯
                                 for (let i = 0; i < 3; i++) {
                                     if (lightlist[i].style.opacity == 1) {
@@ -1087,7 +1176,7 @@ let Car = {
                             }
                             break; //正常行驶
                         case 2:
-                            if (car.y + 30 >= _self.obstructsInAllRoads[car.sourcePlace + car.targetPlace][car.pathIdx - 1] || sy == 168) {
+                            if (car.y + 30 >= _self.obstructsInAllRoads[car.sourcePlace + car.targetPlace][car.pathIdx - 1] || sy == 246) {
                                 slowdown = 0;
                             }
                             if (slowdown <= 0) {
