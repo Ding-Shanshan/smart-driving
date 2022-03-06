@@ -12,7 +12,7 @@
                 </div>
             </el-main>
             <!-- 侧边栏 -->
-            <el-aside width="300px">
+            <el-aside width="320px">
                 <!-- 参数调节面板 -->
                 <div class="setParameters">
                     <setParameters  @createCar="createCar" @runchange="isRun"></setParameters>

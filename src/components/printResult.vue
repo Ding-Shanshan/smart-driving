@@ -3,8 +3,10 @@
     <el-collapse>
       <el-collapse-item title="运行结果" name="1">
         <el-table :data="tableData" style="width: 100%" max-height="250">
-          <el-table-column prop="total" label="总数" width="60" />
-          <el-table-column prop="proportion" label="比例" width="60" />
+          <el-table-column prop="total" label="总数" width="48" />
+          <el-table-column prop="proportion" label="比例" width="48" />
+          <el-table-column prop="drivingRoute" label="路线" width="48" />
+          <el-table-column prop="trafficFlow" label="流量" width="48" />
           <el-table-column prop="runtime" label="总耗时" width="140" />
         </el-table>
       </el-collapse-item>
@@ -33,6 +35,8 @@ export default {
       tableData.value.push({
         total: props.paramters.totalNum,
         proportion: props.paramters.proportion,
+        drivingRoute:props.paramters.drivingRoute,
+        trafficFlow:props.paramters.trafficFlow,
         runtime: runtimeTable[index],
       });
     };
@@ -212,5 +216,9 @@ div {
 #runChart {
   width: 275px;
   height: 400px;
+}
+.el-table {
+  font-size: 10px;
+  text-align: center;
 }
 </style>

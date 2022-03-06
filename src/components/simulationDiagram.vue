@@ -120,7 +120,7 @@ export default {
       // 车辆行驶方式（直线/直线+转弯）
       let drivingRoute=data.drivingRoute;
       // 生成车辆的时间间隔
-      let trafficFlow = parseInt(data.trafficFlow);
+      let trafficFlow = parseInt(data.trafficFlow) * 1000;
       // let normalCarTargetNum = 2;
       // let smartCarTargetNum = 0;
       //已经生成的两类车的数量

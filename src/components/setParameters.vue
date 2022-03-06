@@ -33,9 +33,8 @@
             <!-- 车流量 -->
             <el-form-item label="车流量：">
                 <el-select v-model="parameters.trafficFlow" placeholder="the flow of vehicles">
-                    <el-option label="大" value="500"></el-option>
-                    <el-option label="中" value="1200"></el-option>
-                    <el-option label="小" value="2000"></el-option>
+                    <el-option label="大" value="1.2"></el-option>
+                    <el-option label="小" value="2.0"></el-option>
                 </el-select>
             </el-form-item>
             <!-- 运行 -->
@@ -81,7 +80,7 @@ export default {
                 totalNum: '30',
                 proportion:'0.5',
                 drivingRoute:'0',
-                trafficFlow:'1200'
+                trafficFlow:'2.0'
             },
             light:'默认',
             light2:'默认',
@@ -120,10 +119,13 @@ div {
     font-size: 14px;
     font-weight: 400;
 }
+.el-form-item {
+    margin-bottom: 10px;
+}
 .light,
 .light2 {
     text-align: center;
-    margin: 20px auto;
+    margin: 10px auto;
 }
 .light span,
 .light2 span{
