@@ -1,8 +1,8 @@
 import { intersectionBTOA, intersectionATOB, intersectionCTOD, intersectionDTOC, intersectionDTOA, intersectionATOC, intersectionCTOB, intersectionBTOD } from "./intersection.js"
-var number = 0;
+window.number = 0;
 
 function carNumber() {
-    number = number + 1;
+    window.number = window.number + 1;
 }
 
 let Car = {
@@ -36,6 +36,8 @@ let Car = {
             let accelerate = 0; //加速速度
             let slowdown = 2; //减速速度
             let obsFlag = 1;
+            let moveInterval = [10, 15, 20];
+            let moveIndex = Math.floor(Math.random() * moveInterval.length);
             normalCar.setAttribute("src", require("../images/" + car.img + ".png"));
             normalCar.setAttribute("width", "10");
             normalCar.setAttribute("height", "20");
@@ -63,7 +65,13 @@ let Car = {
                 console.log("there is no img");
             }
             father.appendChild(normalCar);
-            let id = setInterval(frame, 30);
+            let id;
+            if (car.type == 'NormalCar') {
+                id = setInterval(frame, moveInterval[moveIndex]);
+                console.log(moveInterval[moveIndex]);
+            } else {
+                id = setInterval(frame, 30);
+            }
 
             function frame() {
                 if (sy <= _self.H / 2 + _self.RoadW) {
@@ -355,6 +363,8 @@ let Car = {
             let accelerate = 0; //加速速度
             let slowdown = 2; //减速速度
             let obsFlag = 1;
+            let moveInterval = [10, 15, 20];
+            let moveIndex = Math.floor(Math.random() * moveInterval.length);
             normalCar.setAttribute("src", require("../images/" + car.img + ".png"));
             normalCar.setAttribute("width", "10");
             normalCar.setAttribute("height", "20");
@@ -383,7 +393,13 @@ let Car = {
                 console.log("there is no img");
             }
             father.appendChild(normalCar);
-            let id = setInterval(frame, 30);
+            let id;
+            if (car.type == 'NormalCar') {
+                id = setInterval(frame, moveInterval[moveIndex]);
+                console.log(moveInterval[moveIndex]);
+            } else {
+                id = setInterval(frame, 30);
+            }
 
             function frame() {
                 if (sy === _self.H / 2 + _self.RoadW) {
@@ -637,6 +653,8 @@ let Car = {
             let accelerate = 0; //加速速度
             let slowdown = 2; //减速速度
             let obsFlag = 1;
+            let moveInterval = [10, 15, 20];
+            let moveIndex = Math.floor(Math.random() * moveInterval.length);
             normalCar.setAttribute("src", require("../images/" + car.img + ".png"));
             normalCar.setAttribute("width", "10");
             normalCar.setAttribute("height", "20");
@@ -666,7 +684,13 @@ let Car = {
                 console.log("there is no img");
             }
             father.appendChild(normalCar);
-            let id = setInterval(frame, 30);
+            let id;
+            if (car.type == 'NormalCar') {
+                id = setInterval(frame, moveInterval[moveIndex]);
+                console.log(moveInterval[moveIndex]);
+            } else {
+                id = setInterval(frame, 30);
+            }
 
             function frame() {
                 if (sy <= 100) {
@@ -842,6 +866,8 @@ let Car = {
             let accelerate = 0; //加速速度
             let slowdown = 2; //减速速度
             let obsFlag = 1;
+            let moveInterval = [10, 15, 20];
+            let moveIndex = Math.floor(Math.random() * moveInterval.length);
             normalCar.setAttribute("src", require("../images/" + car.img + "90.png"));
             normalCar.setAttribute("width", "20");
             normalCar.setAttribute("height", "10");
@@ -868,7 +894,13 @@ let Car = {
                 console.log("there is no img");
             }
             father.appendChild(normalCar);
-            let id = setInterval(frame, 30);
+            let id;
+            if (car.type == 'NormalCar') {
+                id = setInterval(frame, moveInterval[moveIndex]);
+                console.log(moveInterval[moveIndex]);
+            } else {
+                id = setInterval(frame, 30);
+            }
 
             function frame() {
                 if (sx === (_self.W / 2 - _self.RoadW - _self.carH)) {
@@ -1122,6 +1154,8 @@ let Car = {
             let slowdown = 2; //减速速度
 
             let obsFlag = 1;
+            let moveInterval = [10, 15, 20];
+            let moveIndex = Math.floor(Math.random() * moveInterval.length);
             normalCar.setAttribute("src", require("../images/" + car.img + "90.png"));
             normalCar.setAttribute("width", "20");
             normalCar.setAttribute("height", "10");
@@ -1148,7 +1182,13 @@ let Car = {
                 console.log("there is no img");
             }
             father.appendChild(normalCar);
-            let id = setInterval(frame, 30);
+            let id;
+            if (car.type == 'NormalCar') {
+                id = setInterval(frame, moveInterval[moveIndex]);
+                console.log(moveInterval[moveIndex]);
+            } else {
+                id = setInterval(frame, 30);
+            }
 
             function frame() {
                 if (sx >= _self.W / 2 - _self.RoadW - _self.carH) {
@@ -1438,7 +1478,8 @@ let Car = {
             let slowdown = 2; //减速速度
 
             let obsFlag = 1;
-
+            let moveInterval = [10, 15, 20];
+            let moveIndex = Math.floor(Math.random() * moveInterval.length);
             normalCar.setAttribute("src", require("../images/" + car.img + "90.png"));
             normalCar.setAttribute("width", "20");
             normalCar.setAttribute("height", "10");
@@ -1467,7 +1508,13 @@ let Car = {
                 console.log("there is no img");
             }
             father.appendChild(normalCar);
-            let id = setInterval(frame, 30);
+            let id;
+            if (car.type == 'NormalCar') {
+                id = setInterval(frame, moveInterval[moveIndex]);
+                console.log(moveInterval[moveIndex]);
+            } else {
+                id = setInterval(frame, 30);
+            }
 
             function frame() {
                 if (sx >= _self.W - 100) {
@@ -1643,6 +1690,8 @@ let Car = {
             let accelerate = 0; //加速速度
             let slowdown = 2; //减速速度
             let obsFlag = 1;
+            let moveInterval = [10, 15, 20];
+            let moveIndex = Math.floor(Math.random() * moveInterval.length);
             normalCar.setAttribute("src", require("../images/" + car.img + "-.png"));
             normalCar.setAttribute("width", "10");
             normalCar.setAttribute("height", "20");
@@ -1670,7 +1719,13 @@ let Car = {
                 console.log("there is no img");
             }
             father.appendChild(normalCar);
-            let id = setInterval(frame, 30);
+            let id;
+            if (car.type == 'NormalCar') {
+                id = setInterval(frame, moveInterval[moveIndex]);
+                console.log(moveInterval[moveIndex]);
+            } else {
+                id = setInterval(frame, 30);
+            }
 
             function frame() {
                 if (sy == _self.H / 2 - _self.RoadW - _self.carH) {
@@ -1844,6 +1899,8 @@ let Car = {
             let accelerate = 0; //加速速度
             let slowdown = 2; //减速速度
             let obsFlag = 1;
+            let moveInterval = [10, 15, 20];
+            let moveIndex = Math.floor(Math.random() * moveInterval.length);
             normalCar.setAttribute("src", require("../images/" + car.img + "-.png"));
             normalCar.setAttribute("width", "10");
             normalCar.setAttribute("height", "20");
@@ -1872,7 +1929,14 @@ let Car = {
                 console.log("there is no img");
             }
             father.appendChild(normalCar);
-            let id = setInterval(frame, 30);
+            let id;
+            if (car.type == 'NormalCar') {
+                id = setInterval(frame, moveInterval[moveIndex]);
+                console.log(moveInterval[moveIndex]);
+            } else {
+                id = setInterval(frame, 30);
+            }
+
 
             function frame() {
                 if (sy >= _self.H / 2 - _self.RoadW - _self.carH) {
@@ -2011,7 +2075,8 @@ let Car = {
             let accelerate = 0; //加速速度
             let slowdown = 2; //减速速度
             let obsFlag = 1;
-
+            let moveInterval = [10, 15, 20];
+            let moveIndex = Math.floor(Math.random() * moveInterval.length);
             normalCar.setAttribute("src", require("../images/" + car.img + "-.png"));
             normalCar.setAttribute("width", "10");
             normalCar.setAttribute("height", "20");
@@ -2040,7 +2105,13 @@ let Car = {
                 console.log("there is no img");
             }
             father.appendChild(normalCar);
-            let id = setInterval(frame, 30);
+            let id;
+            if (car.type == 'NormalCar') {
+                id = setInterval(frame, moveInterval[moveIndex]);
+                console.log(moveInterval[moveIndex]);
+            } else {
+                id = setInterval(frame, 30);
+            }
 
             function frame() {
                 if (sy >= _self.H - 100) {
@@ -2215,6 +2286,8 @@ let Car = {
             let slowdown = 2; //减速速度
 
             let obsFlag = 1;
+            let moveInterval = [10, 15, 20];
+            let moveIndex = Math.floor(Math.random() * moveInterval.length);
             normalCar.setAttribute("src", require("../images/" + car.img + "-90.png"));
             normalCar.setAttribute("width", "20");
             normalCar.setAttribute("height", "10");
@@ -2243,7 +2316,13 @@ let Car = {
                 console.log("there is no img");
             }
             father.appendChild(normalCar);
-            let id = setInterval(frame, 30);
+            let id;
+            if (car.type == 'NormalCar') {
+                id = setInterval(frame, moveInterval[moveIndex]);
+                console.log(moveInterval[moveIndex]);
+            } else {
+                id = setInterval(frame, 30);
+            }
 
             function frame() {
                 if (sx === _self.W / 2 + _self.RoadW) {
@@ -2381,6 +2460,8 @@ let Car = {
             let slowdown = 2; //减速速度
 
             let obsFlag = 1;
+            let moveInterval = [10, 15, 20];
+            let moveIndex = Math.floor(Math.random() * moveInterval.length);
             normalCar.setAttribute("src", require("../images/" + car.img + "-90.png"));
             normalCar.setAttribute("width", "20");
             normalCar.setAttribute("height", "10");
@@ -2409,7 +2490,13 @@ let Car = {
                 console.log("there is no img");
             }
             father.appendChild(normalCar);
-            let id = setInterval(frame, 30);
+            let id;
+            if (car.type == 'NormalCar') {
+                id = setInterval(frame, moveInterval[moveIndex]);
+                console.log(moveInterval[moveIndex]);
+            } else {
+                id = setInterval(frame, 30);
+            }
 
             function frame() {
                 if (sx <= _self.W / 2 + _self.RoadW) {
@@ -2585,7 +2672,8 @@ let Car = {
             let slowdown = 2; //减速速度
 
             let obsFlag = 1;
-
+            let moveInterval = [10, 15, 20];
+            let moveIndex = Math.floor(Math.random() * moveInterval.length);
             normalCar.setAttribute("src", require("../images/" + car.img + "-90.png"));
             normalCar.setAttribute("width", "20");
             normalCar.setAttribute("height", "10");
@@ -2616,7 +2704,13 @@ let Car = {
                 console.log("there is no img");
             }
             father.appendChild(normalCar);
-            let id = setInterval(frame, 30);
+            let id;
+            if (car.type == 'NormalCar') {
+                id = setInterval(frame, moveInterval[moveIndex]);
+                console.log(moveInterval[moveIndex]);
+            } else {
+                id = setInterval(frame, 30);
+            }
 
             function frame() {
                 if (sx <= 100) {
@@ -2794,5 +2888,4 @@ let Car = {
 
 export {
     Car,
-    number
 }
