@@ -8,80 +8,80 @@ body,
     padding: 0;
 }
 
-.trans {
-    transform-origin: -90px 0px;
-    animation: rotate 3.5s linear;
+.DToA {
+    transform-origin: -85px 0px;
+    animation: DToA 3s linear;
     animation-fill-mode : forwards;/*保持结束位置*/
   }
-@keyframes rotate {
+@keyframes DToA {
     from { transform:rotate(-0deg); }
     to { transform:rotate(-90deg); }
 }
 
-.transToRight {
-    transform-origin: 40px 5px;
-    animation: rotateToRight 3.5s linear;
+.DToB {
+    transform-origin: 35px 0px;
+    animation: DToB 1.5s linear;
     animation-fill-mode : forwards;/*保持结束位置*/
   }
-@keyframes rotateToRight {
+@keyframes DToB {
     from { transform:rotate(0deg); }
     to { transform:rotate(90deg); }
 }
-.transToDown {
-  transform-origin: 5px 50px;
-  animation: rotateToRight 3.5s linear;
+.AToD {
+  transform-origin: 0px 55px;
+  animation: AToD 1.5s linear;
   animation-fill-mode : forwards;/*保持结束位置*/
 } 
-@keyframes transToDown {
-  from { transform:rotate(-90deg); }
-  to { transform:rotate(0deg); }
+@keyframes AToD {
+  from { transform:rotate(0deg); }
+  to { transform:rotate(90deg); }
 }
-.transToTop {
-  transform-origin: 5px -90px;
-  animation: transToTop 3.5s linear;
+.AToC {
+  transform-origin: 0px -105px;
+  animation: AToC 3s linear;
   animation-fill-mode : forwards;/*保持结束位置*/
 } 
-@keyframes transToTop {
+@keyframes AToC {
   from { transform:rotate(0deg); }
   to { transform:rotate(-90deg); }
 }
 
-.transToLeft {
-  transform-origin: -50px 0px;
-  animation: transToLeft 3.5s linear;
+.CToA {
+  transform-origin: -45px 0px;
+  animation: CToA 1.5s linear;
   animation-fill-mode : forwards;/*保持结束位置*/
 } 
-@keyframes transToLeft {
+@keyframes CToA {
   from { transform:rotate(0deg); }
   to { transform:rotate(90deg); }
 }
 
-.transTopToRight {
-  transform-origin: 95px 10px;
-  animation: transTopToRight 3.5s linear;
+.CToB {
+  transform-origin: 115px 0px;
+  animation: CToB 3s linear;
   animation-fill-mode : forwards;/*保持结束位置*/
 } 
-@keyframes transTopToRight {
+@keyframes CToB {
   from { transform:rotate(0deg); }
   to { transform:rotate(-90deg); }
 }
 
-.transRightToTop {
+.BToC {
   transform-origin: 0px -25px;
-  animation: transRightToTop 3.5s linear;
+  animation: BToC 1.5s linear;
   animation-fill-mode : forwards;/*保持结束位置*/
 } 
-@keyframes transRightToTop {
+@keyframes BToC {
   from { transform:rotate(0deg); }
   to { transform:rotate(90deg); }
 }
 
-.transRightToDown {
+.BToD {
   transform-origin: 0px 95px;
-  animation: transRightToDown 3.5s linear;
+  animation: BToD 3s linear;
   animation-fill-mode : forwards;/*保持结束位置*/
 } 
-@keyframes transRightToDown {
+@keyframes BToD {
   from { transform:rotate(0deg); }
   to { transform:rotate(-90deg); }
 }
