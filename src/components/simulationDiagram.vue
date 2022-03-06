@@ -102,6 +102,8 @@ export default {
       //获取兄弟组件中传过来的参数，通过总数和百分比计算出普通车和智能车的数量
       let smartCarTargetNum = parseInt(data.totalNum) * parseFloat(data.proportion)
       let normalCarTargetNum = parseInt(data.totalNum) - smartCarTargetNum
+      // 车辆行驶方式（直线/直线+转弯）
+      let drivingRoute=data.drivingRoute;
       // let normalCarTargetNum = 2;
       // let smartCarTargetNum = 0;
       //已经生成的两类车的数量
@@ -119,9 +121,24 @@ export default {
         }
         else{
         let Places = ["A","B","C","D"];
-          // 测试注释
-         let sourceIdx = Math.floor(Math.random()*4);
-         let targetIdx = Math.floor(Math.random()*4);
+        let sourceIdx;
+        let targetIdx;
+        // 行驶路线为直线+转弯
+        if(drivingRoute==1)
+        {
+           sourceIdx = Math.floor(Math.random()*4);
+           targetIdx = Math.floor(Math.random()*4);
+        }else{
+        // 行驶路线为直线
+          sourceIdx = Math.floor(Math.random()*4);
+          switch(sourceIdx){
+            case 0:targetIdx=1;break;
+            case 1:targetIdx=0;break;
+            case 2:targetIdx=3;break;
+            case 3:targetIdx=2;break;
+            default:break;
+          }
+        }
          // 避免起点终点重叠
          if(targetIdx===sourceIdx){
            targetIdx=(targetIdx+1)%4;
