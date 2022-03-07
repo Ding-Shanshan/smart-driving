@@ -13,7 +13,7 @@
       <el-collapse-item title="历史数据" name="2"><br/>
           <div class="charttxet">80辆车大流量下不同比例的运行结果</div><br/>
           <div id="runChart"></div>
-          <div class="charttxet">80辆车流量下不同比例的运行结果</div><br/>
+          <div class="charttxet">80辆车小流量下不同比例的运行结果</div><br/>
           <div id="runChart01"></div>
       </el-collapse-item>
     </el-collapse>
