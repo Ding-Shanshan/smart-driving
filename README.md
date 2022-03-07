@@ -92,7 +92,7 @@ npm run serve
 
 ### UI设计
 
-​	UI原型图![空白页 Copy_状态 1 (1)](D:\Files\Study\前端\百度训练营\晋级班\大作业\空白页 Copy_状态 1 (1).png)
+​	UI原型图![空白页 Copy_状态 1 (1)](.\pictures\空白页 Copy_状态 1 (1).png)
 
 
 
@@ -100,7 +100,7 @@ npm run serve
 
 ### 车辆模拟模块
 
-![image-20220307154517515](C:\Users\ZJ\AppData\Roaming\Typora\typora-user-images\image-20220307154517515.png)
+![image-20220307154517515](.\pictures\image-20220307154517515.png)
 
 #### **智能车和普通车的参数区别**
 
@@ -138,7 +138,7 @@ npm run serve
 
 ### 参数调节模块
 
-![image-20220307154541487](C:\Users\ZJ\AppData\Roaming\Typora\typora-user-images\image-20220307154541487.png)
+![image-20220307154541487](.\pictures\image-20220307154541487.png)
 
 #### 参数设置
 
@@ -149,7 +149,7 @@ npm run serve
 
 
 
-![image-20220307154603149](C:\Users\ZJ\AppData\Roaming\Typora\typora-user-images\image-20220307154603149.png)
+![image-20220307154603149](.\pictures\image-20220307154603149.png)
 
 ### 运行结果面板
 
