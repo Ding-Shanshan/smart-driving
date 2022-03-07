@@ -14,8 +14,6 @@
 
 - [项目设计](#项目设计)
 
-- 
-
 - [贡献](#贡献)
 
   
@@ -27,7 +25,7 @@
 
 ## 项目需求
 
-![image-20220307154800058](C:\Users\ZJ\AppData\Roaming\Typora\typora-user-images\image-20220307154800058.png)
+![image-20220307154800058](.\pictures\image-20220307154800058.png)
 
 - 必选功能： 
 
@@ -58,7 +56,7 @@ npm run serve
 
 ## 项目介绍
 
-![image-20220307150539426](C:\Users\ZJ\AppData\Roaming\Typora\typora-user-images\image-20220307150539426.png)
+![image-20220307150539426](.\pictures\image-20220307150539426.png)
 
 ### 	主要功能&亮点
 
