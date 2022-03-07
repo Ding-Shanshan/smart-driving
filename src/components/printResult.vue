@@ -3,15 +3,18 @@
     <el-collapse>
       <el-collapse-item title="运行结果" name="1">
         <el-table :data="tableData" style="width: 100%" max-height="250">
-          <el-table-column prop="total" label="总数" width="48" />
-          <el-table-column prop="proportion" label="比例" width="48" />
-          <el-table-column prop="drivingRoute" label="路线" width="48" />
-          <el-table-column prop="trafficFlow" label="流量" width="48" />
+          <el-table-column prop="total" label="总数" width="52" />
+          <el-table-column prop="proportion" label="比例" width="52" />
+          <el-table-column prop="drivingRoute" label="路线" width="52" />
+          <el-table-column prop="trafficFlow" label="流量" width="52" />
           <el-table-column prop="runtime" label="总耗时" width="140" />
         </el-table>
       </el-collapse-item>
-      <el-collapse-item title="历史数据" name="2">
-        <div id="runChart"></div>
+      <el-collapse-item title="历史数据" name="2"><br/>
+          <div class="charttxet">80辆车大流量下不同比例的运行结果</div><br/>
+          <div id="runChart"></div>
+          <div class="charttxet">80辆车流量下不同比例的运行结果</div><br/>
+          <div id="runChart01"></div>
       </el-collapse-item>
     </el-collapse>
   </div>
@@ -20,7 +23,7 @@
 <script>
 import * as echarts from "echarts";
 import { ref, watch, onMounted } from "vue";
-import { ElMessage } from 'element-plus';
+import { ElMessage } from "element-plus";
 export default {
   // 读取父组件中的传递参数和运行判断
   props: ["isRun", "paramters"],
@@ -54,119 +57,129 @@ export default {
       var chartDom = document.getElementById("runChart");
       var myChart = echarts.init(chartDom);
       var option;
-      //50辆车在不同智能车比例下的运行时间情况
-      const car50Data = [
-        ["0%", 1336],
-        ["10%", 1009],
-        ["30%", 935],
-        ["50%", 867],
-        ["80%", 731],
-        ["100%", 680],
-      ];
-      //50%智能车比例在不同车辆总数下的运行时间情况
-      const car50ProportionData = [
-        ["10", 1090],
-        ["30", 929],
-        ["50", 735],
-        ["80", 586],
-        ["100", 286],
-      ];
-      //遍历读入数据
-      const car50DataList = car50Data.map(function (item) {
-        return item[0];
-      });
-      const car50DataValue = car50Data.map(function (item) {
-        return item[1];
-      });
-      const car50ProportionDataList = car50ProportionData.map(function (item) {
-        return item[0];
-      });
-      const car50ProportionDataValue = car50ProportionData.map(function (item) {
-        return item[1];
-      });
-      //表格总体显示设置
-      myChart.setOption({
-        visualMap: [
-          {
-            show: false,
-            type: "continuous",
-            seriesIndex: 0,
-            min: 0,
-            max: 400,
-          },
-          {
-            show: false,
-            type: "continuous",
-            seriesIndex: 1,
-            dimension: 0,
-            min: 0,
-            max: car50DataList.length - 1,
-          },
-        ],
-        //表格对齐方式及题头文本设置
-        title: [
-          {
-            left: "center",
-            text: "50辆车在不同比例下的表现",},
-          {
-            top: "50%",
-            left: "center",
-            text: "50%比例在不同车辆数下的表现",
-          },
-        ],
-        tooltip: {
-          trigger: "axis",
+      option = {
+        legend: {
+          data: [
+            "0%智能车",
+            "10%智能车",
+            "30%智能车",
+            "50%智能车",
+            "80%智能车",
+            "100%智能车",
+            "100%智能车",
+          ],
         },
-        //坐标轴数据导入
-        xAxis: [
-          {
-            data: car50DataList,
-          },
-          {
-            data: car50ProportionDataList,
-            gridIndex: 1,
-          },
-        ],
-        yAxis: [
-          {},
-          {
-            gridIndex: 1,
-          },
-        ],
-        grid: [
-          {
-            bottom: "60%",
-          },
-          {
-            top: "60%",
-          },
-        ],
+        xAxis: {
+          type: "category",
+          data: [
+            "测试1",
+            "测试2",
+            "测试3",
+            "测试4",
+            "测试5",
+            "测试6",
+          ],
+        },
+        //设置y轴坐标轴
+        yAxis: {
+          min: 8000,
+          type: "value",
+        },
+        //读入测试数据，单位ms
         series: [
           {
+            name: "0%智能车",
+            data: [12695, 14035, 13490, 14050, 13435, 12200],
             type: "line",
-            showSymbol: false,
-            data: car50DataValue,
           },
           {
+            name: "30%智能车",
+            data: [13100, 13640, 12335, 12570, 12050, 12710],
             type: "line",
-            showSymbol: false,
-            data: car50ProportionDataValue,
-            xAxisIndex: 1,
-            yAxisIndex: 1,
+          },
+          {
+            name: "50%智能车",
+            data: [12290, 12490, 13225, 13005, 12880, 12400],
+            type: "line",
+          },
+          {
+            name: "80%智能车",
+            data: [10900, 10385, 10400, 10725, 10520, 10570],
+            type: "line",
+          },
+          {
+            name: "100%智能车",
+            data: [9840, 10225, 9615, 9800, 9625, 9735],
+            type: "line",
           },
         ],
-      });
-      window.onresize = function () {
-        // 自适应大小
-        myChart.resize();
       };
+      option && myChart.setOption(option);
+      var chartDom = document.getElementById("runChart01");
+      var myChart = echarts.init(chartDom);
+      option = {
+        legend: {
+          data: [
+            "0%智能车",
+            "10%智能车",
+            "30%智能车",
+            "50%智能车",
+            "80%智能车",
+            "100%智能车",
+            "100%智能车",
+          ],
+        },
+        xAxis: {
+          type: "category",
+          data: [
+            "测试1",
+            "测试2",
+            "测试3",
+            "测试4",
+            "测试5",
+            "测试6",
+          ],
+        },
+        yAxis: {
+          min: 17050,
+          type: "value",
+        },
+        series: [
+          {
+            name: "0%智能车",
+            data: [18190, 17980, 18395, 18120, 17945, 17900],
+            type: "line",
+          },
+          {
+            name: "30%智能车",
+            data: [18130, 18075, 17895, 17850, 17875, 17800],
+            type: "line",
+          },
+          {
+            name: "50%智能车",
+            data: [17990, 17620, 17790, 17800, 17750, 17775],
+            type: "line",
+          },
+          {
+            name: "80%智能车",
+            data: [18085, 17580, 17685, 17750, 17470, 17680],
+            type: "line",
+          },
+          {
+            name: "100%智能车",
+            data: [17685, 17480, 17270, 17500, 17520, 17320],
+            type: "line",
+          },
+        ],
+      };
+      option && myChart.setOption(option);
     });
 
     //计时器显示设置
     //runtime初始化
     watch(
       //观察isRun的变化情况，用于判断计时器的开始与停止
-      ( ) => props.isRun,
+      () => props.isRun,
       (newValue, oldValue) => {
         runtimeShow[index] = ref("00分00秒000毫秒");
         var int = null;
@@ -200,7 +213,7 @@ export default {
             //运行停止，清除计时器
           } else if (oldValue === true && newValue === false) {
             window.clearInterval(window.int);
-            success()
+            success();
             index++;
           }
         }
@@ -225,10 +238,15 @@ div {
 }
 #runChart {
   width: 275px;
-  height: 400px;
+  height: 250px;
 }
-.el-table {
-  font-size: 10px;
+#runChart01 {
+  width: 275px;
+  height: 250px;
+}
+.charttxet{
   text-align: center;
+  font-size: 16px;
+  font-weight: 500;
 }
 </style>
