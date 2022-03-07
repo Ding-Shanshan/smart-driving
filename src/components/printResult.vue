@@ -3,10 +3,10 @@
     <el-collapse>
       <el-collapse-item title="运行结果" name="1">
         <el-table :data="tableData" style="width: 100%" max-height="250">
-          <el-table-column prop="total" label="总数" width="52" />
-          <el-table-column prop="proportion" label="比例" width="52" />
-          <el-table-column prop="drivingRoute" label="路线" width="52" />
-          <el-table-column prop="trafficFlow" label="流量" width="52" />
+          <el-table-column prop="total" label="总数" width="48" />
+          <el-table-column prop="proportion" label="比例" width="48" />
+          <el-table-column prop="drivingRoute" label="路线" width="48" />
+          <el-table-column prop="trafficFlow" label="流量" width="48" />
           <el-table-column prop="runtime" label="总耗时" width="140" />
         </el-table>
       </el-collapse-item>
@@ -233,7 +233,7 @@ h4 {
   text-align: center;
 }
 div {
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 400;
 }
 #runChart {
