@@ -25,7 +25,7 @@
 
 ## 项目需求
 
-![image-20220307154800058](.\pictures\image-20220307154800058.png)
+![image-20220307154800058](https://gitee.com/zeng_xiaoxi/smart-driving/raw/master/pictures/image-20220307154800058.png)
 
 - 必选功能： 
 
@@ -56,7 +56,7 @@ npm run serve
 
 ## 项目介绍
 
-![image-20220307150539426](.\pictures\image-20220307150539426.png)
+![image-20220307150539426](https://gitee.com/zeng_xiaoxi/smart-driving/raw/master/pictures/image-20220307150539426.png)
 
 ### 	主要功能&亮点
 
@@ -92,7 +92,7 @@ npm run serve
 
 ### UI设计
 
-​	UI原型图![空白页 Copy_状态 1 (1)](.\pictures\空白页 Copy_状态 1 (1).png)
+​	UI原型图![空白页 Copy_状态 1 (1)](https://gitee.com/zeng_xiaoxi/smart-driving/raw/master/pictures/%E7%A9%BA%E7%99%BD%E9%A1%B5%20Copy_%E7%8A%B6%E6%80%81%201%20(1).png)
 
 
 
@@ -100,7 +100,7 @@ npm run serve
 
 ### 车辆模拟模块
 
-![image-20220307154517515](.\pictures\image-20220307154517515.png)
+![image-20220307154517515](https://gitee.com/zeng_xiaoxi/smart-driving/raw/master/pictures/image-20220307154517515.png)
 
 #### **智能车和普通车的参数区别**
 
@@ -138,7 +138,7 @@ npm run serve
 
 ### 参数调节模块
 
-![image-20220307154541487](.\pictures\image-20220307154541487.png)
+![image-20220307154541487](https://gitee.com/zeng_xiaoxi/smart-driving/raw/master/pictures/image-20220307154541487.png)
 
 #### 参数设置
 
@@ -149,7 +149,7 @@ npm run serve
 
 
 
-![image-20220307154603149](.\pictures\image-20220307154603149.png)
+![image-20220307154603149](https://gitee.com/zeng_xiaoxi/smart-driving/raw/master/pictures/image-20220307154603149.png)
 
 ### 运行结果面板
 
