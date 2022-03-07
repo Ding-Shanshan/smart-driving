@@ -20,6 +20,7 @@
 <script>
 import * as echarts from "echarts";
 import { ref, watch, onMounted } from "vue";
+import { ElMessage } from 'element-plus';
 export default {
   // 读取父组件中的传递参数和运行判断
   props: ["isRun", "paramters"],
@@ -38,6 +39,13 @@ export default {
         drivingRoute:props.paramters.drivingRoute,
         trafficFlow:props.paramters.trafficFlow,
         runtime: runtimeTable[index],
+      });
+    };
+    const success = () => {
+        ElMessage({
+        showClose: true,
+        message: '本次模拟完成',
+        type: 'success',
       });
     };
 
@@ -192,6 +200,7 @@ export default {
             //运行停止，清除计时器
           } else if (oldValue === true && newValue === false) {
             window.clearInterval(window.int);
+            success()
             index++;
           }
         }
@@ -201,6 +210,7 @@ export default {
       runtimeShow,
       tableData,
       onAddItem,
+      success,
     };
   },
 };
